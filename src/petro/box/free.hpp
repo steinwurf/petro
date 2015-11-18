@@ -22,10 +22,10 @@ namespace box
         static const std::string TYPE;
 
     public:
-        free(byte_stream& bs, uint32_t size):
-            box(free::TYPE)
+        free(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            box(free::TYPE, size, bs, parent)
         {
-            bs.skip(size);
+            bs.skip(m_remaining_bytes);
         }
     };
 

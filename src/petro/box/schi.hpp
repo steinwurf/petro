@@ -22,10 +22,10 @@ namespace box
         static const std::string TYPE;
 
     public:
-        schi(byte_stream& bs, uint32_t size):
-            box(schi::TYPE)
+        schi(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            box(schi::TYPE, size, bs, parent)
         {
-            bs.skip(size);
+            bs.skip(m_remaining_bytes);
         }
     };
 

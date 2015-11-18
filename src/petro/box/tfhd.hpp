@@ -22,10 +22,10 @@ namespace box
         static const std::string TYPE;
 
     public:
-        tfhd(byte_stream& bs, uint32_t size):
-            box(tfhd::TYPE)
+        tfhd(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            box(tfhd::TYPE, size, bs, parent)
         {
-            bs.skip(size);
+            bs.skip(m_remaining_bytes);
         }
     };
 

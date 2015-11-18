@@ -22,8 +22,8 @@ namespace box
         static const std::string TYPE;
 
     public:
-        tkhd(byte_stream& bs, uint32_t size):
-            full_box(tkhd::TYPE, bs, size)
+        tkhd(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            full_box(tkhd::TYPE, size, bs, parent)
         {
 
             m_track_enabled = m_flags.m_data[2] & 0x01;
@@ -40,7 +40,7 @@ namespace box
                 bs.skip(4);
 
                 m_duration = bs.read_uint64_t();
-                size -= 32;
+                m_remaining_bytes -= 32;
             }
             else  // m_version == 0
             {
@@ -52,24 +52,24 @@ namespace box
                 bs.skip(4);
 
                 m_duration = bs.read_uint32_t();
-                size -= 20;
+                m_remaining_bytes -= 20;
             }
             // reserved
             bs.skip(8);
-            size -= 8;
+            m_remaining_bytes -= 8;
 
             m_layer = bs.read_int16_t();
-            size -= 2;
+            m_remaining_bytes -= 2;
 
             m_alternate_group = bs.read_int16_t();
-            size -= 2;
+            m_remaining_bytes -= 2;
 
             m_volume = bs.read_fixed_point(8, 8);
-            size -= 2;
+            m_remaining_bytes -= 2;
 
             // reserved
             bs.skip(2);
-            size -= 2;
+            m_remaining_bytes -= 2;
 
             m_matrix.push_back(bs.read_int32_t());
             m_matrix.push_back(bs.read_int32_t());
@@ -80,14 +80,14 @@ namespace box
             m_matrix.push_back(bs.read_int32_t());
             m_matrix.push_back(bs.read_int32_t());
             m_matrix.push_back(bs.read_int32_t());
-            size -= 4 * 9;
+            m_remaining_bytes -= 4 * 9;
 
             m_width = bs.read_fixed_point(16, 16);
-            size -= 4;
+            m_remaining_bytes -= 4;
 
             m_height = bs.read_fixed_point(16, 16);
-            size -= 4;
-            bs.skip(size);
+            m_remaining_bytes -= 4;
+            bs.skip(m_remaining_bytes);
         }
 
         virtual std::string describe() const

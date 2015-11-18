@@ -22,19 +22,19 @@ namespace box
         static const std::string TYPE;
 
     public:
-        stts(byte_stream& bs, uint32_t size):
-            full_box(stts::TYPE, bs, size)
+        stts(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            full_box(stts::TYPE, size, bs, parent)
         {
             m_entry_count = bs.read_uint32_t();
-            size -= 4;
+            m_remaining_bytes -= 4;
             for (uint32_t i = 0; i < m_entry_count; ++i)
             {
                 m_entries.push_back(std::pair<uint32_t, uint32_t>(
                     bs.read_uint32_t(),
                     bs.read_uint32_t()));
-                size -= 8;
+                m_remaining_bytes -= 8;
             }
-            bs.skip(size);
+            bs.skip(m_remaining_bytes);
         }
 
         virtual std::string describe() const

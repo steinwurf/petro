@@ -22,14 +22,14 @@ namespace box
         static const std::string TYPE;
 
     public:
-        smhd(byte_stream& bs, uint32_t size):
-            full_box(smhd::TYPE, bs, size)
+        smhd(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            full_box(smhd::TYPE, size, bs, parent)
         {
             m_balance = bs.read_fixed_point(8, 8);
-            size -= 2;
+            m_remaining_bytes -= 2;
             bs.skip(2);
-            size -= 2;
-            bs.skip(size);
+            m_remaining_bytes -= 2;
+            bs.skip(m_remaining_bytes);
         }
 
         virtual std::string describe() const

@@ -22,24 +22,24 @@ namespace box
         static const std::string TYPE;
 
     public:
-        hdlr(byte_stream& bs, uint32_t size):
-            full_box(hdlr::TYPE, bs, size)
+        hdlr(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            full_box(hdlr::TYPE, size, bs, parent)
         {
             // predefined
             bs.skip(4);
-            size -= 4;
+            m_remaining_bytes -= 4;
 
             m_handler_type = bs.read_type();
-            size -= 4;
+            m_remaining_bytes -= 4;
 
             // reserved
             bs.skip(4 * 3);
-            size -= 4 * 3;
+            m_remaining_bytes -= 4 * 3;
 
-            while (size != 0)
+            while (m_remaining_bytes != 0)
             {
                 m_name += bs.read_uint8_t();
-                size -= 1;
+                m_remaining_bytes -= 1;
             }
         }
 

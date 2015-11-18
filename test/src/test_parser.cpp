@@ -24,7 +24,9 @@ TEST(test_parser, invalid_data)
         petro::box::moov<petro::parser<petro::box::ftyp>>,
         petro::box::free,
         petro::box::ftyp> p;
-    auto boxes = p.read((uint8_t*)data.data(), data.size());
+
+    std::vector<petro::box::box*> boxes;
+    p.read(boxes, (uint8_t*)data.data(), data.size());
 
     for(const auto& box : boxes)
     {

@@ -22,10 +22,10 @@ namespace box
         static const std::string TYPE;
 
     public:
-        sdtp(byte_stream& bs, uint32_t size):
-            box(sdtp::TYPE)
+        sdtp(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            box(sdtp::TYPE, size, bs, parent)
         {
-            bs.skip(size);
+            bs.skip(m_remaining_bytes);
         }
     };
 

@@ -22,10 +22,10 @@ namespace box
         static const std::string TYPE;
 
     public:
-        co64(byte_stream& bs, uint32_t size):
-            box(co64::TYPE)
+        co64(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            box(co64::TYPE, size, bs, parent)
         {
-            bs.skip(size);
+            bs.skip(m_remaining_bytes);
         }
     };
 

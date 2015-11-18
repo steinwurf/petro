@@ -101,7 +101,10 @@ int main(int argc, char* argv[])
                 petro::box::mehd,
                 petro::box::trex
             >>,
-            petro::box::ipmc
+            petro::box::ipmc,
+            petro::box::udta<petro::parser<
+                petro::box::cprt
+            >>
         >>,
         petro::box::moof<petro::parser<
             petro::box::mfhd,
@@ -119,11 +122,7 @@ int main(int argc, char* argv[])
         >>,
         petro::box::mdat,
         petro::box::free,
-        petro::box::skip<petro::parser<
-            petro::box::udta<petro::parser<
-                petro::box::cprt
-            >>
-        >>,
+        petro::box::skip,
         petro::box::meta<petro::parser<
             petro::box::hdlr,
             petro::box::dinf<petro::parser<
@@ -148,7 +147,9 @@ int main(int argc, char* argv[])
             petro::box::pitm
         >>
     > parser;
-    auto boxes = parser.read((uint8_t*)data.data(), data.size());
+
+    std::vector<petro::box::box*> boxes;
+    parser.read(boxes, (uint8_t*)data.data(), data.size());
 
     for (auto box : boxes)
     {

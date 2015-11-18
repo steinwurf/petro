@@ -22,13 +22,13 @@ namespace box
         static const std::string TYPE;
 
     public:
-        url(byte_stream& bs, uint32_t size):
-            full_box(url::TYPE, bs, size)
+        url(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            full_box(url::TYPE, size, bs, parent)
         {
-            while (size != 0)
+            while (m_remaining_bytes != 0)
             {
                 m_location += bs.read_uint8_t();
-                size -= 1;
+                m_remaining_bytes -= 1;
             }
         }
 

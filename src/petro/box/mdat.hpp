@@ -22,12 +22,18 @@ namespace box
         static const std::string TYPE;
 
     public:
-        mdat(byte_stream& bs, uint32_t size);
+        mdat(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            box(mdat::TYPE, size, bs, parent),
+            m_data(bs.data())
+        {
+            bs.skip(m_remaining_bytes);
+        }
 
     private:
 
         const uint8_t* m_data;
-        uint32_t m_size;
     };
+
+    const std::string mdat::TYPE = "mdat";
 }
 }

@@ -24,11 +24,11 @@ namespace box
         static const std::string TYPE;
 
     public:
-        dref(byte_stream& bs, uint32_t size):
-            full_box(dref::TYPE, bs, size)
+        dref(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            full_box(dref::TYPE, size, bs, parent)
         {
             m_entry_count = bs.read_uint32_t();
-            size -= 4;
+            m_remaining_bytes -= 4;
             Parser p;
             for (uint32_t i = 0; i < m_entry_count; ++i)
             {

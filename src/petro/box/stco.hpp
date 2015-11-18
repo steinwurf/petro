@@ -22,10 +22,10 @@ namespace box
         static const std::string TYPE;
 
     public:
-        stco(byte_stream& bs, uint32_t size):
-            box(stco::TYPE)
+        stco(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            box(stco::TYPE, size, bs, parent)
         {
-            bs.skip(size);
+            bs.skip(m_remaining_bytes);
         }
     };
 

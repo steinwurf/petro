@@ -22,26 +22,26 @@ namespace box
         static const std::string TYPE;
 
     public:
-        hmhd(byte_stream& bs, uint32_t size):
-            full_box(hmhd::TYPE, bs, size)
+        hmhd(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            full_box(hmhd::TYPE, size, bs, parent)
         {
             m_max_pdu_size = bs.read_uint16_t();
-            size -= 2;
+            m_remaining_bytes -= 2;
 
             m_average_pdu_size = bs.read_uint16_t();
-            size -= 2;
+            m_remaining_bytes -= 2;
 
             m_max_bit_rate = bs.read_uint32_t();
-            size -= 4;
+            m_remaining_bytes -= 4;
 
             m_average_bit_rate = bs.read_uint32_t();
-            size -= 4;
+            m_remaining_bytes -= 4;
 
             // reserved
             bs.skip(4);
-            size -= 4;
+            m_remaining_bytes -= 4;
 
-            bs.skip(size);
+            bs.skip(m_remaining_bytes);
         }
 
         virtual std::string describe() const

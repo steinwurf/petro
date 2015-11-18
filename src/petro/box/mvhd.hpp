@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <string>
 #include <sstream>
+#include <cassert>
 
 #include "full_box.hpp"
 #include "../byte_stream.hpp"
@@ -23,8 +24,8 @@ namespace box
         static const std::string TYPE;
 
     public:
-        mvhd(byte_stream& bs, uint32_t size):
-            full_box(mvhd::TYPE, bs, size)
+        mvhd(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            full_box(mvhd::TYPE, size, bs, parent)
         {
             if (m_version == 1)
             {
@@ -32,7 +33,7 @@ namespace box
                 m_modification_time = bs.read_uint64_t();
                 m_timescale = bs.read_uint32_t();
                 m_duration = bs.read_uint64_t();
-                size -= 28;
+                m_remaining_bytes -= 28;
             }
             else
             {
@@ -41,17 +42,17 @@ namespace box
                 m_modification_time = bs.read_uint32_t();
                 m_timescale = bs.read_uint32_t();
                 m_duration = bs.read_uint32_t();
-                size -= 16;
+                m_remaining_bytes -= 16;
             }
 
             m_rate = bs.read_fixed_point(16, 16);
-            size -= 4;
+            m_remaining_bytes -= 4;
             m_volume = bs.read_fixed_point(8, 8);
-            size -= 2;
+            m_remaining_bytes -= 2;
 
             // reserved
             bs.skip(2 + 4 + 4);
-            size -= 2 + 4 + 4;
+            m_remaining_bytes -= 2 + 4 + 4;
 
             m_matrix.push_back(bs.read_int32_t());
             m_matrix.push_back(bs.read_int32_t());
@@ -62,15 +63,15 @@ namespace box
             m_matrix.push_back(bs.read_int32_t());
             m_matrix.push_back(bs.read_int32_t());
             m_matrix.push_back(bs.read_int32_t());
-            size -= 4 * 9;
+            m_remaining_bytes -= 4 * 9;
 
             // pre_defined
             bs.skip(6 * 4);
-            size -= 6 * 4;
+            m_remaining_bytes -= 6 * 4;
 
             m_next_track_id = bs.read_uint32_t();
-            size -= 4;
-            assert(size == 0);
+            m_remaining_bytes -= 4;
+            assert(m_remaining_bytes == 0);
         }
 
         virtual std::string describe() const

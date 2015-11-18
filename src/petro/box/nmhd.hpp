@@ -22,10 +22,10 @@ namespace box
         static const std::string TYPE;
 
     public:
-        nmhd(byte_stream& bs, uint32_t size):
-            full_box(nmhd::TYPE, bs, size)
+        nmhd(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            full_box(nmhd::TYPE, size, bs, parent)
         {
-            bs.skip(size);
+            bs.skip(m_remaining_bytes);
         }
     };
 

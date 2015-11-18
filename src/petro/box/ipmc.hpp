@@ -22,10 +22,10 @@ namespace box
         static const std::string TYPE;
 
     public:
-        ipmc(byte_stream& bs, uint32_t size):
-            box(ipmc::TYPE)
+        ipmc(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            box(ipmc::TYPE, size, bs, parent)
         {
-            bs.skip(size);
+            bs.skip(m_remaining_bytes);
         }
     };
 

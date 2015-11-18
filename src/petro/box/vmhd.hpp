@@ -22,20 +22,20 @@ namespace box
         static const std::string TYPE;
 
     public:
-        vmhd(byte_stream& bs, uint32_t size):
-            full_box(vmhd::TYPE, bs, size)
+        vmhd(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            full_box(vmhd::TYPE, size, bs, parent)
         {
             m_graphics_mode = bs.read_uint16_t();
-            size -= 2;
+            m_remaining_bytes -= 2;
 
             m_op_color.push_back(bs.read_uint16_t());
-            size -= 2;
+            m_remaining_bytes -= 2;
             m_op_color.push_back(bs.read_uint16_t());
-            size -= 2;
+            m_remaining_bytes -= 2;
             m_op_color.push_back(bs.read_uint16_t());
-            size -= 2;
+            m_remaining_bytes -= 2;
 
-            bs.skip(size);
+            bs.skip(m_remaining_bytes);
         }
 
         virtual std::string describe() const

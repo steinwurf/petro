@@ -14,7 +14,6 @@ namespace petro
 namespace box
 {
     /// free space
-    template<class Parser>
     class skip : public box
     {
 
@@ -23,16 +22,13 @@ namespace box
         static const std::string TYPE;
 
     public:
-        skip(byte_stream& parent_bs, uint32_t size):
-            box(skip::TYPE)
+        skip(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            box(skip::TYPE, size, bs, parent)
         {
-            Parser p;
-            m_children = p.read(parent_bs.data(), size);
-            parent_bs.skip(size);
+            bs.skip(m_remaining_bytes);
         }
     };
 
-    template<class Parser>
-    const std::string skip<Parser>::TYPE = "skip";
+    const std::string skip::TYPE = "skip";
 }
 }

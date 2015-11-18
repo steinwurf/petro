@@ -22,7 +22,7 @@ namespace box
         static const std::string TYPE;
 
     public:
-        ftyp(byte_stream& bs, uint32_t size);
+        ftyp(uint32_t size, byte_stream& bs, box* parent=nullptr);
         virtual std::string describe() const;
 
     private:

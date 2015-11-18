@@ -22,8 +22,8 @@ namespace box
         static const std::string TYPE;
 
     public:
-        mdhd(byte_stream& bs, uint32_t size):
-            full_box(mdhd::TYPE, bs, size)
+        mdhd(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            full_box(mdhd::TYPE, size, bs, parent)
         {
             if (m_version == 1)
             {
@@ -31,7 +31,7 @@ namespace box
                 m_modification_time = bs.read_uint64_t();
                 m_timescale = bs.read_uint32_t();
                 m_duration = bs.read_uint64_t();
-                size -= 28;
+                m_remaining_bytes -= 28;
             }
             else // m_version == 0
             {
@@ -39,18 +39,18 @@ namespace box
                 m_modification_time = bs.read_uint32_t();
                 m_timescale = bs.read_uint32_t();
                 m_duration = bs.read_uint32_t();
-                size -= 16;
+                m_remaining_bytes -= 16;
             }
 
             // ISO-639-2/T language code
             m_language = bs.read_iso639_code();
-            size -= 2;
+            m_remaining_bytes -= 2;
 
             // pre_defined
             bs.skip(2);
-            size -= 2;
+            m_remaining_bytes -= 2;
 
-            bs.skip(size);
+            bs.skip(m_remaining_bytes);
         }
 
         virtual std::string describe() const

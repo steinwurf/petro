@@ -23,12 +23,12 @@ namespace box
         static const std::string TYPE;
 
     public:
-        mfra(byte_stream& parent_bs, uint32_t size):
-            box(mfra::TYPE)
+        mfra(uint32_t size, byte_stream& bs, box* parent=nullptr):
+            box(mfra::TYPE, size, bs, parent)
         {
             Parser p;
-            m_children = p.read(parent_bs.data(), size);
-            parent_bs.skip(size);
+            p.read(m_children, bs.data(), m_remaining_bytes, this);
+            bs.skip(m_remaining_bytes);
         }
     };
 
