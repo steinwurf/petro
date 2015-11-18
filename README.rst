@@ -2,12 +2,11 @@
 petro
 =====
 
-This is the default description, please change it.
+petro is an mp4 parser which allows you to extract all kinds of information.
 
-.. contents:: Table of Contents:
-   :local:
+The implementation is based on `ISO/IEC 14496-12 <http://www.iso.org/iso/catalogue_detail.htm?csnumber=61988>`_.
 
 Usage
 =====
 
-Here is how you use it...
+An example of how to use petro is located in the examples folder.
