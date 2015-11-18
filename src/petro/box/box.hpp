@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <sstream>
 
 namespace petro
 {
@@ -79,7 +80,10 @@ namespace box
 
         virtual std::string describe() const
         {
-            return type();
+            std::stringstream ss;
+            ss << type() << std::endl;
+            ss << "  size: " << size();
+            return ss.str();
         }
 
         virtual ~box()

@@ -25,8 +25,11 @@ namespace petro
         int32_t read_int32_t();
         uint32_t read_uint32_t();
 
-        std::string read_type();
+        int64_t read_int64_t();
         uint64_t read_uint64_t();
+
+        std::string read_type();
+
         float read_fixed_point(uint32_t integer_length,
             uint32_t fractional_length);
 

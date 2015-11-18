@@ -69,6 +69,10 @@ namespace box
 
         private:
 
+            /// an integer that contains the index of the data reference to use
+            /// to retrieve data associated with samples that use this sample
+            /// description. Data references are stored in dref boxes. The index
+            /// ranges from 1 to the number of data references.
             uint32_t m_data_reference_index;
         };
 
@@ -95,8 +99,8 @@ namespace box
 
                 m_width = bs.read_uint16_t();
                 m_height = bs.read_uint16_t();
-                m_horizontal_resolution = bs.read_uint32_t();
-                m_vertical_resolution = bs.read_uint32_t();
+                m_horizontal_resolution = bs.read_fixed_point(16, 16);
+                m_vertical_resolution = bs.read_fixed_point(16, 16);
                 m_remaining_bytes -= 2 + 2 + 4 + 4;
 
                 // reserved
@@ -138,12 +142,30 @@ namespace box
 
         private:
 
+            /// are the maximum visual width and height of the stream described
+            /// by this sample description, in pixels
             uint16_t m_width;
             uint16_t m_height;
+
+            /// fields give the resolution of the image in pixels-per-inch, as a
+            /// fixed 16.16 number
             uint32_t m_horizontal_resolution;
             uint32_t m_vertical_resolution;
+
+            /// how many frames of compressed video are stored in each sample.
+            /// The default is 1, for one frame per sample; it may be more than
+            /// 1 for multiple frames per sample
             uint16_t m_frame_count;
+
+            /// a name, for informative purposes. It is formatted in a fixed
+            /// 32-byte field, with the first byte set to the number of bytes
+            /// to be displayed, followed by that number of bytes of displayable
+            /// data, and then padding to complete 32 bytes total (including
+            /// the size byte). The field may be set to 0.
             std::string m_compressor_name;
+
+            /// takes one of the following values
+            ///     0x0018 – images are in colour with no alpha
             uint16_t m_depth;
         };
 
@@ -190,8 +212,14 @@ namespace box
 
         private:
 
+            /// either 1 (mono) or 2 (stereo)
             uint16_t m_channel_count;
+
+            /// sample size in bits
             uint16_t m_sample_size;
+
+            /// the sampling rate expressed as a 16.16 fixed-point number
+            /// (hi.lo)
             uint32_t m_sample_rate;
         };
 
