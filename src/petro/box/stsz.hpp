@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <string>
+#include <memory>
 #include <algorithm>
 
 #include "full_box.hpp"
@@ -34,7 +35,7 @@ namespace box
             {
                 for (uint32_t i = 0; i < m_sample_count; ++i)
                 {
-                    m_entry_sizes.push_back(bs.read_uint32_t());
+                    m_entries.push_back(bs.read_uint32_t());
                     m_remaining_bytes -= 4;
                 }
             }
@@ -48,20 +49,35 @@ namespace box
             ss << full_box::describe() << std::endl;
             ss << "  sample_size: " << m_sample_size << std::endl;
             ss << "  sample_count: " << m_sample_count << std::endl;
-            ss << "  samples (size): ";
+            ss << "  entities (size): ";
             auto seperator = "";
             uint32_t max_print = 5;
             for (uint32_t i = 0; i < std::min(
-                (uint32_t)m_entry_sizes.size(), max_print); ++i)
+                (uint32_t)m_entries.size(), max_print); ++i)
             {
                 ss << seperator;
-                ss << "(" << m_entry_sizes[i] << ")";
+                ss << "(" << m_entries[i] << ")";
                 seperator =  ", ";
             }
-            if (m_entry_sizes.size() > max_print)
+            if (m_entries.size() > max_print)
                 ss << "...";
             ss << std::endl;
             return ss.str();
+        }
+
+        uint32_t sample_size() const
+        {
+            return m_sample_size;
+        }
+
+        uint32_t sample_count() const
+        {
+            return m_sample_count;
+        }
+
+        const std::vector<uint32_t>& entries() const
+        {
+            return m_entries;
         }
 
     private:
@@ -78,7 +94,7 @@ namespace box
         uint32_t m_sample_count;
         /// a vector of integers specifying the size of the samples, indexed by
         /// its number.
-        std::vector<uint32_t> m_entry_sizes;
+        std::vector<uint32_t> m_entries;
     };
 
     const std::string stsz::TYPE = "stsz";

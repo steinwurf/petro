@@ -5,8 +5,8 @@
 
 #include <string>
 #include <istream>
-#include <iostream>
 #include <memory>
+#include <iostream>
 #include "parser.hpp"
 #include "byte_stream.hpp"
 #include "box/unknown.hpp"
@@ -24,7 +24,7 @@ namespace petro
             std::vector<box::box*>& boxes,
             const uint8_t* byte_data,
             uint32_t byte_size,
-            petro::box::box* parent=nullptr)
+            box::box* parent=nullptr)
         {
             byte_stream bs(byte_data, byte_size);
             while(bs.size() != 0)
@@ -33,12 +33,13 @@ namespace petro
             }
         }
 
-        void parse(std::vector<box::box*>& boxes, byte_stream& bs,
-            petro::box::box* parent=nullptr)
+        void parse(
+            std::vector<box::box*>& boxes,
+            byte_stream& bs,
+            box::box* parent=nullptr)
         {
             // size is an integer that specifies the number of bytes in this
             // box, including all its fields and contained boxes.
-
             uint32_t size = bs.read_uint32_t();
 
 
@@ -50,34 +51,47 @@ namespace petro
             // the type field is set to "uuid".
             std::string type = bs.read_type();
 
+            // Try parsing the found type
+            auto found_box = parse_box<Boxes...>(type, size, bs, parent);
+            // if the parser doesn't support the given type, a generic box type
+            // called "unknown" is used instead.
+            if (found_box == nullptr)
+            {
+                found_box = box::unknown(type, size, bs, parent);
+            }
 
-            bool found_box = parse<Boxes...>(boxes, type, size, bs, parent);
-            if (not found_box)
-                boxes.push_back(new box::unknown(type, size, bs, parent));
+            boxes.push_back(found_box);
         }
 
     private:
 
         template<class Box>
-        bool parse(std::vector<box::box*>& boxes, const std::string& type,
-            uint32_t size, byte_stream& bs,
-            petro::box::box* parent)
+        box::box* parse_box(
+            const std::string& type,
+            uint32_t size,
+            byte_stream& bs,
+            box::box* parent)
         {
             if (Box::TYPE == type)
             {
-                boxes.push_back(new Box(size, bs, parent));
-                return true;
+                return new Box(size, bs, parent);
             }
-            return false;
+            return nullptr;
         }
 
         template<class Box, class NextBox, class... Remaining>
-        bool parse(std::vector<box::box*>& boxes, const std::string& type,
-            uint32_t size, byte_stream& bs,
-            petro::box::box* parent)
+        box::box* parse_box(
+            const std::string& type,
+            uint32_t size,
+            byte_stream& bs,
+            box::box* parent)
         {
-            return parse<Box>(boxes, type,  size, bs, parent) or
-                   parse<NextBox, Remaining...>(boxes, type, size, bs, parent);
+            auto box = parse_box<Box>(type,  size, bs, parent);
+            if (box != nullptr)
+            {
+                return box;
+            }
+            return parse_box<NextBox, Remaining...>(type, size, bs, parent);
         }
     };
 }

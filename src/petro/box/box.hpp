@@ -15,7 +15,8 @@ namespace box
     {
     public:
 
-        box(const std::string& type, uint32_t size, byte_stream& bs, box* parent):
+        box(const std::string& type, uint32_t size, byte_stream& bs,
+            box* parent):
             m_type(type),
             m_size(size),
             m_parent(parent)
@@ -58,7 +59,7 @@ namespace box
             }
         }
 
-        const std::string& type() const
+        virtual std::string type() const
         {
             return m_type;
         }
@@ -73,7 +74,7 @@ namespace box
             return m_children;
         }
 
-        const box* parent() const
+        const box parent() const
         {
             return m_parent;
         }

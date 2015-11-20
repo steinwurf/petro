@@ -16,6 +16,14 @@ namespace box
     /// sample-to-chunk, partial data-offset information
     class stsc : public full_box
     {
+    public:
+
+        struct entry_type
+        {
+            uint32_t first_chunk;
+            uint32_t samples_per_chunk;
+            uint32_t sample_description_index;
+        };
 
     public:
 
@@ -29,11 +37,11 @@ namespace box
             m_remaining_bytes -= 4;
             for (uint32_t i = 0; i < m_entry_count; ++i)
             {
-                m_entries.push_back(std::tuple<uint32_t,uint32_t,uint32_t>(
+                m_entries.push_back(entry_type{
                     bs.read_uint32_t(),
                     bs.read_uint32_t(),
-                    bs.read_uint32_t()
-                    ));
+                    bs.read_uint32_t()});
+
                 m_remaining_bytes -= 4 * 3;
             }
             bs.skip(m_remaining_bytes);
@@ -56,15 +64,25 @@ namespace box
                 auto entry = m_entries[i];
                 ss << seperator;
                 ss << "("
-                    << std::get<0>(entry) << ","
-                    << std::get<1>(entry) << ","
-                    << std::get<2>(entry) << ")";
+                    << entry.first_chunk << ","
+                    << entry.samples_per_chunk << ","
+                    << entry.sample_description_index << ")";
                 seperator =  ", ";
             }
             if (m_entries.size() > max_print)
                 ss << "...";
             ss << std::endl;
             return ss.str();
+        }
+
+        const std::vector<entry_type>& entries() const
+        {
+            return m_entries;
+        }
+
+        uint32_t entry_count()
+        {
+            return m_entry_count;
         }
 
     private:
@@ -86,7 +104,7 @@ namespace box
         /// sample_description_index is an integer that gives the index of the
         /// sample entry that describes the samples in this chunk. The index
         /// ranges from 1 to the number of sample entries in the stsd.
-        std::vector<std::tuple<uint32_t,uint32_t,uint32_t>> m_entries;
+        std::vector<entry_type> m_entries;
     };
 
     const std::string stsc::TYPE = "stsc";

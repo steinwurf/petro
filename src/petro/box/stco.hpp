@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <string>
+#include <memory>
 
 #include "full_box.hpp"
 #include "../byte_stream.hpp"
@@ -55,6 +56,11 @@ namespace box
                 ss << "...";
             ss << std::endl;
             return ss.str();
+        }
+
+        const std::vector<uint32_t>& entries() const
+        {
+            return m_entries;
         }
 
     private:

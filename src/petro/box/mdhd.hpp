@@ -8,6 +8,7 @@
 
 #include "full_box.hpp"
 #include "../byte_stream.hpp"
+#include "../utils.hpp"
 
 namespace petro
 {
@@ -57,8 +58,10 @@ namespace box
         {
             std::stringstream ss;
             ss << full_box::describe() << std::endl;
-            ss << "  creation_time: " << m_creation_time << std::endl;
-            ss << "  modification_time: " << m_modification_time << std::endl;
+            ss << "  creation_time: " << parse_time(m_creation_time)
+               << std::endl;
+            ss << "  modification_time: " << parse_time(m_modification_time)
+               << std::endl;
             ss << "  time_scale: " << m_timescale << std::endl;
             ss << "  duration: " << m_duration << std::endl;
             ss << "  language: " << m_language << std::endl;

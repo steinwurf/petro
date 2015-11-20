@@ -16,9 +16,11 @@ namespace box
 {
 
 
-    const box* get_grand_parent(const box* b, const std::string& grand_parent)
+    box* get_grand_parent(
+        const box* b,
+        const std::string& grand_parent)
     {
-        const box* parent = b->parent();
+        auto parent = b->parent();
         if (parent != nullptr)
         {
             for (auto child : parent->children())
@@ -259,18 +261,14 @@ namespace box
             m_entry_count = bs.read_uint32_t();
             m_remaining_bytes -= 4;
 
-            const box* handler = get_grand_parent(this, "hdlr");
+            auto handler = get_grand_parent(this, "hdlr");
             for (uint32_t i = 0; i < m_entry_count; ++i)
             {
                 uint32_t entry_size = bs.read_uint32_t();
                 std::string entry_type = bs.read_type();
 
-                sample_entry* entry;
-                if (handler == nullptr)
-                {
-                    entry = new sample_entry(entry_type, entry_size, bs, this);
-                }
-                else
+                sample_entry* entry = nullptr;
+                if (handler != nullptr)
                 {
                     std::string handler_type = ((hdlr*)handler)->handler_type();
                     if (handler_type == "vide") // for video tracks
@@ -288,12 +286,11 @@ namespace box
                         entry = new hint_sample_entry(
                             entry_type, entry_size, bs, this);
                     }
-                    else
-                    {
-                        // unkown handler_type.
-                        assert(0);
-                    }
                 }
+                if (!entry)
+                    entry = new sample_entry(
+                        entry_type, entry_size, bs, this);
+
                 m_remaining_bytes -= entry->size();
                 m_children.push_back(entry);
             }

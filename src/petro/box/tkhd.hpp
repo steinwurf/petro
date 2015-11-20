@@ -8,6 +8,7 @@
 
 #include "full_box.hpp"
 #include "../byte_stream.hpp"
+#include "../utils.hpp"
 
 namespace petro
 {
@@ -97,8 +98,10 @@ namespace box
             ss << "  track_enabled: " << m_track_enabled << std::endl;
             ss << "  track_in_movie: " << m_track_in_movie << std::endl;
             ss << "  track_in_preview: " << m_track_in_preview << std::endl;
-            ss << "  creation_time: " << m_creation_time << std::endl;
-            ss << "  modification_time: " << m_modification_time << std::endl;
+            ss << "  creation_time: " << parse_time(m_creation_time)
+               << std::endl;
+            ss << "  modification_time: " << parse_time(m_modification_time)
+               << std::endl;
             ss << "  track_id: " << m_track_id << std::endl;
             ss << "  duration: " << m_duration << std::endl;
             ss << "  layer: " << m_layer << std::endl;

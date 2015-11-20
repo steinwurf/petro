@@ -5,3 +5,8 @@ bld.program(features='cxx',
             source='complete_parser.cpp',
             target='complete_parser',
             use=['petro'])
+
+bld.program(features='cxx',
+            source='access_unit_parser.cpp',
+            target='access_unit_parser',
+            use=['petro'])

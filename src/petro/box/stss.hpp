@@ -57,6 +57,11 @@ namespace box
             return ss.str();
         }
 
+        const std::vector<uint32_t>& entries() const
+        {
+            return m_entries;
+        }
+
     private:
 
         /// an integer that gives the number of entries in the following table.

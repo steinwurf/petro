@@ -29,6 +29,11 @@ namespace box
             bs.skip(m_remaining_bytes);
         }
 
+        const uint8_t* data() const
+        {
+            return m_data;
+        }
+
     private:
 
         const uint8_t* m_data;
