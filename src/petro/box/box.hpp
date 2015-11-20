@@ -74,7 +74,7 @@ namespace box
             return m_children;
         }
 
-        const box parent() const
+        const box* parent() const
         {
             return m_parent;
         }
