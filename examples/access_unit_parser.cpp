@@ -142,7 +142,7 @@ int main(int argc, char* argv[])
 {
     if (argc != 2 || std::string(argv[1]) == "--help")
     {
-        auto usage = "./complete_parser MP4_FILE";
+        auto usage = "./access_unit_parser MP4_FILE";
         std::cout << usage << std::endl;
         return 0;
     }
@@ -211,10 +211,10 @@ int main(int argc, char* argv[])
         petro::box::mdat
     > parser;
 
-    std::vector<petro::box::box*> boxes;
-    parser.read(boxes, (uint8_t*)data.data(), data.size());
+    auto root = new petro::box::root();
+    parser.read(root, (uint8_t*)data.data(), data.size());
 
-    auto traks = petro::find_boxes(boxes, "trak");
+    auto traks = petro::find_boxes(root->children(), "trak");
 
     petro::box::box* trak = nullptr;
 
@@ -234,7 +234,7 @@ int main(int argc, char* argv[])
 
     assert(trak != nullptr);
 
-    auto mvex = petro::find_box(boxes, "mvex");
+    auto mvex = petro::find_box(root->children(), "mvex");
 
 
 

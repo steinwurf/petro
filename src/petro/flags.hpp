@@ -9,7 +9,7 @@ namespace petro
     {
     public:
 
-        flags(byte_stream& bs)
+        void read(byte_stream& bs)
         {
             // read 24 bytes
             m_data.push_back(bs.read_uint8_t());

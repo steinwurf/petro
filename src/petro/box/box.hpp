@@ -15,12 +15,13 @@ namespace box
     {
     public:
 
-        box(const std::string& type, uint32_t size, byte_stream& bs,
-            box* parent):
-            m_type(type),
-            m_size(size),
-            m_parent(parent)
+        virtual void read(const std::string& type, uint32_t size, byte_stream& bs,
+            box* parent)
         {
+            m_type = type;
+            m_size = size;
+            m_parent = parent;
+
             if (m_size == 1)
             {
                 // if size is 1 then the actual size is in the field
@@ -72,6 +73,11 @@ namespace box
         const std::vector<box*> children() const
         {
             return m_children;
+        }
+
+        void add_child(box* box)
+        {
+            m_children.push_back(box);
         }
 
         const box* parent() const

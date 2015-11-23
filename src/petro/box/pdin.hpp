@@ -22,9 +22,9 @@ namespace box
         static const std::string TYPE;
 
     public:
-        pdin(uint32_t size, byte_stream& bs, box* parent=nullptr):
-            box(pdin::TYPE, size, bs, parent)
+        void read(uint32_t size, byte_stream& bs, box* parent)
         {
+            box::read(pdin::TYPE, size, bs, parent);
             bs.skip(m_remaining_bytes);
         }
     };

@@ -22,9 +22,9 @@ namespace box
         static const std::string TYPE;
 
     public:
-        tref(uint32_t size, byte_stream& bs, box* parent=nullptr):
-            box(tref::TYPE, size, bs, parent)
+        void read(uint32_t size, byte_stream& bs, box* parent)
         {
+            box::read(tref::TYPE, size, bs, parent);
             bs.skip(m_remaining_bytes);
         }
     };

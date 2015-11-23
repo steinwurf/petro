@@ -22,9 +22,9 @@ namespace box
         static const std::string TYPE;
 
     public:
-        xml(uint32_t size, byte_stream& bs, box* parent=nullptr):
-            box(xml::TYPE, size, bs, parent)
+        void read(uint32_t size, byte_stream& bs, box* parent)
         {
+            box::read(xml::TYPE, size, bs, parent);
             bs.skip(m_remaining_bytes);
         }
     };

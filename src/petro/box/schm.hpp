@@ -22,9 +22,9 @@ namespace box
         static const std::string TYPE;
 
     public:
-        schm(uint32_t size, byte_stream& bs, box* parent=nullptr):
-            box(schm::TYPE, size, bs, parent)
+        void read(uint32_t size, byte_stream& bs, box* parent)
         {
+            box::read(schm::TYPE, size, bs, parent);
             bs.skip(m_remaining_bytes);
         }
     };

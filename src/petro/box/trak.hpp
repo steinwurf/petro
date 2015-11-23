@@ -23,11 +23,11 @@ namespace box
         static const std::string TYPE;
 
     public:
-        trak(uint32_t size, byte_stream& bs, box* parent=nullptr):
-            box(trak::TYPE, size, bs, parent)
+        void read(uint32_t size, byte_stream& bs, box* parent)
         {
+            box::read(trak::TYPE, size, bs, parent);
             Parser p;
-            p.read(m_children, bs.data(), m_remaining_bytes, this);
+            p.read(this, bs.data(), m_remaining_bytes);
             bs.skip(m_remaining_bytes);
         }
     };

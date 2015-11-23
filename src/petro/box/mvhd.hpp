@@ -25,9 +25,9 @@ namespace box
         static const std::string TYPE;
 
     public:
-        mvhd(uint32_t size, byte_stream& bs, box* parent=nullptr):
-            full_box(mvhd::TYPE, size, bs, parent)
+        void read(uint32_t size, byte_stream& bs, box* parent)
         {
+            full_box::read(mvhd::TYPE, size, bs, parent);
             if (m_version == 1)
             {
                 m_creation_time = bs.read_uint64_t();

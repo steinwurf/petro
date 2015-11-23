@@ -39,6 +39,7 @@
 #include "padb.hpp"
 #include "pdin.hpp"
 #include "pitm.hpp"
+#include "root.hpp"
 #include "sbgp.hpp"
 #include "schi.hpp"
 #include "schm.hpp"

@@ -148,18 +148,15 @@ int main(int argc, char* argv[])
         >>
     > parser;
 
-    std::vector<petro::box::box*> boxes;
-    parser.read(boxes, (uint8_t*)data.data(), data.size());
+    auto root = new petro::box::root();
+    parser.read(root, (uint8_t*)data.data(), data.size());
 
-    for (auto box : boxes)
+    for (auto box : root->children())
     {
         print_box(box);
     }
 
-    for (auto box : boxes)
-    {
-        delete box;
-    }
+    delete root;
 
     return 0;
 }

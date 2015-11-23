@@ -9,35 +9,12 @@
 #include "full_box.hpp"
 #include "hdlr.hpp"
 #include "../byte_stream.hpp"
+#include "../utils.hpp"
 
 namespace petro
 {
 namespace box
 {
-
-
-    box* get_grand_parent(
-        const box* b,
-        const std::string& grand_parent)
-    {
-        auto parent = b->parent();
-        if (parent != nullptr)
-        {
-            for (auto child : parent->children())
-            {
-                if (child->type() == grand_parent)
-                {
-                    return child;
-                }
-            }
-            if (parent->parent() != nullptr)
-            {
-                return get_grand_parent(parent, grand_parent);
-            }
-        }
-        return nullptr;
-    }
-
     /// sample descriptions (codec types, initialization etc.)
     class stsd : public full_box
     {
@@ -49,10 +26,10 @@ namespace box
 
         public:
 
-            sample_entry(const std::string& format, uint32_t size,
-                byte_stream& bs, box* parent):
-                box(format, size, bs, parent)
+            void read(const std::string& format, uint32_t size,
+                byte_stream& bs, box* parent)
             {
+                box::read(format, size, bs, parent);
                 // reserved
                 bs.skip(6);
                 m_remaining_bytes -= 6;
@@ -83,10 +60,10 @@ namespace box
 
         public:
 
-            visual_sample_entry(const std::string& coding_name, uint32_t size,
-                byte_stream& bs, box* parent):
-                sample_entry(coding_name, size, bs, parent)
+            void read(const std::string& coding_name, uint32_t size,
+                byte_stream& bs, box* parent)
             {
+                sample_entry::read(coding_name, size, bs, parent);
                 // pre_defined
                 bs.skip(2);
                 m_remaining_bytes -= 2;
@@ -176,10 +153,10 @@ namespace box
 
         public:
 
-            audio_sample_entry(const std::string& coding_name, uint32_t size,
-                byte_stream& bs, box* parent):
-                sample_entry(coding_name, size, bs, parent)
+            void read(const std::string& coding_name, uint32_t size,
+                byte_stream& bs, box* parent)
             {
+                sample_entry::read(coding_name, size, bs, parent);
                 // reserved
                 bs.skip(4 * 2);
                 m_remaining_bytes -= 4 * 2;
@@ -230,10 +207,10 @@ namespace box
 
         public:
 
-            hint_sample_entry(const std::string& protocol, uint32_t size,
-                byte_stream& bs, box* parent):
-                sample_entry(protocol, size, bs, parent)
+            void read(const std::string& protocol, uint32_t size,
+                byte_stream& bs, box* parent)
             {
+                sample_entry::read(protocol, size, bs, parent);
                 bs.skip(m_remaining_bytes);
             }
 
@@ -255,13 +232,13 @@ namespace box
         static const std::string TYPE;
 
     public:
-        stsd(uint32_t size, byte_stream& bs, box* parent=nullptr):
-            full_box(stsd::TYPE, size, bs, parent)
+        void read(uint32_t size, byte_stream& bs, box* parent)
         {
+            full_box::read(stsd::TYPE, size, bs, parent);
             m_entry_count = bs.read_uint32_t();
             m_remaining_bytes -= 4;
 
-            auto handler = get_grand_parent(this, "hdlr");
+            auto handler = get_ancestor(this, "hdlr");
             for (uint32_t i = 0; i < m_entry_count; ++i)
             {
                 uint32_t entry_size = bs.read_uint32_t();
@@ -273,23 +250,25 @@ namespace box
                     std::string handler_type = ((hdlr*)handler)->handler_type();
                     if (handler_type == "vide") // for video tracks
                     {
-                        entry = new visual_sample_entry(
-                            entry_type, entry_size, bs, this);
+                        entry = new visual_sample_entry();
+                        entry->read(entry_type, entry_size, bs, this);
                     }
                     else if (handler_type == "soun") // for audio tracks
                     {
-                        entry = new audio_sample_entry(
-                            entry_type, entry_size, bs, this);
+                        entry = new audio_sample_entry();
+                        entry->read(entry_type, entry_size, bs, this);
                     }
                     else if (handler_type == "hint")
                     {
-                        entry = new hint_sample_entry(
-                            entry_type, entry_size, bs, this);
+                        entry = new hint_sample_entry();
+                        entry->read(entry_type, entry_size, bs, this);
                     }
                 }
                 if (!entry)
-                    entry = new sample_entry(
-                        entry_type, entry_size, bs, this);
+                {
+                    entry = new sample_entry();
+                    entry->read(entry_type, entry_size, bs, this);
+                }
 
                 m_remaining_bytes -= entry->size();
                 m_children.push_back(entry);

@@ -22,9 +22,9 @@ namespace box
         static const std::string TYPE;
 
     public:
-        hmhd(uint32_t size, byte_stream& bs, box* parent=nullptr):
-            full_box(hmhd::TYPE, size, bs, parent)
+        void read(uint32_t size, byte_stream& bs, box* parent)
         {
+            full_box::read(hmhd::TYPE, size, bs, parent);
             m_max_pdu_size = bs.read_uint16_t();
             m_remaining_bytes -= 2;
 

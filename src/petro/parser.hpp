@@ -20,23 +20,17 @@ namespace petro
 
     public:
 
-        void read(
-            std::vector<box::box*>& boxes,
-            const uint8_t* byte_data,
-            uint32_t byte_size,
-            box::box* parent=nullptr)
+        void read(box::box* parent, const uint8_t* byte_data,
+            uint32_t byte_size)
         {
             byte_stream bs(byte_data, byte_size);
             while(bs.size() != 0)
             {
-                parse(boxes, bs, parent);
+                parse(parent, bs);
             }
         }
 
-        void parse(
-            std::vector<box::box*>& boxes,
-            byte_stream& bs,
-            box::box* parent=nullptr)
+        void parse(box::box* parent, byte_stream& bs)
         {
             // size is an integer that specifies the number of bytes in this
             // box, including all its fields and contained boxes.
@@ -57,10 +51,11 @@ namespace petro
             // called "unknown" is used instead.
             if (found_box == nullptr)
             {
-                found_box = new box::unknown(type, size, bs, parent);
+                found_box = new box::unknown();
+                found_box->read(type, size, bs, parent);
             }
 
-            boxes.push_back(found_box);
+            parent->add_child(found_box);
         }
 
     private:
@@ -74,7 +69,9 @@ namespace petro
         {
             if (Box::TYPE == type)
             {
-                return new Box(size, bs, parent);
+                auto box = new Box();
+                box->read(size, bs, parent);
+                return box;
             }
             return nullptr;
         }

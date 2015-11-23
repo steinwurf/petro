@@ -24,9 +24,9 @@ namespace box
         static const std::string TYPE;
 
     public:
-        stsz(uint32_t size, byte_stream& bs, box* parent=nullptr):
-            full_box(stsz::TYPE, size, bs, parent)
+        void read(uint32_t size, byte_stream& bs, box* parent)
         {
+            full_box::read(stsz::TYPE, size, bs, parent);
             m_sample_size = bs.read_uint32_t();
             m_sample_count = bs.read_uint32_t();
             m_remaining_bytes -= 4 * 2;
