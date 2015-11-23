@@ -26,10 +26,13 @@ namespace box
 
         public:
 
-            void read(const std::string& format, uint32_t size,
-                byte_stream& bs, box* parent)
+            sample_entry(const std::string& format):
+                box(format)
+            { }
+
+            void read(uint32_t size, byte_stream& bs, box* parent)
             {
-                box::read(format, size, bs, parent);
+                box::read(size, bs, parent);
                 // reserved
                 bs.skip(6);
                 m_remaining_bytes -= 6;
@@ -60,10 +63,13 @@ namespace box
 
         public:
 
-            void read(const std::string& coding_name, uint32_t size,
-                byte_stream& bs, box* parent)
+            visual_sample_entry(const std::string& coding_name):
+                sample_entry(coding_name)
+            { }
+
+            void read(uint32_t size, byte_stream& bs, box* parent)
             {
-                sample_entry::read(coding_name, size, bs, parent);
+                sample_entry::read(size, bs, parent);
                 // pre_defined
                 bs.skip(2);
                 m_remaining_bytes -= 2;
@@ -153,10 +159,13 @@ namespace box
 
         public:
 
-            void read(const std::string& coding_name, uint32_t size,
-                byte_stream& bs, box* parent)
+            audio_sample_entry(const std::string& coding_name):
+                sample_entry(coding_name)
+            { }
+
+            void read(uint32_t size, byte_stream& bs, box* parent)
             {
-                sample_entry::read(coding_name, size, bs, parent);
+                sample_entry::read(size, bs, parent);
                 // reserved
                 bs.skip(4 * 2);
                 m_remaining_bytes -= 4 * 2;
@@ -207,10 +216,13 @@ namespace box
 
         public:
 
-            void read(const std::string& protocol, uint32_t size,
-                byte_stream& bs, box* parent)
+            hint_sample_entry(const std::string& protocol):
+                sample_entry(protocol)
+            { }
+
+            void read(uint32_t size, byte_stream& bs, box* parent)
             {
-                sample_entry::read(protocol, size, bs, parent);
+                sample_entry::read(size, bs, parent);
                 bs.skip(m_remaining_bytes);
             }
 
@@ -232,9 +244,13 @@ namespace box
         static const std::string TYPE;
 
     public:
+        stsd():
+            full_box(stsd::TYPE)
+        { }
+
         void read(uint32_t size, byte_stream& bs, box* parent)
         {
-            full_box::read(stsd::TYPE, size, bs, parent);
+            full_box::read(size, bs, parent);
             m_entry_count = bs.read_uint32_t();
             m_remaining_bytes -= 4;
 
@@ -250,24 +266,24 @@ namespace box
                     std::string handler_type = ((hdlr*)handler)->handler_type();
                     if (handler_type == "vide") // for video tracks
                     {
-                        entry = new visual_sample_entry();
-                        entry->read(entry_type, entry_size, bs, this);
+                        entry = new visual_sample_entry(entry_type);
+                        entry->read(entry_size, bs, this);
                     }
                     else if (handler_type == "soun") // for audio tracks
                     {
-                        entry = new audio_sample_entry();
-                        entry->read(entry_type, entry_size, bs, this);
+                        entry = new audio_sample_entry(entry_type);
+                        entry->read(entry_size, bs, this);
                     }
                     else if (handler_type == "hint")
                     {
-                        entry = new hint_sample_entry();
-                        entry->read(entry_type, entry_size, bs, this);
+                        entry = new hint_sample_entry(entry_type);
+                        entry->read(entry_size, bs, this);
                     }
                 }
                 if (!entry)
                 {
-                    entry = new sample_entry();
-                    entry->read(entry_type, entry_size, bs, this);
+                    entry = new sample_entry(entry_type);
+                    entry->read(entry_size, bs, this);
                 }
 
                 m_remaining_bytes -= entry->size();

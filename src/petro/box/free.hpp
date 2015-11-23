@@ -22,9 +22,13 @@ namespace box
         static const std::string TYPE;
 
     public:
+        free():
+            box(free::TYPE)
+        { }
+
         void read(uint32_t size, byte_stream& bs, box* parent)
         {
-            box::read(free::TYPE, size, bs, parent);
+            box::read(size, bs, parent);
             bs.skip(m_remaining_bytes);
         }
     };

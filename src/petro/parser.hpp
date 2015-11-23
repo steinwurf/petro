@@ -51,8 +51,8 @@ namespace petro
             // called "unknown" is used instead.
             if (found_box == nullptr)
             {
-                found_box = new box::unknown();
-                found_box->read(type, size, bs, parent);
+                found_box = new box::unknown(type);
+                found_box->read(size, bs, parent);
             }
 
             parent->add_child(found_box);

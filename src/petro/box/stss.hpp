@@ -22,9 +22,13 @@ namespace box
         static const std::string TYPE;
 
     public:
+        stss():
+            full_box(stss::TYPE)
+        { }
+
         void read(uint32_t size, byte_stream& bs, box* parent)
         {
-            full_box::read(stss::TYPE, size, bs, parent);
+            full_box::read(size, bs, parent);
             m_entry_count = bs.read_uint32_t();
             m_remaining_bytes -= 4;
             for (uint32_t i = 0; i < m_entry_count; ++i)

@@ -23,9 +23,13 @@ namespace box
         static const std::string TYPE;
 
     public:
+        tkhd():
+            full_box(tkhd::TYPE)
+        { }
+
         void read(uint32_t size, byte_stream& bs, box* parent)
         {
-            full_box::read(tkhd::TYPE, size, bs, parent);
+            full_box::read(size, bs, parent);
 
             m_track_enabled = m_flags.m_data[2] & 0x01;
             m_track_in_movie = m_flags.m_data[2] & 0x02;

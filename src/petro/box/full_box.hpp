@@ -18,10 +18,13 @@ namespace box
     {
     public:
 
-        void read(const std::string& type, uint32_t size, byte_stream& bs,
-            box* parent)
+        full_box(const std::string& type):
+            box(type)
+        { }
+
+        void read(uint32_t size, byte_stream& bs, box* parent)
         {
-            box::read(type, size, bs, parent);
+            box::read(size, bs, parent);
             m_version = bs.read_uint8_t();
             m_remaining_bytes -= 1;
             m_flags.read(bs);

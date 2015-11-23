@@ -20,10 +20,15 @@ namespace box
     class unknown : public box
     {
     public:
-        void read(const std::string& type, uint32_t size, byte_stream& bs,
+
+        unknown(const std::string& type):
+            box(type + "?")
+        { }
+
+        void read(uint32_t size, byte_stream& bs,
             box* parent=nullptr)
         {
-            box::read(type + "?", size, bs, parent);
+            box::read(size, bs, parent);
             bs.skip(m_remaining_bytes);
         }
     };

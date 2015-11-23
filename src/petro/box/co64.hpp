@@ -22,9 +22,13 @@ namespace box
         static const std::string TYPE;
 
     public:
+        co64():
+            full_box(co64::TYPE)
+        { }
+
         void read(uint32_t size, byte_stream& bs, box* parent)
         {
-            full_box::read(co64::TYPE, size, bs, parent);
+            full_box::read(size, bs, parent);
             m_entry_count = bs.read_uint32_t();
             m_remaining_bytes -= 4;
             for (uint32_t i = 0; i < m_entry_count; ++i)

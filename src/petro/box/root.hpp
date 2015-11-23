@@ -18,10 +18,13 @@ namespace box
     {
     public:
 
+        root():
+            box("root")
+        { }
+
         /// hide box implementation
-        void read(const std::string& type, uint32_t size, byte_stream& bs, box* parent) override
+        void read(uint32_t size, byte_stream& bs, box* parent) override
         {
-            (void) type;
             (void) size;
             (void) bs;
             (void) parent;

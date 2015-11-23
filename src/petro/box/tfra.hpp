@@ -22,9 +22,13 @@ namespace box
         static const std::string TYPE;
 
     public:
+        tfra():
+            box(tfra::TYPE)
+        { }
+
         void read(uint32_t size, byte_stream& bs, box* parent)
         {
-            box::read(tfra::TYPE, size, bs, parent);
+            box::read(size, bs, parent);
             bs.skip(m_remaining_bytes);
         }
     };

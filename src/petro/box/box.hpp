@@ -15,10 +15,12 @@ namespace box
     {
     public:
 
-        virtual void read(const std::string& type, uint32_t size, byte_stream& bs,
-            box* parent)
+        box(const std::string& type):
+            m_type(type)
+        { }
+
+        virtual void read(uint32_t size, byte_stream& bs, box* parent)
         {
-            m_type = type;
             m_size = size;
             m_parent = parent;
 
@@ -50,7 +52,7 @@ namespace box
             // this.
             m_remaining_bytes -= 4;
 
-            if (type == "uuid")
+            if (m_type == "uuid")
             {
                 for (int i = 0; i < 16; ++i)
                 {

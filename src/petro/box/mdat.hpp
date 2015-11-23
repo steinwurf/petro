@@ -22,9 +22,13 @@ namespace box
         static const std::string TYPE;
 
     public:
+        mdat():
+            box(mdat::TYPE)
+        { }
+
         void read(uint32_t size, byte_stream& bs, box* parent)
         {
-            box::read(mdat::TYPE, size, bs, parent);
+            box::read(size, bs, parent);
             m_data = bs.data();
             bs.skip(m_remaining_bytes);
         }

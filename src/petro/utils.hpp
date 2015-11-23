@@ -43,21 +43,6 @@ namespace petro
         return nullptr;
     }
 
-    box::box* get_box(
-        const std::vector<box::box*>& boxes, const std::string& type)
-    {
-        for(auto box : boxes)
-        {
-            if (box->type() == type)
-                return box;
-
-            auto found_box = find_box(box->children(), type);
-            if (found_box != nullptr)
-                return found_box;
-        }
-        return nullptr;
-    }
-
     box::box* get_ancestor(
         const box::box* b,
         const std::string& grand_parent)
