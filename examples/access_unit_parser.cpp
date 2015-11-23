@@ -77,37 +77,65 @@
 //     return stco->entries();
 // }
 
-std::vector<uint32_t> get_sample_to_chunk(petro::box::stsc* stsc)
+// std::vector<uint32_t> get_sample_to_chunk(petro::box::stsc* stsc)
+// {
+//     assert(stsc != nullptr);
+
+//     auto stsc_entries = stsc->entries();
+//     std::vector<uint32_t> results;
+//     for (uint32_t i = 1; i < stsc->entry_count(); ++i)
+//     {
+//         const auto& entry = stsc_entries[i - 1];
+//         const auto& next_entry = stsc_entries[i];
+
+//         for (uint32_t j = 0; j < entry.samples_per_chunk; ++j)
+//         {
+
+//         }
+//     }
+
+//     return results;
+// }
+
+std::vector<std::vector<uint8_t>> parse_mdat(petro::box::mdat* mdat)
 {
-    assert(stsc != nullptr);
+    petro::byte_stream bs(mdat->data(), mdat->size());
+    uint8_t byte1 = bs.read_uint8_t();
+    uint8_t byte2 = bs.read_uint8_t();
+    uint8_t byte3 = bs.read_uint8_t();
 
-    auto stsc_entries = stsc->entries();
-    std::vector<uint32_t> results;
-    for (uint32_t i = 1; i < stsc->entry_count(); ++i)
+    std::vector<std::vector<uint8_t>> nalus;
+
+    while (bs.size() != 0)
     {
-        const auto& entry = stsc_entries[i - 1];
-        const auto& next_entry = stsc_entries[i];
-
-        for (uint32_t j = 0; j < entry.samples_per_chunk; ++j)
+        if (byte1 == 0U &&
+            byte2 == 0U &&
+            byte3 == 1U)
         {
-
+            std::vector<uint8_t> nalu;
+            nalu.push_back(bs.read_uint8_t());
+            nalu.push_back(bs.read_uint8_t());
+            nalu.push_back(bs.read_uint8_t());
+            std::cout << "hep";
+            while (bs.size() != 0)
+            {
+                if (nalu[nalu.size() - 2] == 0U &&
+                    nalu[nalu.size() - 1] == 0U &&
+                   (nalu[nalu.size() - 1] == 0U || nalu[nalu.size() - 1] == 1U))
+                {
+                    std::cout << "hey";
+                    break;
+                }
+                nalu.push_back(bs.read_uint8_t());
+            }
+            nalus.push_back(nalu);
+            std::cout << std::endl;
         }
+        byte1 = byte2;
+        byte2 = byte3;
+        byte3 = bs.read_uint8_t();
     }
-
-    return results;
-}
-
-void parse_mdat(petro::box::mdat* mdat)
-{
-    auto data = mdat->data();
-    for (uint32_t i = 2; i < mdat->size(); ++i)
-    {
-        if (data[i - 2] == 0U &&
-            data[i - 1] == 0U &&
-            data[i] == 1U)
-        {
-        }
-    }
+    return nalus;
 }
 
 int main(int argc, char* argv[])
@@ -186,10 +214,44 @@ int main(int argc, char* argv[])
     std::vector<petro::box::box*> boxes;
     parser.read(boxes, (uint8_t*)data.data(), data.size());
 
-    // auto mdat = petro::find_box(boxes, "mdat");
-    // assert(mdat != nullptr);
+    auto traks = petro::find_boxes(boxes, "trak");
 
-    // parse_mdat(dynamic_cast<petro::box::mdat*>(mdat));
+    petro::box::box* trak = nullptr;
+
+    for(const auto& t : traks)
+    {
+        petro::box::hdlr* hdlr = dynamic_cast<petro::box::hdlr*>(
+            petro::find_box(t->children(), "hdlr"));
+        if (hdlr == nullptr)
+            continue;
+
+        if (hdlr->handler_type() == "vide")
+        {
+            trak = t;
+            break;
+        }
+    }
+
+    assert(trak != nullptr);
+
+    auto mvex = petro::find_box(boxes, "mvex");
+
+
+
+    assert(traks.size() != 0);
+
+    // auto nalus = parse_mdat(dynamic_cast<petro::box::mdat*>(mdat));
+
+    // for (const auto& nalu : nalus)
+    // {
+    //     std::cout << (uint32_t)(nalu[0] & 0x1f)<< std::endl;
+    //     uint8_t type = nalu[0];
+    //     uint8_t nalu_ref_idc = (type >> 5) & 3;
+    //     uint8_t nalu_type = type & 0x1f;
+
+    //     std::cout << "nalu_ref_idc: " << (uint32_t)nalu_ref_idc << std::endl;
+    //     std::cout << "nalu_type: " << (uint32_t)nalu_type << std::endl;
+    // }
 
     // return 0;
 

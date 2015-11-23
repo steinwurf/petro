@@ -43,6 +43,21 @@ namespace petro
         return nullptr;
     }
 
+    box::box* get_box(
+        const std::vector<box::box*>& boxes, const std::string& type)
+    {
+        for(auto box : boxes)
+        {
+            if (box->type() == type)
+                return box;
+
+            auto found_box = find_box(box->children(), type);
+            if (found_box != nullptr)
+                return found_box;
+        }
+        return nullptr;
+    }
+
     std::string parse_time(uint64_t total_time)
     {
         // 2082844800 seconds between 01/01/1904 & 01/01/1970
