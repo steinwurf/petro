@@ -67,6 +67,11 @@ namespace box
             return m_entries;
         }
 
+        uint32_t entry_count() const
+        {
+            return m_entry_count;
+        }
+
     private:
 
         /// an integer that gives the number of entries in the following table

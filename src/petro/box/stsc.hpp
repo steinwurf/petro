@@ -14,14 +14,34 @@ namespace petro
 namespace box
 {
     /// sample-to-chunk, partial data-offset information
+    /// in non-hint tracks, a sample is an individual frame of video, a
+    /// time-contiguous series of video frames, or a time-contiguous compressed
+    /// section of audio.
+    /// in hint tracks, a sample defines the formation of one or more streaming
+    /// packets.
+    /// no two samples within a track may share the same time-stamp.
+    /// a chunk is a contiguous set of samples for one track.
     class stsc : public full_box
     {
     public:
 
         struct entry_type
         {
+            /// an integer that gives the index of the first chunk in this run
+            /// of chunks that share the same samples_per_chunk and
+            /// sample_description_index; the index of the first chunk in a
+            /// track has the value 1 (the first_chunk field in the first record
+            /// of this box has the value 1, identifying that the first sample
+            /// maps to the first chunk).
             uint32_t first_chunk;
+
+            /// an integer that gives the number of sample in each of these
+            /// chunks.
             uint32_t samples_per_chunk;
+
+            /// an integer that gives the index of the sample entry that
+            /// describes the samples in this chunk. The index ranges from 1
+            /// to the number of sample entries in the stsd.
             uint32_t sample_description_index;
         };
 
@@ -84,9 +104,23 @@ namespace box
             return m_entries;
         }
 
-        uint32_t entry_count()
+        uint32_t entry_count() const
         {
             return m_entry_count;
+        }
+
+        uint32_t samples_for_chunk(uint32_t chunk_index) const
+        {
+            for (uint32_t i = entry_count() - 1; i > 0; --i)
+            {
+                const auto& entry = m_entries[i];
+                // std::cout << entry.first_chunk << " <= " << chunk_index + 1<< std::endl;
+                if (entry.first_chunk <= (chunk_index + 1))
+                {
+                    return entry.samples_per_chunk;
+                }
+            }
+            // assert(0);
         }
 
     private:
@@ -94,20 +128,7 @@ namespace box
         /// an integer that gives the number of entries in the following table
         uint32_t m_entry_count;
 
-        /// vector containing entires of
-        /// (first_chunk, samples_per_chunk, sample_description_index)
-        /// where;
-        /// first_chunk is an integer that gives the index of the  first chunk
-        /// in this run of chunks that share the same samples-per-chunk and
-        /// sample-description-index; the index of the first chunk in a track
-        /// has the value 1 (the first_chunk field in the first record of this
-        /// box has the value 1, identifying that the first sample maps to
-        /// the first chunk).
-        /// samples_per_chunk is an integer that gives the number of samples in
-        /// each of these chunks.
-        /// sample_description_index is an integer that gives the index of the
-        /// sample entry that describes the samples in this chunk. The index
-        /// ranges from 1 to the number of sample entries in the stsd.
+        /// vector containing entries
         std::vector<entry_type> m_entries;
     };
 

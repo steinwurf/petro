@@ -10,132 +10,21 @@
 #include <sstream>
 #include <string>
 
-// void print_box(petro::box::box* b, uint32_t level = 0)
-// {
-//     // skip unknown boxes.
-//     if (dynamic_cast<petro::box::unknown*>(b) != nullptr)
-//         return;
-
-//     std::stringstream ss(b->describe());
-//     std::string line;
-//     while(std::getline(ss, line))
-//     {
-//         for (uint32_t i = 0; i < level; ++i)
-//         {
-//             std::cout << "    ";
-//         }
-//         std::cout << line << std::endl;
-//     }
-
-//     for(auto child : b->children())
-//     {
-//         print_box(child, level + 1);
-//     }
-// }
-
-// std::vector<uint32_t> get_sample_times(petro::box::stts* stts)
-// {
-//     assert(stts != nullptr);
-//     std::vector<uint32_t> results;
-//     for (const auto& entry : stts->entries())
-//     {
-//         for (uint32_t i = 0; i < entry.first; ++i)
-//         {
-//             results.push_back(entry.second);
-//         }
-//     }
-//     return results;
-// }
-
-// std::vector<uint32_t> get_key_frames(petro::box::stss* stss)
-// {
-//     assert(stss != nullptr);
-//     return stss->entries();
-// }
-
-// std::vector<uint32_t> get_sample_sizes(petro::box::stsz* stsz)
-// {
-//     assert(stsz != nullptr);
-
-//     if (stsz->sample_size() != 0)
-//     {
-//         return std::vector<uint32_t>(stsz->sample_count(), stsz->sample_size());
-//     }
-
-//     std::vector<uint32_t> results;
-//     for (const auto& entry : stsz->entries())
-//     {
-//         results.push_back(entry);
-//     }
-
-//     return results;
-// }
-
-// std::vector<uint32_t> get_chunk_offsets(petro::box::stco* stco)
-// {
-//     assert(stco != nullptr);
-//     return stco->entries();
-// }
-
-// std::vector<uint32_t> get_sample_to_chunk(petro::box::stsc* stsc)
-// {
-//     assert(stsc != nullptr);
-
-//     auto stsc_entries = stsc->entries();
-//     std::vector<uint32_t> results;
-//     for (uint32_t i = 1; i < stsc->entry_count(); ++i)
-//     {
-//         const auto& entry = stsc_entries[i - 1];
-//         const auto& next_entry = stsc_entries[i];
-
-//         for (uint32_t j = 0; j < entry.samples_per_chunk; ++j)
-//         {
-
-//         }
-//     }
-
-//     return results;
-// }
-
-std::vector<std::vector<uint8_t>> parse_mdat(petro::box::mdat* mdat)
+namespace
 {
-    petro::byte_stream bs(mdat->data(), mdat->size());
-    uint8_t byte1 = bs.read_uint8_t();
-    uint8_t byte2 = bs.read_uint8_t();
-    uint8_t byte3 = bs.read_uint8_t();
-
-    std::vector<std::vector<uint8_t>> nalus;
-
-    while (bs.size() != 0)
+    struct sample
     {
-        if (byte1 == 0U &&
-            byte2 == 0U &&
-            byte3 == 1U)
-        {
-            std::vector<uint8_t> nalu;
-            nalu.push_back(bs.read_uint8_t());
-            nalu.push_back(bs.read_uint8_t());
-            nalu.push_back(bs.read_uint8_t());
-            std::cout << "hep";
-            while (bs.size() != 0)
-            {
-                if (nalu[nalu.size() - 2] == 0U &&
-                    nalu[nalu.size() - 1] == 0U &&
-                   (nalu[nalu.size() - 1] == 0U || nalu[nalu.size() - 1] == 1U))
-                {
-                    std::cout << "hey";
-                    break;
-                }
-                nalu.push_back(bs.read_uint8_t());
-            }
-            nalus.push_back(nalu);
-            std::cout << std::endl;
-        }
-        byte1 = byte2;
-        byte2 = byte3;
-        byte3 = bs.read_uint8_t();
-    }
-    return nalus;
+        uint32_t size;
+        uint32_t delta;
+        bool random_access;
+    };
+
+    struct chunk
+    {
+        uint32_t sample_count;
+        std::vector<sample> samples;
+        uint32_t offset;
+    };
 }
 
 int main(int argc, char* argv[])
@@ -224,74 +113,36 @@ int main(int argc, char* argv[])
     // don't handle special case with fragmented samples
     assert(mvex == nullptr);
 
+    auto stco = dynamic_cast<const petro::box::stco*>(trak->get_child("stco"));
+    assert(stco != nullptr);
 
+    auto stsz = dynamic_cast<const petro::box::stsz*>(trak->get_child("stsz"));
+    assert(stsz != nullptr);
 
-    // auto nalus = parse_mdat(dynamic_cast<petro::box::mdat*>(mdat));
+    auto stsc = dynamic_cast<const petro::box::stsc*>(trak->get_child("stsc"));
+    assert(stsc != nullptr);
 
-    // for (const auto& nalu : nalus)
-    // {
-    //     std::cout << (uint32_t)(nalu[0] & 0x1f)<< std::endl;
-    //     uint8_t type = nalu[0];
-    //     uint8_t nalu_ref_idc = (type >> 5) & 3;
-    //     uint8_t nalu_type = type & 0x1f;
+    auto chunk_offsets = stco->entries();
 
-    //     std::cout << "nalu_ref_idc: " << (uint32_t)nalu_ref_idc << std::endl;
-    //     std::cout << "nalu_type: " << (uint32_t)nalu_type << std::endl;
-    // }
+    auto samples_to_chunks = stsc->entries();
 
-    // return 0;
+    std::vector<chunk> chunks;
+    auto sample = 0;
+    for (uint32_t i = 0; i < stco->entry_count(); ++i)
+    {
+        chunk c;
+        c.sample_count += stsc->samples_for_chunk(i);
+        // for (int i = 0; i < c.sample_count; ++i)
+        // {
+        //     sample s;
+        //     s.
+        //     c.samples.push_back(s);
+        // }
+    }
 
-    // auto traks = petro::find_boxes(boxes, "trak");
+    std::cout << sample << std::endl;
 
-    // petro::box::box* video_track = nullptr;
-    // petro::box::box* audio_track = nullptr;
-
-    // for (auto trak : traks)
-    // {
-    //     auto hdlr = dynamic_cast<petro::box::hdlr*>(
-    //         petro::find_box(trak->children(), "hdlr"));
-    //     if (hdlr != nullptr)
-    //     {
-    //         auto handler_type = hdlr->handler_type();
-    //         if(handler_type == "vide")
-    //         {
-    //             video_track = trak;
-    //         }
-    //         else if (handler_type == "soun")
-    //         {
-    //             audio_track = trak;
-    //         }
-    //     }
-    // }
-
-    // assert(video_track != nullptr);
-    // assert(audio_track != nullptr);
-
-    // auto sample_times = get_sample_times(dynamic_cast<petro::box::stts*>(
-    //     petro::find_box(video_track->children(), "stts")));
-
-    // auto key_frames = get_key_frames(dynamic_cast<petro::box::stss*>(
-    //     petro::find_box(video_track->children(), "stss")));
-
-    // auto sample_sizes = get_sample_sizes(dynamic_cast<petro::box::stsz*>(
-    //     petro::find_box(video_track->children(), "stsz")));
-
-    // auto chunk_offsets = get_chunk_offsets(dynamic_cast<petro::box::stco*>(
-    //     petro::find_box(video_track->children(), "stco")));
-
-    // auto samples_to_chunk = get_sample_to_chunk(dynamic_cast<petro::box::stsc*>(
-    //     petro::find_box(video_track->children(), "stsc")));
-
-    // std::cout << sample_times.size() << std::endl;
-    // std::cout << key_frames.size() << std::endl;
-    // std::cout << sample_sizes.size() << std::endl;
-    // std::cout << chunk_offsets.size() << std::endl;
-    // std::cout << samples_to_chunk.size() << std::endl;
-
-    // for (auto box : boxes)
-    // {
-    //     delete box;
-    // }
+    delete root;
 
     return 0;
 }

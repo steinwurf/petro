@@ -53,7 +53,7 @@ namespace box
             ss << full_box::describe() << std::endl;
             ss << "  sample_size: " << m_sample_size << std::endl;
             ss << "  sample_count: " << m_sample_count << std::endl;
-            ss << "  entities (size): ";
+            ss << "  entities (size):";
             auto seperator = "";
             uint32_t max_print = 5;
             for (uint32_t i = 0; i < std::min(

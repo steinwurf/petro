@@ -19,7 +19,15 @@ namespace box
 
     public:
 
-        using entry_type = std::pair<uint32_t,uint32_t>;
+        struct entry_type
+        {
+            /// an integer that counts the number of consecutive samples that
+            /// have the given duration.
+            uint32_t sample_count;
+            /// an integer that gives the delta of these samples in the
+            /// time-scale of the media.
+            uint32_t sample_delta;
+        };
 
     public:
 
@@ -37,9 +45,12 @@ namespace box
             m_remaining_bytes -= 4;
             for (uint32_t i = 0; i < m_entry_count; ++i)
             {
-                m_entries.push_back(
-                    entry_type(bs.read_uint32_t(), bs.read_uint32_t()));
-                m_remaining_bytes -= 8;
+                entry_type entry;
+                entry.sample_count = bs.read_uint32_t();
+                m_remaining_bytes -= 4;
+                entry.sample_delta = bs.read_uint32_t();
+                m_remaining_bytes -= 4;
+                m_entries.push_back(entry);
             }
             bs.skip(m_remaining_bytes);
         }
@@ -54,7 +65,7 @@ namespace box
             for (const auto& entry : m_entries)
             {
                 ss << seperator;
-                ss << "(" << entry.first << ", " << entry.second << ")";
+                ss << "(" << entry.sample_count << ", " << entry.sample_delta << ")";
                 seperator =  ", ";
             }
             ss << std::endl;
