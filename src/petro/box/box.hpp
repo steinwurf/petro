@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <queue>
 
 namespace petro
 {
@@ -16,7 +17,10 @@ namespace box
     public:
 
         box(const std::string& type):
-            m_type(type)
+            m_type(type),
+            m_size(0),
+            m_remaining_bytes(0),
+            m_parent(nullptr)
         { }
 
         virtual void read(uint32_t size, byte_stream& bs, box* parent)
@@ -85,6 +89,73 @@ namespace box
         const box* parent() const
         {
             return m_parent;
+        }
+
+        const box* get_parent(const std::string& type) const
+        {
+            if (m_parent == nullptr || m_parent->type() == type)
+            {
+                return m_parent;
+            }
+            return m_parent->get_parent(type);
+        }
+
+        /// Find the first child matching the type.
+        /// The child is found in a breadth-first search manner:
+        /// (the numbers represent the order each node is visited.)
+        /// .-----------------------------------------------------------------.
+        /// |this:                                   .--------*--------.      |
+        /// |                                       /         |         \     |
+        /// |children:                           .-1-.        2       .-3-.   |
+        /// |                                   /  |  \       |       |   |   |
+        /// |children of children:             4   5 .-6-.  .-7-.     8  .9-. |
+        /// |                                  |     |   |  |   |     |  |  | |
+        /// |children of children's children: 10    11  12 13  14    15 16 17 |
+        /// |(and so on...)                                                   |
+        /// '-----------------------------------------------------------------'
+        const box* get_child(const std::string& type) const
+        {
+            std::queue<const box*> queue;
+            queue.push(this);
+            while (!queue.empty())
+            {
+                auto child = queue.front();
+                queue.pop();
+
+                if (child->m_type == type)
+                {
+                    return child;
+                }
+
+                for (auto c : child->m_children)
+                {
+                    queue.push(c);
+                }
+            }
+            return nullptr;
+        }
+
+        const std::vector<const box*> get_children(const std::string& type)
+        {
+            std::vector<const box*> result;
+            std::queue<const box*> queue;
+            queue.push(this);
+            while (!queue.empty())
+            {
+                auto child = queue.front();
+                queue.pop();
+
+                if (child->m_type == type)
+                {
+                    result.push_back(child);
+                }
+
+                for (auto c : child->m_children)
+                {
+                    queue.push(c);
+                }
+            }
+            return result;
         }
 
         virtual std::string describe() const

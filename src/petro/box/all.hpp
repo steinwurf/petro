@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "avcc.hpp"
 #include "box.hpp"
 #include "bxml.hpp"
 #include "co64.hpp"

@@ -214,31 +214,17 @@ int main(int argc, char* argv[])
     auto root = new petro::box::root();
     parser.read(root, (uint8_t*)data.data(), data.size());
 
-    auto traks = petro::find_boxes(root->children(), "trak");
+    auto avc1 = root->get_child("avc1");
+    assert(avc1 != nullptr);
 
-    petro::box::box* trak = nullptr;
-
-    for(const auto& t : traks)
-    {
-        petro::box::hdlr* hdlr = dynamic_cast<petro::box::hdlr*>(
-            petro::find_box(t->children(), "hdlr"));
-        if (hdlr == nullptr)
-            continue;
-
-        if (hdlr->handler_type() == "vide")
-        {
-            trak = t;
-            break;
-        }
-    }
-
+    auto trak = avc1->get_parent("trak");
     assert(trak != nullptr);
 
-    auto mvex = petro::find_box(root->children(), "mvex");
+    auto mvex = root->get_child("mvex");
+    // don't handle special case with fragmented samples
+    assert(mvex == nullptr);
 
 
-
-    assert(traks.size() != 0);
 
     // auto nalus = parse_mdat(dynamic_cast<petro::box::mdat*>(mdat));
 

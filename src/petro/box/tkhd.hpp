@@ -116,6 +116,11 @@ namespace box
             return ss.str();
         }
 
+        uint32_t track_id() const
+        {
+            return m_track_id;
+        }
+
     private:
 
         /// indicates that the track is enabled.

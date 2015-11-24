@@ -9,6 +9,7 @@
 #include "full_box.hpp"
 #include "hdlr.hpp"
 #include "../byte_stream.hpp"
+#include "../parser.hpp"
 #include "../utils.hpp"
 
 namespace petro
@@ -106,6 +107,9 @@ namespace box
                 // pre_defined
                 bs.skip(2);
                 m_remaining_bytes -= 2;
+
+                parser<avcc> p;
+                p.read(this, bs.data(), m_remaining_bytes);
                 bs.skip(m_remaining_bytes);
             }
 
@@ -239,6 +243,22 @@ namespace box
             uint8_t* m_data = nullptr;
         };
 
+        class unknown_sample_entry : public sample_entry
+        {
+
+        public:
+
+            unknown_sample_entry(const std::string& format):
+                sample_entry(format)
+            { }
+
+            void read(uint32_t size, byte_stream& bs, box* parent)
+            {
+                sample_entry::read(size, bs, parent);
+                bs.skip(m_remaining_bytes);
+            }
+        };
+
     public:
 
         static const std::string TYPE;
@@ -253,17 +273,19 @@ namespace box
             full_box::read(size, bs, parent);
             m_entry_count = bs.read_uint32_t();
             m_remaining_bytes -= 4;
-
-            auto handler = get_ancestor(this, "hdlr");
+            auto mdia = get_parent("mdia");
+            assert(mdia != nullptr);
+            auto hdlr =
+                dynamic_cast<const petro::box::hdlr*>(mdia->get_child("hdlr"));
             for (uint32_t i = 0; i < m_entry_count; ++i)
             {
                 uint32_t entry_size = bs.read_uint32_t();
                 std::string entry_type = bs.read_type();
 
                 sample_entry* entry = nullptr;
-                if (handler != nullptr)
+                if (hdlr != nullptr)
                 {
-                    std::string handler_type = ((hdlr*)handler)->handler_type();
+                    std::string handler_type = hdlr->handler_type();
                     if (handler_type == "vide") // for video tracks
                     {
                         entry = new visual_sample_entry(entry_type);
@@ -282,7 +304,7 @@ namespace box
                 }
                 if (!entry)
                 {
-                    entry = new sample_entry(entry_type);
+                    entry = new unknown_sample_entry(entry_type);
                     entry->read(entry_size, bs, this);
                 }
 
