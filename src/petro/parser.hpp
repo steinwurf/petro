@@ -14,10 +14,9 @@
 
 namespace petro
 {
-    template <class... Boxes>
+    template <class... PBoxes>
     class parser
     {
-
     public:
 
         void read(std::weak_ptr<box::box> parent, const uint8_t* byte_data,
@@ -46,50 +45,49 @@ namespace petro
             std::string type = bs.read_type();
 
             // Try parsing the found type
-            auto found_box = parse_box<Boxes...>(type, size, bs, parent);
-            // if the parser doesn't support the given type, a generic box type
-            // called "unknown" is used instead.
-            if (found_box == nullptr)
-            {
-                found_box = std::make_shared<box::unknown>(type, parent);
-                found_box->read(size, bs);
-            }
+            auto box = parse_helper<PBoxes...>::call(type, size, bs, parent);
+            assert(box);
             auto p = parent.lock();
             assert(p);
-            p->add_child(found_box);
+            p->add_child(box);
         }
 
     private:
 
-        template<class Box>
-        std::shared_ptr<box::box> parse_box(
-            const std::string& type,
-            uint32_t size,
-            byte_stream& bs,
-            std::weak_ptr<box::box> parent)
+        template<class... Boxes>
+        struct parse_helper
         {
-            if (Box::TYPE == type)
+            static std::shared_ptr<box::box> call(
+                const std::string& type,
+                uint32_t size,
+                byte_stream& bs,
+                std::weak_ptr<box::box> parent)
             {
-                auto box = std::make_shared<Box>(parent);
+                // if the parser doesn't support the given type, a generic box type
+                // called "unknown" is used instead.
+                auto box = std::make_shared<box::unknown>(type, parent);
                 box->read(size, bs);
                 return box;
             }
-            return nullptr;
-        }
+        };
 
-        template<class Box, class NextBox, class... Remaining>
-        std::shared_ptr<box::box> parse_box(
-            const std::string& type,
-            uint32_t size,
-            byte_stream& bs,
-            std::weak_ptr<box::box> parent)
+        template<class Box, class... Boxes>
+        struct parse_helper<Box, Boxes...>
         {
-            auto box = parse_box<Box>(type,  size, bs, parent);
-            if (box != nullptr)
+            static std::shared_ptr<box::box> call(
+                const std::string& type,
+                uint32_t size,
+                byte_stream& bs,
+                std::weak_ptr<box::box> parent)
             {
-                return box;
+                if (Box::TYPE == type)
+                {
+                    auto box = std::make_shared<Box>(parent);
+                    box->read(size, bs);
+                    return box;
+                }
+                return parse_helper<Boxes...>::call(type, size, bs, parent);
             }
-            return parse_box<NextBox, Remaining...>(type, size, bs, parent);
-        }
+        };
     };
 }

@@ -189,6 +189,9 @@ namespace box
                 // {timescale of media}<<16;
                 m_sample_rate = bs.read_fixed_point(16, 16);
                 m_remaining_bytes -= 4;
+
+                parser<> p;
+                p.read(shared_from_this(), bs.data(), m_remaining_bytes);
                 bs.skip(m_remaining_bytes);
             }
 

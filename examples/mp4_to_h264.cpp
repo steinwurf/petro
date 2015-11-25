@@ -10,16 +10,6 @@
 #include <string>
 #include <memory>
 
-namespace
-{
-    struct chunk
-    {
-        uint32_t sample_count;
-        std::vector<uint32_t> sample_sizes;
-        uint32_t offset;
-    };
-}
-
 uint32_t read_uint32_t(const uint8_t* data)
 {
     uint32_t result =
@@ -78,24 +68,28 @@ int main(int argc, char* argv[])
     auto avc1 = root->get_child("avc1");
     assert(avc1 != nullptr);
 
-    auto avcc = std::dynamic_pointer_cast<const petro::box::avcc>(avc1->get_child("avcC"));
+    auto avcc = std::dynamic_pointer_cast<const petro::box::avcc>(
+        avc1->get_child("avcC"));
     assert(avcc != nullptr);
 
     auto trak = avc1->get_parent("trak");
     assert(trak != nullptr);
 
-    auto stco = std::dynamic_pointer_cast<const petro::box::stco>(trak->get_child("stco"));
+    auto stco = std::dynamic_pointer_cast<const petro::box::stco>(
+        trak->get_child("stco"));
     assert(stco != nullptr);
 
-    auto stsz = std::dynamic_pointer_cast<const petro::box::stsz>(trak->get_child("stsz"));
+    auto stsz = std::dynamic_pointer_cast<const petro::box::stsz>(
+        trak->get_child("stsz"));
     assert(stsz != nullptr);
 
-    auto stsc = std::dynamic_pointer_cast<const petro::box::stsc>(trak->get_child("stsc"));
+    auto stsc = std::dynamic_pointer_cast<const petro::box::stsc>(
+        trak->get_child("stsc"));
     assert(stsc != nullptr);
 
     std::ofstream h264_file(argv[2], std::ios::binary);
     // write sps and pps
-    std::vector<uint8_t> nalu_seperator = {0, 0, 0, 1};
+    std::vector<char> nalu_seperator = {0, 0, 0, 1};
     auto sps = avcc->sequence_parameter_set(0);
     h264_file.write((char*)nalu_seperator.data(), nalu_seperator.size());
     h264_file.write((char*)sps.data(), sps.size());
@@ -110,8 +104,9 @@ int main(int argc, char* argv[])
         for (uint32_t j = 0; j < stsc->samples_for_chunk(i); ++j)
         {
             auto actual_size = read_uint32_t((uint8_t*)(data.data() + offset));
-            h264_file.write((char*)nalu_seperator.data(), nalu_seperator.size());
+            h264_file.write(nalu_seperator.data(), nalu_seperator.size());
             h264_file.write((char*)data.data() + offset + 4, actual_size);
+
             offset += stsz->sample_size(found_samples);
             found_samples += 1;
         }
