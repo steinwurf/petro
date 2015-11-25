@@ -126,16 +126,36 @@ namespace box
 
     private:
 
+        /// always 1, if not, the decoder should not decode the stream.
         uint8_t m_configuration_version;
-        uint8_t m_avc_profile_indication;
-        uint8_t m_profile_compatibility;
-        uint8_t m_avc_level_indication;
-        uint8_t m_length_size_minus_one;
-        uint8_t m_num_of_sequence_parameter_sets;
-        std::vector<std::vector<uint8_t>> m_sequence_parameter_sets;
-        uint8_t m_num_of_picture_parameter_sets;
-        std::vector<std::vector<uint8_t>> m_picture_parameter_sets;
 
+        /// profile code in ISO IEC 14496-10
+        uint8_t m_avc_profile_indication;
+
+        /// exactly the same byte that occurs between profile_IDC and level_IDC
+        /// in the SPS
+        uint8_t m_profile_compatibility;
+
+        /// the level code
+        uint8_t m_avc_level_indication;
+
+        /// the length in bytes of the NALUnitLength field in an AVC video
+        /// sample (subtracted by one).
+        uint8_t m_length_size_minus_one;
+
+        /// the number of SPSs that are used as the initial set of SPSs for
+        /// decoding the AVC elementary stream
+        uint8_t m_num_of_sequence_parameter_sets;
+
+        /// the SPSs
+        std::vector<std::vector<uint8_t>> m_sequence_parameter_sets;
+
+        /// the number of PPS that are used as the initial set of PPSs for
+        /// decoding the AVC elementary stream
+        uint8_t m_num_of_picture_parameter_sets;
+
+        /// the SPSs
+        std::vector<std::vector<uint8_t>> m_picture_parameter_sets;
     };
     const std::string avcc::TYPE = "avcC";
 }
