@@ -4,7 +4,6 @@
 #include <petro/parser.hpp>
 #include <petro/box/all.hpp>
 
-#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -13,10 +12,10 @@
 uint32_t read_uint32_t(const uint8_t* data)
 {
     uint32_t result =
-           (uint32_t) data[0] << 24 |
-           (uint32_t) data[1] << 16 |
-           (uint32_t) data[2] << 8 |
-           (uint32_t) data[3];
+       (uint32_t) data[0] << 24 |
+       (uint32_t) data[1] << 16 |
+       (uint32_t) data[2] << 8 |
+       (uint32_t) data[3];
     return result;
 }
 

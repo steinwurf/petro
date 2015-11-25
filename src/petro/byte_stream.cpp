@@ -69,10 +69,10 @@ namespace petro
         assert(m_size >= 4);
 
         uint32_t result =
-               (uint32_t) m_data[0] << 24 |
-               (uint32_t) m_data[1] << 16 |
-               (uint32_t) m_data[2] << 8 |
-               (uint32_t) m_data[3];
+           (uint32_t) m_data[0] << 24 |
+           (uint32_t) m_data[1] << 16 |
+           (uint32_t) m_data[2] << 8 |
+           (uint32_t) m_data[3];
         m_data += 4;
         m_size -= 4;
         return result;
@@ -91,14 +91,14 @@ namespace petro
     {
         assert(m_size >= 8);
         uint64_t result =
-               (uint64_t) m_data[0] << 56 |
-               (uint64_t) m_data[1] << 48 |
-               (uint64_t) m_data[2] << 40 |
-               (uint64_t) m_data[3] << 32 |
-               (uint64_t) m_data[4] << 24 |
-               (uint64_t) m_data[5] << 16 |
-               (uint64_t) m_data[6] << 8 |
-               (uint64_t) m_data[7];
+           (uint64_t) m_data[0] << 56 |
+           (uint64_t) m_data[1] << 48 |
+           (uint64_t) m_data[2] << 40 |
+           (uint64_t) m_data[3] << 32 |
+           (uint64_t) m_data[4] << 24 |
+           (uint64_t) m_data[5] << 16 |
+           (uint64_t) m_data[6] << 8 |
+           (uint64_t) m_data[7];
         m_data += 8;
         m_size -= 8;
         return result;
