@@ -22,13 +22,13 @@ namespace box
         static const std::string TYPE;
 
     public:
-        iinf():
-            box(iinf::TYPE)
+        iinf(std::weak_ptr<box> parent):
+            box(iinf::TYPE, parent)
         { }
 
-        void read(uint32_t size, byte_stream& bs, box* parent)
+        void read(uint32_t size, byte_stream& bs)
         {
-            box::read(size, bs, parent);
+            box::read(size, bs);
             bs.skip(m_remaining_bytes);
         }
     };

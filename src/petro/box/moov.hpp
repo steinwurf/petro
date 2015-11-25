@@ -23,15 +23,15 @@ namespace box
         static const std::string TYPE;
 
     public:
-        moov():
-            box(moov::TYPE)
+        moov(std::weak_ptr<box> parent):
+            box(moov::TYPE, parent)
         { }
 
-        void read(uint32_t size, byte_stream& bs, box* parent)
+        void read(uint32_t size, byte_stream& bs)
         {
-            box::read(size, bs, parent);
+            box::read(size, bs);
             Parser p;
-            p.read(this, bs.data(), m_remaining_bytes);
+            p.read(shared_from_this(), bs.data(), m_remaining_bytes);
             bs.skip(m_remaining_bytes);
         }
     };

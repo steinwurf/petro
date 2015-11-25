@@ -22,13 +22,13 @@ namespace box
         static const std::string TYPE;
 
     public:
-        elst():
-            full_box(elst::TYPE)
+        elst(std::weak_ptr<box> parent):
+            full_box(elst::TYPE, parent)
         { }
 
-        void read(uint32_t size, byte_stream& bs, box* parent)
+        void read(uint32_t size, byte_stream& bs)
         {
-            full_box::read(size, bs, parent);
+            full_box::read(size, bs);
             m_entry_count = bs.read_uint32_t();
             m_remaining_bytes -= 4;
             for (uint32_t i = 0; i < m_entry_count; ++i)

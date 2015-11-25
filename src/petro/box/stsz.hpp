@@ -24,13 +24,13 @@ namespace box
         static const std::string TYPE;
 
     public:
-        stsz():
-            full_box(stsz::TYPE)
+        stsz(std::weak_ptr<box> parent):
+            full_box(stsz::TYPE, parent)
         { }
 
-        void read(uint32_t size, byte_stream& bs, box* parent)
+        void read(uint32_t size, byte_stream& bs)
         {
-            full_box::read(size, bs, parent);
+            full_box::read(size, bs);
             m_sample_size = bs.read_uint32_t();
             m_sample_count = bs.read_uint32_t();
             m_remaining_bytes -= 4 * 2;

@@ -22,13 +22,13 @@ namespace box
         static const std::string TYPE;
 
     public:
-        sdtp():
-            box(sdtp::TYPE)
+        sdtp(std::weak_ptr<box> parent):
+            box(sdtp::TYPE, parent)
         { }
 
-        void read(uint32_t size, byte_stream& bs, box* parent)
+        void read(uint32_t size, byte_stream& bs)
         {
-            box::read(size, bs, parent);
+            box::read(size, bs);
             bs.skip(m_remaining_bytes);
         }
     };

@@ -22,13 +22,13 @@ namespace box
         static const std::string TYPE;
 
     public:
-        stz2():
-            full_box(stz2::TYPE)
+        stz2(std::weak_ptr<box> parent):
+            full_box(stz2::TYPE, parent)
         { }
 
-        void read(uint32_t size, byte_stream& bs, box* parent)
+        void read(uint32_t size, byte_stream& bs)
         {
-            full_box::read(size, bs, parent);
+            full_box::read(size, bs);
             bs.skip(3);
             m_remaining_bytes -= 3;
 

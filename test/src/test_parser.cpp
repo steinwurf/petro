@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <vector>
 #include <sstream>
+#include <memory>
 #include <fstream>
 #include <iterator>
 
@@ -27,13 +28,11 @@ TEST(test_parser, invalid_data)
 
     std::vector<petro::box::box*> boxes;
 
-    auto root = new petro::box::root();
+    auto root = std::make_shared<petro::box::root>();
     p.read(root, (uint8_t*)data.data(), data.size());
 
     for(const auto& box : root->children())
     {
         std::cout << box->type() << std::endl;
     }
-
-    delete root;
 }

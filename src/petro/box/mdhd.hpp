@@ -23,13 +23,13 @@ namespace box
         static const std::string TYPE;
 
     public:
-        mdhd():
-            full_box(mdhd::TYPE)
+        mdhd(std::weak_ptr<box> parent):
+            full_box(mdhd::TYPE, parent)
         { }
 
-        void read(uint32_t size, byte_stream& bs, box* parent)
+        void read(uint32_t size, byte_stream& bs)
         {
-            full_box::read(size, bs, parent);
+            full_box::read(size, bs);
             if (m_version == 1)
             {
                 m_creation_time = bs.read_uint64_t();

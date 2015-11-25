@@ -7,9 +7,10 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <memory>
 #include <string>
 
-void print_box(petro::box::box* b, uint32_t level = 0)
+void print_box(std::shared_ptr<petro::box::box> b, uint32_t level = 0)
 {
     std::stringstream ss(b->describe());
     std::string line;
@@ -148,15 +149,13 @@ int main(int argc, char* argv[])
         >>
     > parser;
 
-    auto root = new petro::box::root();
+    auto root = std::make_shared<petro::box::root>();
     parser.read(root, (uint8_t*)data.data(), data.size());
 
     for (auto box : root->children())
     {
         print_box(box);
     }
-
-    delete root;
 
     return 0;
 }

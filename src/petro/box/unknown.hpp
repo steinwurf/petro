@@ -21,14 +21,13 @@ namespace box
     {
     public:
 
-        unknown(const std::string& type):
-            box(type + "?")
+        unknown(const std::string& type, std::weak_ptr<box> parent):
+            box(type + "?", parent)
         { }
 
-        void read(uint32_t size, byte_stream& bs,
-            box* parent=nullptr)
+        void read(uint32_t size, byte_stream& bs)
         {
-            box::read(size, bs, parent);
+            box::read(size, bs);
             bs.skip(m_remaining_bytes);
         }
     };

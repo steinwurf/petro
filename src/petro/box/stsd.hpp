@@ -27,13 +27,13 @@ namespace box
 
         public:
 
-            sample_entry(const std::string& format):
-                box(format)
+            sample_entry(const std::string& format, std::weak_ptr<box> parent):
+                box(format, parent)
             { }
 
-            void read(uint32_t size, byte_stream& bs, box* parent)
+            void read(uint32_t size, byte_stream& bs)
             {
-                box::read(size, bs, parent);
+                box::read(size, bs);
                 // reserved
                 bs.skip(6);
                 m_remaining_bytes -= 6;
@@ -64,13 +64,14 @@ namespace box
 
         public:
 
-            visual_sample_entry(const std::string& coding_name):
-                sample_entry(coding_name)
+            visual_sample_entry(const std::string& coding_name,
+                std::weak_ptr<box> parent):
+                sample_entry(coding_name, parent)
             { }
 
-            void read(uint32_t size, byte_stream& bs, box* parent)
+            void read(uint32_t size, byte_stream& bs)
             {
-                sample_entry::read(size, bs, parent);
+                sample_entry::read(size, bs);
                 // pre_defined
                 bs.skip(2);
                 m_remaining_bytes -= 2;
@@ -109,7 +110,7 @@ namespace box
                 m_remaining_bytes -= 2;
 
                 parser<avcc> p;
-                p.read(this, bs.data(), m_remaining_bytes);
+                p.read(shared_from_this(), bs.data(), m_remaining_bytes);
                 bs.skip(m_remaining_bytes);
             }
 
@@ -163,13 +164,13 @@ namespace box
 
         public:
 
-            audio_sample_entry(const std::string& coding_name):
-                sample_entry(coding_name)
+            audio_sample_entry(const std::string& coding_name, std::weak_ptr<box> parent):
+                sample_entry(coding_name, parent)
             { }
 
-            void read(uint32_t size, byte_stream& bs, box* parent)
+            void read(uint32_t size, byte_stream& bs)
             {
-                sample_entry::read(size, bs, parent);
+                sample_entry::read(size, bs);
                 // reserved
                 bs.skip(4 * 2);
                 m_remaining_bytes -= 4 * 2;
@@ -220,13 +221,13 @@ namespace box
 
         public:
 
-            hint_sample_entry(const std::string& protocol):
-                sample_entry(protocol)
+            hint_sample_entry(const std::string& protocol, std::weak_ptr<box> parent):
+                sample_entry(protocol, parent)
             { }
 
-            void read(uint32_t size, byte_stream& bs, box* parent)
+            void read(uint32_t size, byte_stream& bs)
             {
-                sample_entry::read(size, bs, parent);
+                sample_entry::read(size, bs);
                 bs.skip(m_remaining_bytes);
             }
 
@@ -248,13 +249,13 @@ namespace box
 
         public:
 
-            unknown_sample_entry(const std::string& format):
-                sample_entry(format)
+            unknown_sample_entry(const std::string& format, std::weak_ptr<box> parent):
+                sample_entry(format, parent)
             { }
 
-            void read(uint32_t size, byte_stream& bs, box* parent)
+            void read(uint32_t size, byte_stream& bs)
             {
-                sample_entry::read(size, bs, parent);
+                sample_entry::read(size, bs);
                 bs.skip(m_remaining_bytes);
             }
         };
@@ -264,48 +265,48 @@ namespace box
         static const std::string TYPE;
 
     public:
-        stsd():
-            full_box(stsd::TYPE)
+        stsd(std::weak_ptr<box> parent):
+            full_box(stsd::TYPE, parent)
         { }
 
-        void read(uint32_t size, byte_stream& bs, box* parent)
+        void read(uint32_t size, byte_stream& bs)
         {
-            full_box::read(size, bs, parent);
+            full_box::read(size, bs);
             m_entry_count = bs.read_uint32_t();
             m_remaining_bytes -= 4;
             auto mdia = get_parent("mdia");
             assert(mdia != nullptr);
             auto hdlr =
-                dynamic_cast<const petro::box::hdlr*>(mdia->get_child("hdlr"));
+                std::dynamic_pointer_cast<const petro::box::hdlr>(mdia->get_child("hdlr"));
             for (uint32_t i = 0; i < m_entry_count; ++i)
             {
                 uint32_t entry_size = bs.read_uint32_t();
                 std::string entry_type = bs.read_type();
 
-                sample_entry* entry = nullptr;
+                std::shared_ptr<sample_entry> entry = nullptr;
                 if (hdlr != nullptr)
                 {
                     std::string handler_type = hdlr->handler_type();
                     if (handler_type == "vide") // for video tracks
                     {
-                        entry = new visual_sample_entry(entry_type);
-                        entry->read(entry_size, bs, this);
+                        entry = std::make_shared<visual_sample_entry>(entry_type, shared_from_this());
+                        entry->read(entry_size, bs);
                     }
                     else if (handler_type == "soun") // for audio tracks
                     {
-                        entry = new audio_sample_entry(entry_type);
-                        entry->read(entry_size, bs, this);
+                        entry = std::make_shared<audio_sample_entry>(entry_type, shared_from_this());
+                        entry->read(entry_size, bs);
                     }
                     else if (handler_type == "hint")
                     {
-                        entry = new hint_sample_entry(entry_type);
-                        entry->read(entry_size, bs, this);
+                        entry = std::make_shared<hint_sample_entry>(entry_type, shared_from_this());
+                        entry->read(entry_size, bs);
                     }
                 }
                 if (!entry)
                 {
-                    entry = new unknown_sample_entry(entry_type);
-                    entry->read(entry_size, bs, this);
+                    entry = std::make_shared<unknown_sample_entry>(entry_type, shared_from_this());
+                    entry->read(entry_size, bs);
                 }
 
                 m_remaining_bytes -= entry->size();

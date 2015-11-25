@@ -9,6 +9,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <memory>
 
 namespace
 {
@@ -69,7 +70,7 @@ int main(int argc, char* argv[])
         >>
     > parser;
 
-    auto root = new petro::box::root();
+    auto root = std::make_shared<petro::box::root>();
     parser.read(root, (uint8_t*)data.data(), data.size());
 
     // don't handle special case with fragmented samples
@@ -78,19 +79,19 @@ int main(int argc, char* argv[])
     auto avc1 = root->get_child("avc1");
     assert(avc1 != nullptr);
 
-    auto avcc = dynamic_cast<const petro::box::avcc*>(avc1->get_child("avcC"));
+    auto avcc = std::dynamic_pointer_cast<const petro::box::avcc>(avc1->get_child("avcC"));
     assert(avcc != nullptr);
 
     auto trak = avc1->get_parent("trak");
     assert(trak != nullptr);
 
-    auto stco = dynamic_cast<const petro::box::stco*>(trak->get_child("stco"));
+    auto stco = std::dynamic_pointer_cast<const petro::box::stco>(trak->get_child("stco"));
     assert(stco != nullptr);
 
-    auto stsz = dynamic_cast<const petro::box::stsz*>(trak->get_child("stsz"));
+    auto stsz = std::dynamic_pointer_cast<const petro::box::stsz>(trak->get_child("stsz"));
     assert(stsz != nullptr);
 
-    auto stsc = dynamic_cast<const petro::box::stsc*>(trak->get_child("stsc"));
+    auto stsc = std::dynamic_pointer_cast<const petro::box::stsc>(trak->get_child("stsc"));
     assert(stsc != nullptr);
 
     std::ofstream h264_file(argv[2], std::ios::binary);
@@ -116,8 +117,6 @@ int main(int argc, char* argv[])
             found_samples += 1;
         }
     }
-
-    delete root;
 
     h264_file.close();
     return 0;

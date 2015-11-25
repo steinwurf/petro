@@ -22,13 +22,13 @@ namespace box
         static const std::string TYPE;
 
     public:
-        hdlr():
-            full_box(hdlr::TYPE)
+        hdlr(std::weak_ptr<box> parent):
+            full_box(hdlr::TYPE, parent)
         { }
 
-        void read(uint32_t size, byte_stream& bs, box* parent)
+        void read(uint32_t size, byte_stream& bs)
         {
-            full_box::read(size, bs, parent);
+            full_box::read(size, bs);
             // predefined
             bs.skip(4);
             m_remaining_bytes -= 4;

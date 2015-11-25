@@ -22,13 +22,13 @@ namespace box
         static const std::string TYPE;
 
     public:
-        avcc():
-            box(avcc::TYPE)
+        avcc(std::weak_ptr<box> parent):
+            box(avcc::TYPE, parent)
         { }
 
-        void read(uint32_t size, byte_stream& bs, box* parent)
+        void read(uint32_t size, byte_stream& bs)
         {
-            box::read(size, bs, parent);
+            box::read(size, bs);
 
             m_configuration_version = bs.read_uint8_t();
             m_remaining_bytes -= 1;

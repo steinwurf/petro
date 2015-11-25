@@ -20,7 +20,7 @@ namespace petro
 
     public:
 
-        void read(box::box* parent, const uint8_t* byte_data,
+        void read(std::weak_ptr<box::box> parent, const uint8_t* byte_data,
             uint32_t byte_size)
         {
             byte_stream bs(byte_data, byte_size);
@@ -30,7 +30,7 @@ namespace petro
             }
         }
 
-        void parse(box::box* parent, byte_stream& bs)
+        void parse(std::weak_ptr<box::box> parent, byte_stream& bs)
         {
             // size is an integer that specifies the number of bytes in this
             // box, including all its fields and contained boxes.
@@ -51,37 +51,38 @@ namespace petro
             // called "unknown" is used instead.
             if (found_box == nullptr)
             {
-                found_box = new box::unknown(type);
-                found_box->read(size, bs, parent);
+                found_box = std::make_shared<box::unknown>(type, parent);
+                found_box->read(size, bs);
             }
-
-            parent->add_child(found_box);
+            auto p = parent.lock();
+            assert(p);
+            p->add_child(found_box);
         }
 
     private:
 
         template<class Box>
-        box::box* parse_box(
+        std::shared_ptr<box::box> parse_box(
             const std::string& type,
             uint32_t size,
             byte_stream& bs,
-            box::box* parent)
+            std::weak_ptr<box::box> parent)
         {
             if (Box::TYPE == type)
             {
-                auto box = new Box();
-                box->read(size, bs, parent);
+                auto box = std::make_shared<Box>(parent);
+                box->read(size, bs);
                 return box;
             }
             return nullptr;
         }
 
         template<class Box, class NextBox, class... Remaining>
-        box::box* parse_box(
+        std::shared_ptr<box::box> parse_box(
             const std::string& type,
             uint32_t size,
             byte_stream& bs,
-            box::box* parent)
+            std::weak_ptr<box::box> parent)
         {
             auto box = parse_box<Box>(type,  size, bs, parent);
             if (box != nullptr)

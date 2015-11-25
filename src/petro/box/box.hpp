@@ -7,26 +7,26 @@
 #include <vector>
 #include <sstream>
 #include <queue>
+#include <memory>
 
 namespace petro
 {
 namespace box
 {
-    class box
+    class box : public std::enable_shared_from_this<box>
     {
     public:
 
-        box(const std::string& type):
+        box(const std::string& type, std::weak_ptr<box> parent):
             m_type(type),
+            m_parent(parent),
             m_size(0),
-            m_remaining_bytes(0),
-            m_parent(nullptr)
+            m_remaining_bytes(0)
         { }
 
-        virtual void read(uint32_t size, byte_stream& bs, box* parent)
+        virtual void read(uint32_t size, byte_stream& bs)
         {
             m_size = size;
-            m_parent = parent;
 
             if (m_size == 1)
             {
@@ -76,28 +76,29 @@ namespace box
             return m_size;
         }
 
-        const std::vector<box*> children() const
+        const std::vector<std::shared_ptr<box>> children() const
         {
             return m_children;
         }
 
-        void add_child(box* box)
+        void add_child(std::shared_ptr<box> box)
         {
             m_children.push_back(box);
         }
 
-        const box* parent() const
+        std::shared_ptr<box> parent() const
         {
-            return m_parent;
+            return m_parent.lock();
         }
 
-        const box* get_parent(const std::string& type) const
+        std::shared_ptr<box> get_parent(const std::string& type) const
         {
-            if (m_parent == nullptr || m_parent->type() == type)
+            auto parent = m_parent.lock();
+            if (parent == nullptr || parent->type() == type)
             {
-                return m_parent;
+                return parent;
             }
-            return m_parent->get_parent(type);
+            return parent->get_parent(type);
         }
 
         /// Find the first child matching the type.
@@ -113,10 +114,10 @@ namespace box
         /// |children of children's children: 10    11  12 13  14    15 16 17 |
         /// |(and so on...)                                                   |
         /// '-----------------------------------------------------------------'
-        const box* get_child(const std::string& type) const
+        std::shared_ptr<const box> get_child(const std::string& type) const
         {
-            std::queue<const box*> queue;
-            queue.push(this);
+            std::queue<std::shared_ptr<const box>> queue;
+            queue.push(shared_from_this());
             while (!queue.empty())
             {
                 auto child = queue.front();
@@ -135,11 +136,11 @@ namespace box
             return nullptr;
         }
 
-        const std::vector<const box*> get_children(const std::string& type)
+        std::vector<std::shared_ptr<const box>> get_children(const std::string& type)
         {
-            std::vector<const box*> result;
-            std::queue<const box*> queue;
-            queue.push(this);
+            std::vector<std::shared_ptr<const box>> result;
+            std::queue<std::shared_ptr<const box>> queue;
+            queue.push(shared_from_this());
             while (!queue.empty())
             {
                 auto child = queue.front();
@@ -166,27 +167,19 @@ namespace box
             return ss.str();
         }
 
-        virtual ~box()
-        {
-            for (auto box : m_children)
-            {
-                delete box;
-            }
-        }
-
     protected:
 
         std::string m_type;
+
+        std::weak_ptr<box> m_parent;
 
         uint32_t m_size;
 
         uint32_t m_remaining_bytes;
 
-        box* m_parent;
-
         std::string m_extended_type;
 
-        std::vector<box*> m_children;
+        std::vector<std::shared_ptr<box>> m_children;
 
     };
 }

@@ -19,15 +19,14 @@ namespace box
     public:
 
         root():
-            box("root")
+            box("root", std::weak_ptr<box>())
         { }
 
         /// hide box implementation
-        void read(uint32_t size, byte_stream& bs, box* parent) override
+        void read(uint32_t size, byte_stream& bs) override
         {
             (void) size;
             (void) bs;
-            (void) parent;
             // root cannot be read.
             assert(0);
         }

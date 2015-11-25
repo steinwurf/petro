@@ -22,13 +22,13 @@ namespace box
         static const std::string TYPE;
 
     public:
-        ftyp():
-            box(ftyp::TYPE)
+        ftyp(std::weak_ptr<box> parent):
+            box(ftyp::TYPE, parent)
         { }
 
-        void read(uint32_t size, byte_stream& bs, box* parent)
+        void read(uint32_t size, byte_stream& bs)
         {
-            box::read(size, bs, parent);
+            box::read(size, bs);
             m_major_brand = bs.read_type();
             m_remaining_bytes -= 4;
 

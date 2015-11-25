@@ -22,13 +22,13 @@ namespace box
         static const std::string TYPE;
 
     public:
-        tfhd():
-            box(tfhd::TYPE)
+        tfhd(std::weak_ptr<box> parent):
+            box(tfhd::TYPE, parent)
         { }
 
-        void read(uint32_t size, byte_stream& bs, box* parent)
+        void read(uint32_t size, byte_stream& bs)
         {
-            box::read(size, bs, parent);
+            box::read(size, bs);
             bs.skip(m_remaining_bytes);
         }
     };

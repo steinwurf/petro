@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <sstream>
+#include <memory>
 
 #include "box.hpp"
 #include "../byte_stream.hpp"
@@ -18,13 +19,13 @@ namespace box
     {
     public:
 
-        full_box(const std::string& type):
-            box(type)
+        full_box(const std::string& type, std::weak_ptr<box> parent):
+            box(type, parent)
         { }
 
-        void read(uint32_t size, byte_stream& bs, box* parent)
+        void read(uint32_t size, byte_stream& bs)
         {
-            box::read(size, bs, parent);
+            box::read(size, bs);
             m_version = bs.read_uint8_t();
             m_remaining_bytes -= 1;
             m_flags.read(bs);
