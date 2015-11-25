@@ -35,8 +35,15 @@ namespace petro
 
         std::string read_iso639_code();
 
+        std::string read_time32();
+        std::string read_time64();
+
         uint32_t size() const;
         const uint8_t* data() const;
+
+    private:
+
+        std::string read_time(uint64_t total_time);
 
     private:
 

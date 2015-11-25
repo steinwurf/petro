@@ -5,7 +5,12 @@
 
 #include <cassert>
 #include <iostream>
+#include <sstream>
 #include <cmath>
+#include <chrono>
+#include <iomanip>
+#include <ctime>
+
 
 namespace petro
 {
@@ -151,6 +156,35 @@ namespace petro
         result.append((char*)&c3, 1);
 
         return result;
+    }
+
+
+    std::string byte_stream::read_time32()
+    {
+        return read_time(read_uint32_t());
+    }
+
+    std::string byte_stream::read_time64()
+    {
+        return read_time(read_uint64_t());
+    }
+
+    std::string byte_stream::read_time(uint64_t total_time)
+    {
+        // 2082844800 seconds between 01/01/1904 & 01/01/1970
+        // 2081376000 + 1468800 (66 years + 17 leap days)
+        total_time -= 2082844800;
+
+        // asctime creates a char* with the following format:
+        //     Www Mmm dd hh:mm:ss yyyy\n
+        std::time_t t = total_time;
+        char* time_chars = std::asctime(std::localtime(&t));
+
+        std::stringstream ss;
+        // We don't want the trailing newline so we only pick the first 24
+        // chars.
+        ss << std::string(time_chars, 24);
+        return ss.str();
     }
 
     uint32_t byte_stream::size() const

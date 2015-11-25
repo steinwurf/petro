@@ -10,7 +10,6 @@
 #include "hdlr.hpp"
 #include "../byte_stream.hpp"
 #include "../parser.hpp"
-#include "../utils.hpp"
 
 namespace petro
 {

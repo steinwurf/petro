@@ -10,7 +10,6 @@
 
 #include "full_box.hpp"
 #include "../byte_stream.hpp"
-#include "../utils.hpp"
 
 namespace petro
 {
@@ -34,8 +33,8 @@ namespace box
             full_box::read(size, bs);
             if (m_version == 1)
             {
-                m_creation_time = bs.read_uint64_t();
-                m_modification_time = bs.read_uint64_t();
+                m_creation_time = bs.read_time64();
+                m_modification_time = bs.read_time64();
                 m_timescale = bs.read_uint32_t();
                 m_duration = bs.read_uint64_t();
                 m_remaining_bytes -= 28;
@@ -43,8 +42,8 @@ namespace box
             else
             {
                 assert(m_version == 0);
-                m_creation_time = bs.read_uint32_t();
-                m_modification_time = bs.read_uint32_t();
+                m_creation_time = bs.read_time32();
+                m_modification_time = bs.read_time32();
                 m_timescale = bs.read_uint32_t();
                 m_duration = bs.read_uint32_t();
                 m_remaining_bytes -= 16;
@@ -83,10 +82,8 @@ namespace box
         {
             std::stringstream ss;
             ss << full_box::describe() << std::endl;
-            ss << "  creation_time: " << parse_time(m_creation_time)
-               << std::endl;
-            ss << "  modification_time: " << parse_time(m_modification_time)
-               << std::endl;
+            ss << "  creation_time: " << m_creation_time << std::endl;
+            ss << "  modification_time: " << m_modification_time << std::endl;
             ss << "  time_scale: " << m_timescale << std::endl;
             ss << "  duration: " << m_duration << std::endl;
             ss << "  rate: " << m_rate << std::endl;
@@ -99,11 +96,11 @@ namespace box
 
         /// an integer that declares the creation time of the presentation
         /// (in seconds since midnight, Jan. 1, 1904, in UTC time)
-        uint64_t m_creation_time;
+        std::string m_creation_time;
 
         /// an integer that declares the most recent time the presentation was
         /// modified (in seconds since midnight, Jan. 1, 1904, in UTC time)
-        uint64_t m_modification_time;
+        std::string m_modification_time;
 
         /// an integer that specifies the time-scale for the entire
         /// presentation; this is the number of time units that pass in one

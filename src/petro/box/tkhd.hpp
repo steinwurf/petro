@@ -8,7 +8,6 @@
 
 #include "full_box.hpp"
 #include "../byte_stream.hpp"
-#include "../utils.hpp"
 
 namespace petro
 {
@@ -37,8 +36,8 @@ namespace box
 
             if (m_version == 1)
             {
-                m_creation_time = bs.read_uint64_t();
-                m_modification_time = bs.read_uint64_t();
+                m_creation_time = bs.read_time64();
+                m_modification_time = bs.read_time64();
                 m_track_id = bs.read_uint32_t();
 
                 // reserved
@@ -49,8 +48,8 @@ namespace box
             }
             else  // m_version == 0
             {
-                m_creation_time = bs.read_uint32_t();
-                m_modification_time = bs.read_uint32_t();
+                m_creation_time = bs.read_time32();
+                m_modification_time = bs.read_time32();
                 m_track_id = bs.read_uint32_t();
 
                 // reserved
@@ -102,10 +101,8 @@ namespace box
             ss << "  track_enabled: " << m_track_enabled << std::endl;
             ss << "  track_in_movie: " << m_track_in_movie << std::endl;
             ss << "  track_in_preview: " << m_track_in_preview << std::endl;
-            ss << "  creation_time: " << parse_time(m_creation_time)
-               << std::endl;
-            ss << "  modification_time: " << parse_time(m_modification_time)
-               << std::endl;
+            ss << "  creation_time: " << m_creation_time << std::endl;
+            ss << "  modification_time: " << m_modification_time << std::endl;
             ss << "  track_id: " << m_track_id << std::endl;
             ss << "  duration: " << m_duration << std::endl;
             ss << "  layer: " << m_layer << std::endl;
@@ -134,11 +131,11 @@ namespace box
 
         /// an integer that declares the creation time of this track
         /// (in seconds since midnight, Jan. 1, 1904, in UTC time)
-        uint64_t m_creation_time;
+        std::string m_creation_time;
 
         /// an integer that declares the most recent time the track was modified
         /// (in seconds since midnight, Jan. 1, 1904, in UTC time)
-        uint64_t m_modification_time;
+        std::string m_modification_time;
 
         /// an integer that uniquely identifies this track over the entire
         /// life-time of this presentation.

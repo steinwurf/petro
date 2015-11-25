@@ -3,7 +3,6 @@
 
 #include <petro/parser.hpp>
 #include <petro/box/all.hpp>
-#include <petro/utils.hpp>
 
 #include <iostream>
 #include <fstream>
