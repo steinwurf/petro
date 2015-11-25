@@ -19,20 +19,6 @@ namespace box
 
     public:
 
-        struct sequence_parameter_set
-        {
-            uint16_t sequence_parameter_set_length;
-            std::vector<uint8_t> sequence_parameter_set_nal_unit;
-        };
-
-        struct picture_parameter_set
-        {
-            uint16_t picture_parameter_set_length;
-            std::vector<uint8_t> picture_parameter_set_nal_unit;
-        };
-
-    public:
-
         static const std::string TYPE;
 
     public:
@@ -64,14 +50,13 @@ namespace box
 
             for (uint8_t i = 0; i < m_num_of_sequence_parameter_sets; ++i)
             {
-                sequence_parameter_set sps;
-                sps.sequence_parameter_set_length = bs.read_uint16_t();
+                std::vector<uint8_t> sps;
+                auto sequence_parameter_set_length = bs.read_uint16_t();
                 m_remaining_bytes -= 2;
-                assert(sps.sequence_parameter_set_length <= m_remaining_bytes);
-                for (uint16_t i = 0; i < sps.sequence_parameter_set_length; ++i)
+                assert(sequence_parameter_set_length <= m_remaining_bytes);
+                for (uint16_t i = 0; i < sequence_parameter_set_length; ++i)
                 {
-                    sps.sequence_parameter_set_nal_unit.push_back(
-                        bs.read_uint8_t());
+                    sps.push_back(bs.read_uint8_t());
                     m_remaining_bytes -= 1;
                 }
                 m_sequence_parameter_sets.push_back(sps);
@@ -82,14 +67,13 @@ namespace box
 
             for (uint8_t i = 0; i < m_num_of_picture_parameter_sets; ++i)
             {
-                picture_parameter_set pps;
-                pps.picture_parameter_set_length = bs.read_uint16_t();
+                std::vector<uint8_t> pps;
+                auto picture_parameter_set_length = bs.read_uint16_t();
                 m_remaining_bytes -= 2;
-                assert(pps.picture_parameter_set_length <= m_remaining_bytes);
-                for (uint16_t i = 0; i < pps.picture_parameter_set_length; ++i)
+                assert(picture_parameter_set_length <= m_remaining_bytes);
+                for (uint16_t i = 0; i < picture_parameter_set_length; ++i)
                 {
-                    pps.picture_parameter_set_nal_unit.push_back(
-                        bs.read_uint8_t());
+                    pps.push_back(bs.read_uint8_t());
                     m_remaining_bytes -= 1;
                 }
                 m_picture_parameter_sets.push_back(pps);
@@ -112,15 +96,32 @@ namespace box
             ss << "  sequence_parameter_sets:" << std::endl;
             for (const auto& sps : m_sequence_parameter_sets)
             {
-                ss << "     sequence_parameter_set_length: " << (uint32_t)sps.sequence_parameter_set_length << std::endl;
+                ss << "    sps_length: " << sps.size() << std::endl;
             }
 
             ss << "  picture_parameter_sets:" << std::endl;
             for (const auto& pps : m_picture_parameter_sets)
             {
-                ss << "     picture_parameter_set_length: " << (uint32_t)pps.picture_parameter_set_length << std::endl;
+                ss << "    pps_length: " << pps.size() << std::endl;
             }
             return ss.str();
+        }
+
+        std::vector<uint8_t> sequence_parameter_set(uint32_t index) const
+        {
+            assert(index < m_sequence_parameter_sets.size());
+            return m_sequence_parameter_sets[index];
+        }
+
+        std::vector<uint8_t> picture_parameter_set(uint32_t index) const
+        {
+            assert(index < m_picture_parameter_sets.size());
+            return m_picture_parameter_sets[index];
+        }
+
+        uint8_t length_size() const
+        {
+            return m_length_size_minus_one + 1;
         }
 
     private:
@@ -131,9 +132,9 @@ namespace box
         uint8_t m_avc_level_indication;
         uint8_t m_length_size_minus_one;
         uint8_t m_num_of_sequence_parameter_sets;
-        std::vector<sequence_parameter_set> m_sequence_parameter_sets;
+        std::vector<std::vector<uint8_t>> m_sequence_parameter_sets;
         uint8_t m_num_of_picture_parameter_sets;
-        std::vector<picture_parameter_set> m_picture_parameter_sets;
+        std::vector<std::vector<uint8_t>> m_picture_parameter_sets;
 
     };
     const std::string avcc::TYPE = "avcC";

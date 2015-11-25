@@ -69,9 +69,13 @@ namespace box
             return ss.str();
         }
 
-        uint32_t sample_size() const
+        uint32_t sample_size(uint32_t sample_index) const
         {
-            return m_sample_size;
+            assert(m_sample_size == 0 || sample_index <= m_sample_count);
+            if (m_sample_size != 0)
+                return m_sample_size;
+            else
+                return m_entries[sample_index];
         }
 
         uint32_t sample_count() const

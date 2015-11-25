@@ -111,16 +111,18 @@ namespace box
 
         uint32_t samples_for_chunk(uint32_t chunk_index) const
         {
-            for (uint32_t i = entry_count() - 1; i > 0; --i)
+            for (int32_t i = m_entry_count - 1; i >= 0; i--)
             {
                 const auto& entry = m_entries[i];
-                // std::cout << entry.first_chunk << " <= " << chunk_index + 1<< std::endl;
                 if (entry.first_chunk <= (chunk_index + 1))
                 {
                     return entry.samples_per_chunk;
                 }
             }
-            // assert(0);
+            // no chunk with the given index exists, check chunk offset box
+            // (stco) for number of chunks.
+            assert(0);
+            return 0;
         }
 
     private:

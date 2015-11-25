@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cstdint>
 #include <string>
 
@@ -64,6 +65,14 @@ namespace box
         const std::vector<uint32_t>& entries() const
         {
             return m_entries;
+        }
+
+        bool is_sample_random_access_point(uint32_t sample_index) const
+        {
+            auto sample_number = sample_index + 1;
+            auto result = std::find(
+                m_entries.begin(), m_entries.end(), sample_number);
+            return result != m_entries.end();
         }
 
     private:

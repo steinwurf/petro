@@ -72,6 +72,14 @@ namespace box
             return m_entry_count;
         }
 
+
+        uint32_t chunk_offset(uint32_t chunk_index) const
+        {
+            assert(chunk_index < m_entry_count);
+            return m_entries[chunk_index];
+        }
+
+
     private:
 
         /// an integer that gives the number of entries in the following table

@@ -7,6 +7,6 @@ bld.program(features='cxx',
             use=['petro'])
 
 bld.program(features='cxx',
-            source='access_unit_parser.cpp',
-            target='access_unit_parser',
+            source='mp4_to_h264.cpp',
+            target='mp4_to_h264',
             use=['petro'])

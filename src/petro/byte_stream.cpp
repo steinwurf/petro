@@ -77,14 +77,6 @@ namespace petro
     {
         assert(m_size >= 8);
         int64_t result = ((int64_t*) m_data)[0];
-               // (uint64_t) m_data[0] << 56 |
-               // (uint64_t) m_data[1] << 48 |
-               // (uint64_t) m_data[2] << 40 |
-               // (uint64_t) m_data[3] << 32 |
-               // (uint64_t) m_data[4] << 24 |
-               // (uint64_t) m_data[5] << 16 |
-               // (uint64_t) m_data[6] << 8 |
-               // (uint64_t) m_data[7];
         m_data += 8;
         m_size -= 8;
         return result;
@@ -93,7 +85,7 @@ namespace petro
     uint64_t byte_stream::read_uint64_t()
     {
         assert(m_size >= 8);
-        uint64_t result = //((uint64_t*) m_data)[0];
+        uint64_t result =
                (uint64_t) m_data[0] << 56 |
                (uint64_t) m_data[1] << 48 |
                (uint64_t) m_data[2] << 40 |
