@@ -5,6 +5,8 @@
 
 #include <cstdint>
 #include <string>
+#include <cassert>
+#include <vector>
 
 #include "box.hpp"
 #include "../byte_stream.hpp"

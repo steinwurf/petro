@@ -3,11 +3,14 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
+#include <cstdint>
 #include <vector>
 #include <sstream>
 #include <queue>
-#include <memory>
+
+#include "../byte_stream.hpp"
 
 namespace petro
 {
