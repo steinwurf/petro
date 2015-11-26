@@ -158,7 +158,6 @@ namespace petro
         return result;
     }
 
-
     std::string byte_stream::read_time32()
     {
         return read_time(read_uint32_t());
