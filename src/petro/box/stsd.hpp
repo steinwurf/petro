@@ -109,8 +109,8 @@ namespace box
                 m_remaining_bytes -= 2;
 
                 parser<avcc> p;
-                p.read(shared_from_this(), bs.data(), m_remaining_bytes);
-                bs.skip(m_remaining_bytes);
+                auto branched_bs = byte_stream(bs, m_remaining_bytes);
+                p.read(shared_from_this(), branched_bs);
             }
 
             std::string describe() const
@@ -191,8 +191,8 @@ namespace box
                 m_remaining_bytes -= 4;
 
                 parser<> p;
-                p.read(shared_from_this(), bs.data(), m_remaining_bytes);
-                bs.skip(m_remaining_bytes);
+                auto branched_bs = byte_stream(bs, m_remaining_bytes);
+                p.read(shared_from_this(), branched_bs);
             }
 
             std::string describe() const

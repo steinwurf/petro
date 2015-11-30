@@ -14,6 +14,7 @@ namespace petro
     public:
 
         byte_stream(const uint8_t* data, uint32_t size);
+        byte_stream(byte_stream& bs, uint32_t size);
 
         void skip(uint32_t bytes);
 
@@ -39,7 +40,7 @@ namespace petro
         std::string read_time64();
 
         uint32_t size() const;
-        const uint8_t* data() const;
+        uint32_t remaining_bytes() const;
 
     private:
 
@@ -48,6 +49,7 @@ namespace petro
     private:
 
         const uint8_t* m_data;
-        uint32_t m_size;
+        const uint32_t m_size;
+        uint32_t m_remaining_bytes;
     };
 }

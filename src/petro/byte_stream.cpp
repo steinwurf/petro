@@ -10,63 +10,74 @@
 #include <chrono>
 #include <iomanip>
 #include <ctime>
-
+#include <vector>
 
 namespace petro
 {
     byte_stream::byte_stream(const uint8_t* data, uint32_t size):
         m_data(data),
-        m_size(size)
-    { }
+        m_size(size),
+        m_remaining_bytes(size)
+    {
+    }
+
+    byte_stream::byte_stream(byte_stream& bs, uint32_t size):
+        m_data(bs.m_data),
+        m_size(size),
+        m_remaining_bytes(size)
+    {
+        bs.skip(size);
+    }
+
 
     void byte_stream::skip(uint32_t bytes)
     {
-        assert(m_size >= bytes);
+        assert(m_remaining_bytes >= bytes);
         m_data += bytes;
-        m_size -= bytes;
+        m_remaining_bytes -= bytes;
     }
 
     uint8_t byte_stream::read_uint8_t()
     {
-        assert(m_size >= 1);
+        assert(m_remaining_bytes >= 1);
         uint8_t result = m_data[0];
         m_data += 1;
-        m_size -= 1;
+        m_remaining_bytes -= 1;
         return result;
     }
 
     int16_t byte_stream::read_int16_t()
     {
-        assert(m_size >= 2);
+        assert(m_remaining_bytes >= 2);
         int16_t result = ((int16_t*) m_data)[0];
         m_data += 2;
-        m_size -= 2;
+        m_remaining_bytes -= 2;
         return result;
     }
 
     uint16_t byte_stream::read_uint16_t()
     {
-        assert(m_size >= 2);
+        assert(m_remaining_bytes >= 2);
         uint16_t result = ((uint16_t) m_data[0] << 8 | (uint16_t)m_data[1]);
         m_data += 2;
-        m_size -= 2;
+        m_remaining_bytes -= 2;
         return result;
     }
 
     int32_t byte_stream::read_int32_t()
     {
-        assert(m_size >= 4);
+        assert(m_remaining_bytes >= 4);
 
         int32_t result = ((int32_t*) m_data)[0];
 
         m_data += 4;
-        m_size -= 4;
+        m_remaining_bytes -= 4;
         return result;
     }
 
     uint32_t byte_stream::read_uint32_t()
     {
-        assert(m_size >= 4);
+        assert(m_remaining_bytes >= 4);
 
         uint32_t result =
            (uint32_t) m_data[0] << 24 |
@@ -74,22 +85,22 @@ namespace petro
            (uint32_t) m_data[2] << 8 |
            (uint32_t) m_data[3];
         m_data += 4;
-        m_size -= 4;
+        m_remaining_bytes -= 4;
         return result;
     }
 
     int64_t byte_stream::read_int64_t()
     {
-        assert(m_size >= 8);
+        assert(m_remaining_bytes >= 8);
         int64_t result = ((int64_t*) m_data)[0];
         m_data += 8;
-        m_size -= 8;
+        m_remaining_bytes -= 8;
         return result;
     }
 
     uint64_t byte_stream::read_uint64_t()
     {
-        assert(m_size >= 8);
+        assert(m_remaining_bytes >= 8);
         uint64_t result =
            (uint64_t) m_data[0] << 56 |
            (uint64_t) m_data[1] << 48 |
@@ -100,13 +111,13 @@ namespace petro
            (uint64_t) m_data[6] << 8 |
            (uint64_t) m_data[7];
         m_data += 8;
-        m_size -= 8;
+        m_remaining_bytes -= 8;
         return result;
     }
 
     std::string byte_stream::read_type()
     {
-        assert(m_size >= 4);
+        assert(m_remaining_bytes >= 4);
 
         std::string result;
 
@@ -191,8 +202,8 @@ namespace petro
         return m_size;
     }
 
-    const uint8_t* byte_stream::data() const
+    uint32_t byte_stream::remaining_bytes() const
     {
-        return m_data;
+        return m_remaining_bytes;
     }
 }

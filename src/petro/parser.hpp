@@ -23,7 +23,12 @@ namespace petro
             uint32_t byte_size)
         {
             byte_stream bs(byte_data, byte_size);
-            while(bs.size() != 0)
+            read(parent, bs);
+        }
+
+        void read(std::weak_ptr<box::box> parent, byte_stream& bs)
+        {
+            while(bs.remaining_bytes() != 0)
             {
                 parse(parent, bs);
             }

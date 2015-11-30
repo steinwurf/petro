@@ -118,6 +118,16 @@ namespace box
             return m_track_id;
         }
 
+        uint32_t height() const
+        {
+            return m_height;
+        }
+
+        uint32_t width() const
+        {
+            return m_width;
+        }
+
     private:
 
         /// indicates that the track is enabled.

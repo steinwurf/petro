@@ -43,7 +43,7 @@ namespace box
                 // if size is 0, then this box is the last one in the file,
                 // and its contents extend to the end of the file
                 // (normally only used for a Media Data Box (mdat))
-                m_size = bs.size();
+                m_size = bs.remaining_bytes();
                 m_remaining_bytes = m_size;
             }
             else
