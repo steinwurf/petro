@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <cstdint>
 #include <string>
 
@@ -133,7 +134,5 @@ namespace box
         /// vector containing entries
         std::vector<entry_type> m_entries;
     };
-
-    const std::string stsc::TYPE = "stsc";
 }
 }

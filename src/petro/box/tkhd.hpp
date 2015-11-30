@@ -198,7 +198,5 @@ namespace box
         uint32_t m_width;
         uint32_t m_height;
     };
-
-    const std::string tkhd::TYPE = "tkhd";
 }
 }

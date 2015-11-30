@@ -65,7 +65,5 @@ namespace box
         /// graphics modes
         std::vector<uint16_t> m_op_color;
     };
-
-    const std::string vmhd::TYPE = "vmhd";
 }
 }

@@ -98,7 +98,5 @@ namespace box
         std::string m_language;
 
     };
-
-    const std::string mdhd::TYPE = "mdhd";
 }
 }

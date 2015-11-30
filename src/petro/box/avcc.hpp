@@ -159,6 +159,6 @@ namespace box
         /// the SPSs
         std::vector<std::vector<uint8_t>> m_picture_parameter_sets;
     };
-    const std::string avcc::TYPE = "avcC";
+
 }
 }

@@ -135,7 +135,5 @@ namespace box
         uint32_t m_next_track_id;
 
     };
-
-    const std::string mvhd::TYPE = "mvhd";
 }
 }

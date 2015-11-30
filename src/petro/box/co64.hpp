@@ -72,7 +72,5 @@ namespace box
         std::vector<uint32_t> m_entries;
 
     };
-
-    const std::string co64::TYPE = "co64";
 }
 }

@@ -32,7 +32,5 @@ namespace box
             bs.skip(m_remaining_bytes);
         }
     };
-
-    const std::string xml::TYPE = "xml ";
 }
 }

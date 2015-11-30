@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <cstdint>
 #include <string>
 
@@ -113,7 +114,5 @@ namespace box
         /// in the time-scale of the media.
         std::vector<entry_type> m_entries;
     };
-
-    const std::string stts::TYPE = "stts";
 }
 }

@@ -86,7 +86,5 @@ namespace box
         /// the stream.
         std::vector<uint32_t> m_entries;
     };
-
-    const std::string stss::TYPE = "stss";
 }
 }

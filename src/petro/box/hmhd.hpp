@@ -73,7 +73,5 @@ namespace box
         /// the average rate in bits/second over the entire presentation
         uint32_t m_average_bit_rate;
     };
-
-    const std::string hmhd::TYPE = "hmhd";
 }
 }

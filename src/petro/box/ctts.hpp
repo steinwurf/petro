@@ -69,7 +69,5 @@ namespace box
         /// between CT and DT, such that CT(n) = DT(n) + CTTS(n).
         std::vector<std::pair<uint32_t,uint32_t>> m_entries;
     };
-
-    const std::string ctts::TYPE = "ctts";
 }
 }

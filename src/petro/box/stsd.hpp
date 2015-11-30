@@ -3,9 +3,11 @@
 
 #pragma once
 
+#include <cassert>
 #include <cstdint>
 #include <string>
 
+#include "avcc.hpp"
 #include "full_box.hpp"
 #include "hdlr.hpp"
 #include "../byte_stream.hpp"
@@ -330,7 +332,5 @@ namespace box
         /// an integer that gives the number of entries
         uint32_t m_entry_count;
     };
-
-    const std::string stsd::TYPE = "stsd";
 }
 }

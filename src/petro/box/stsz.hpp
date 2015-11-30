@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <cstdint>
 #include <string>
 #include <memory>
@@ -104,7 +105,5 @@ namespace box
         /// its number.
         std::vector<uint32_t> m_entries;
     };
-
-    const std::string stsz::TYPE = "stsz";
 }
 }

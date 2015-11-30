@@ -51,7 +51,5 @@ namespace box
         /// right is 1.0.
         float m_balance;
     };
-
-    const std::string smhd::TYPE = "smhd";
 }
 }

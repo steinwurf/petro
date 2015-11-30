@@ -78,7 +78,5 @@ namespace box
         /// (for debugging and inspection purposes).
         std::string m_name;
     };
-
-    const std::string hdlr::TYPE = "hdlr";
 }
 }

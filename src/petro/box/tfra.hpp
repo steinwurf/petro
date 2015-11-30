@@ -32,7 +32,5 @@ namespace box
             bs.skip(m_remaining_bytes);
         }
     };
-
-    const std::string tfra::TYPE = "tfra";
 }
 }

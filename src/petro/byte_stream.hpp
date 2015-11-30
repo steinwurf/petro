@@ -11,6 +11,28 @@ namespace petro
 {
     class byte_stream
     {
+
+        struct i_byte_stream
+        {
+            uint8_t read_uint8_t();
+            int16_t read_int16_t();
+            uint16_t read_uint16_t();
+            int32_t read_int32_t();
+            uint32_t read_uint32_t();
+            int64_t read_int64_t();
+            uint64_t read_uint64_t();
+        };
+
+        class vector_byte_stream : public i_byte_stream
+        {
+
+        };
+
+        class file_byte_stream : public i_byte_stream
+        {
+
+        };
+
     public:
 
         byte_stream(const uint8_t* data, uint32_t size);
@@ -47,6 +69,8 @@ namespace petro
         std::string read_time(uint64_t total_time);
 
     private:
+
+        i_byte_stream m_bs;
 
         const uint8_t* m_data;
         const uint32_t m_size;

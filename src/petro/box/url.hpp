@@ -48,7 +48,5 @@ namespace box
 
         std::string m_location;
     };
-
-    const std::string url::TYPE = "url ";
 }
 }

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <cstdint>
 #include <string>
 
@@ -109,7 +110,5 @@ namespace box
         /// its number.
         std::vector<uint16_t> m_entry_sizes;
     };
-
-    const std::string stz2::TYPE = "stz2";
 }
 }

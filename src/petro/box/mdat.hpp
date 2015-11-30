@@ -50,7 +50,5 @@ namespace box
 
         uint32_t m_data_offset;
     };
-
-    const std::string mdat::TYPE = "mdat";
 }
 }

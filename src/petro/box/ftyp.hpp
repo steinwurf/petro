@@ -6,6 +6,7 @@
 #include "../byte_stream.hpp"
 #include "box.hpp"
 
+#include <cassert>
 #include <string>
 #include <vector>
 
@@ -72,6 +73,6 @@ namespace box
         /// a list, to the end of the box, of brands
         std::vector<std::string> m_compatible_brands;
     };
-    const std::string ftyp::TYPE = "ftyp";
+
 }
 }

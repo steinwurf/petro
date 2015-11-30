@@ -110,7 +110,5 @@ namespace box
         /// Otherwise this field shall contain the value 1.
         std::vector<std::tuple<uint64_t,int64_t,uint16_t,uint16_t>> m_entries;
     };
-
-    const std::string elst::TYPE = "elst";
 }
 }
