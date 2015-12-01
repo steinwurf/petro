@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 
     std::ifstream mp4_file(argv[1], std::ios::binary);
 
-    if (not mp4_file.is_open() || not mp4_file.good())
+    if ((!mp4_file.is_open()) || (!mp4_file.good()))
     {
         std::cerr << "Error reading file" << std::endl;
         return 1;
