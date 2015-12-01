@@ -86,10 +86,16 @@ namespace box
                 m_remaining_bytes -= 4 * 3;
 
                 m_width = bs.read_uint16_t();
+                m_remaining_bytes -= 2;
+
                 m_height = bs.read_uint16_t();
-                m_horizontal_resolution = bs.read_fixed_point(16, 16);
-                m_vertical_resolution = bs.read_fixed_point(16, 16);
-                m_remaining_bytes -= 2 + 2 + 4 + 4;
+                m_remaining_bytes -= 2;
+
+                m_horizontal_resolution = bs.read_fixed_point_1616();
+                m_remaining_bytes -= 4;
+
+                m_vertical_resolution = bs.read_fixed_point_1616();
+                m_remaining_bytes -= 4;
 
                 // reserved
                 bs.skip(4);
@@ -189,7 +195,7 @@ namespace box
                 m_remaining_bytes -= 2;
 
                 // {timescale of media}<<16;
-                m_sample_rate = bs.read_fixed_point(16, 16);
+                m_sample_rate = bs.read_fixed_point_1616();
                 m_remaining_bytes -= 4;
 
                 parser<> p;
@@ -217,7 +223,7 @@ namespace box
 
             /// the sampling rate expressed as a 16.16 fixed-point number
             /// (hi.lo)
-            uint32_t m_sample_rate;
+            double m_sample_rate;
         };
 
         class hint_sample_entry : public sample_entry

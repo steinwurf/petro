@@ -8,6 +8,7 @@
 
 #include "full_box.hpp"
 #include "../byte_stream.hpp"
+#include "../matrix.hpp"
 
 namespace petro
 {
@@ -68,28 +69,20 @@ namespace box
             m_alternate_group = bs.read_int16_t();
             m_remaining_bytes -= 2;
 
-            m_volume = bs.read_fixed_point(8, 8);
+            m_volume = bs.read_fixed_point_88();
             m_remaining_bytes -= 2;
 
             // reserved
             bs.skip(2);
             m_remaining_bytes -= 2;
 
-            m_matrix.push_back(bs.read_int32_t());
-            m_matrix.push_back(bs.read_int32_t());
-            m_matrix.push_back(bs.read_int32_t());
-            m_matrix.push_back(bs.read_int32_t());
-            m_matrix.push_back(bs.read_int32_t());
-            m_matrix.push_back(bs.read_int32_t());
-            m_matrix.push_back(bs.read_int32_t());
-            m_matrix.push_back(bs.read_int32_t());
-            m_matrix.push_back(bs.read_int32_t());
+            m_matrix.read(bs);
             m_remaining_bytes -= 4 * 9;
 
-            m_width = bs.read_fixed_point(16, 16);
+            m_width = bs.read_fixed_point_1616();
             m_remaining_bytes -= 4;
 
-            m_height = bs.read_fixed_point(16, 16);
+            m_height = bs.read_fixed_point_1616();
             m_remaining_bytes -= 4;
             bs.skip(m_remaining_bytes);
         }
@@ -108,6 +101,7 @@ namespace box
             ss << "  layer: " << m_layer << std::endl;
             ss << "  alternate_group: " << m_alternate_group << std::endl;
             ss << "  volume: " << m_volume << std::endl;
+            ss << "  matrix: " << std::endl << m_matrix.describe();
             ss << "  width: " << m_width << std::endl;
             ss << "  height: " << m_height << std::endl;
             return ss.str();
@@ -118,12 +112,12 @@ namespace box
             return m_track_id;
         }
 
-        uint32_t height() const
+        double height() const
         {
             return m_height;
         }
 
-        uint32_t width() const
+        double width() const
         {
             return m_width;
         }
@@ -183,11 +177,11 @@ namespace box
         /// combining them according to their volume, and then using the overall
         /// Movie Header Box volume setting; or more complex audio composition
         /// (e.g. MPEG-4 BIFS) may be used.
-        int16_t m_volume;
+        float m_volume;
 
         /// provides a transformation matrix for the video; (u,v,w) are
         /// restricted here to (0,0,1), hex (0,0,0x40000000).
-        std::vector<int32_t> m_matrix;
+        matrix m_matrix;
 
         /// specifies the track's visual presentation size as fixed-point 16.16
         /// values. These need not be the same as the pixel dimensions of the
@@ -195,8 +189,8 @@ namespace box
         /// all images in the sequence are scaled to this size, before any
         /// overall transformation of the track represented by the matrix.
         /// The pixel dimensions of the images are the default values.
-        uint32_t m_width;
-        uint32_t m_height;
+        double m_width;
+        double m_height;
     };
 }
 }

@@ -10,11 +10,6 @@
 #include <memory>
 #include <string>
 
-
-
-#include <iterator>
-
-
 void print_box(std::shared_ptr<petro::box::box> b, uint32_t level = 0)
 {
     std::stringstream ss(b->describe());
@@ -36,7 +31,6 @@ void print_box(std::shared_ptr<petro::box::box> b, uint32_t level = 0)
 
 int main(int argc, char* argv[])
 {
-
     if (argc != 2 || std::string(argv[1]) == "--help")
     {
         auto usage = "./complete_parser MP4_FILE";

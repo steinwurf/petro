@@ -9,6 +9,7 @@
 #include <cassert>
 
 #include "full_box.hpp"
+#include "../matrix.hpp"
 #include "../byte_stream.hpp"
 
 namespace petro
@@ -49,24 +50,16 @@ namespace box
                 m_remaining_bytes -= 16;
             }
 
-            m_rate = bs.read_fixed_point(16, 16);
+            m_rate = bs.read_fixed_point_1616();
             m_remaining_bytes -= 4;
-            m_volume = bs.read_fixed_point(8, 8);
+            m_volume = bs.read_fixed_point_88();
             m_remaining_bytes -= 2;
 
             // reserved
             bs.skip(2 + 4 + 4);
             m_remaining_bytes -= 2 + 4 + 4;
 
-            m_matrix.push_back(bs.read_int32_t());
-            m_matrix.push_back(bs.read_int32_t());
-            m_matrix.push_back(bs.read_int32_t());
-            m_matrix.push_back(bs.read_int32_t());
-            m_matrix.push_back(bs.read_int32_t());
-            m_matrix.push_back(bs.read_int32_t());
-            m_matrix.push_back(bs.read_int32_t());
-            m_matrix.push_back(bs.read_int32_t());
-            m_matrix.push_back(bs.read_int32_t());
+            m_matrix.read(bs);
             m_remaining_bytes -= 4 * 9;
 
             // pre_defined
@@ -88,6 +81,7 @@ namespace box
             ss << "  duration: " << m_duration << std::endl;
             ss << "  rate: " << m_rate << std::endl;
             ss << "  volume: " << m_volume << std::endl;
+            ss << "  matrix: " << std::endl << m_matrix.describe();
             ss << "  next_track_id: " << m_next_track_id << std::endl;
             return ss.str();
         }
@@ -116,15 +110,15 @@ namespace box
 
         /// a fixed point 16.16 number that indicates the preferred rate to play
         /// the presentation; 1.0 (0x00010000) is normal forward playback
-        int32_t m_rate;
+        double m_rate;
 
         /// is a fixed point 8.8 number that indicates the preferred playback
         /// volume. 1.0 (0x0100) is full volume.
-        int16_t m_volume;
+        float m_volume;
 
         /// provides a transformation matrix for the video; (u,v,w) are
         /// restricted here to (0,0,1), hex values (0,0,0x40000000).
-        std::vector<int32_t> m_matrix;
+        matrix m_matrix;
 
         /// a non-zero integer that indicates a value to use for the track ID of
         /// the next track to be added to this presentation. Zero is not a valid

@@ -47,7 +47,7 @@ namespace box
             }
 
             // ISO-639-2/T language code
-            m_language = bs.read_iso639_code();
+            m_language = bs.read_iso639();
             m_remaining_bytes -= 2;
 
             // pre_defined

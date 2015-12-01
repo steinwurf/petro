@@ -29,7 +29,6 @@ namespace petro
         bs.skip(size);
     }
 
-
     void byte_stream::skip(uint32_t bytes)
     {
         assert(m_remaining_bytes >= bytes);
@@ -49,7 +48,11 @@ namespace petro
     int16_t byte_stream::read_int16_t()
     {
         assert(m_remaining_bytes >= 2);
-        int16_t result = ((int16_t*) m_data)[0];
+
+        int16_t result =
+            (int16_t) m_data[0] << 8 |
+            (int16_t) m_data[1];
+
         m_data += 2;
         m_remaining_bytes -= 2;
         return result;
@@ -58,7 +61,11 @@ namespace petro
     uint16_t byte_stream::read_uint16_t()
     {
         assert(m_remaining_bytes >= 2);
-        uint16_t result = ((uint16_t) m_data[0] << 8 | (uint16_t)m_data[1]);
+
+        uint16_t result =
+            (uint16_t) m_data[0] << 8 |
+            (uint16_t) m_data[1];
+
         m_data += 2;
         m_remaining_bytes -= 2;
         return result;
@@ -68,7 +75,11 @@ namespace petro
     {
         assert(m_remaining_bytes >= 4);
 
-        int32_t result = ((int32_t*) m_data)[0];
+        int32_t result =
+           (int32_t) m_data[0] << 24 |
+           (int32_t) m_data[1] << 16 |
+           (int32_t) m_data[2] << 8 |
+           (int32_t) m_data[3];
 
         m_data += 4;
         m_remaining_bytes -= 4;
@@ -92,7 +103,17 @@ namespace petro
     int64_t byte_stream::read_int64_t()
     {
         assert(m_remaining_bytes >= 8);
-        int64_t result = ((int64_t*) m_data)[0];
+
+        int64_t result =
+           (int64_t) m_data[0] << 56 |
+           (int64_t) m_data[1] << 48 |
+           (int64_t) m_data[2] << 40 |
+           (int64_t) m_data[3] << 32 |
+           (int64_t) m_data[4] << 24 |
+           (int64_t) m_data[5] << 16 |
+           (int64_t) m_data[6] << 8 |
+           (int64_t) m_data[7];
+
         m_data += 8;
         m_remaining_bytes -= 8;
         return result;
@@ -101,6 +122,7 @@ namespace petro
     uint64_t byte_stream::read_uint64_t()
     {
         assert(m_remaining_bytes >= 8);
+
         uint64_t result =
            (uint64_t) m_data[0] << 56 |
            (uint64_t) m_data[1] << 48 |
@@ -110,6 +132,7 @@ namespace petro
            (uint64_t) m_data[5] << 16 |
            (uint64_t) m_data[6] << 8 |
            (uint64_t) m_data[7];
+
         m_data += 8;
         m_remaining_bytes -= 8;
         return result;
@@ -119,54 +142,42 @@ namespace petro
     {
         assert(m_remaining_bytes >= 4);
 
-        std::string result;
+        std::stringstream result;
 
-        result += read_uint8_t();
-        result += read_uint8_t();
-        result += read_uint8_t();
-        result += read_uint8_t();
+        result << read_uint8_t();
+        result << read_uint8_t();
+        result << read_uint8_t();
+        result << read_uint8_t();
 
-        return result;
+        return result.str();
     }
 
-    float byte_stream::read_fixed_point(
-        uint32_t integer_length, uint32_t fractional_length)
+    double byte_stream::read_fixed_point_1616()
     {
-        uint32_t n;
-        if ((integer_length + fractional_length) == 16)
-        {
-            n = read_uint16_t();
-        }
-        else
-        {
-            n = read_uint32_t();
-        }
-
-        uint32_t integer = n >> fractional_length;
-        uint32_t fractional_mask = std::pow(2, fractional_length) - 1;
-        uint32_t fractional = (n & fractional_mask) / (1 << fractional_length);
-
-        return integer + fractional;
+        auto result = read_uint32_t();
+        return ((double) result) / (1 << 16);
     }
 
-    std::string byte_stream::read_iso639_code()
+
+    double byte_stream::read_fixed_point_0230()
+    {
+        auto result = read_uint32_t();
+        return ((double) result) / (1 << 30);
+    }
+
+    float byte_stream::read_fixed_point_88()
+    {
+        auto result = read_uint16_t();
+        return ((float) result) / (1 << 8);
+    }
+
+    std::string byte_stream::read_iso639()
     {
         uint16_t n = read_uint16_t();
-
-        uint8_t c1 = (n & 0x7C00) >> 10;  // Mask is 0111 1100 0000 0000
-        uint8_t c2 = (n & 0x03E0) >> 5;   // Mask is 0000 0011 1110 0000
-        uint8_t c3 = (n & 0x001F);        // Mask is 0000 0000 0001 1111
-
-        c1 += 0x60;
-        c2 += 0x60;
-        c3 += 0x60;
-
-        std::string result;
-        result.append((char*)&c1, 1);
-        result.append((char*)&c2, 1);
-        result.append((char*)&c3, 1);
-
-        return result;
+        char c1 = 0x60 + ((n & 0x7C00) >> 10);  // Mask is 0111 1100 0000 0000
+        char c2 = 0x60 + ((n & 0x03E0) >> 5);   // Mask is 0000 0011 1110 0000
+        char c3 = 0x60 + (n & 0x001F);        // Mask is 0000 0000 0001 1111
+        return {c1, c2, c3};
     }
 
     std::string byte_stream::read_time32()
