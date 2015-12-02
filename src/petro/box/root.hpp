@@ -24,7 +24,7 @@ namespace box
         { }
 
         /// hide box implementation
-        void read(uint32_t size, byte_stream& bs) override
+        void read(uint64_t size, byte_stream& bs) override
         {
             (void) size;
             (void) bs;

@@ -27,15 +27,13 @@ namespace box
             box(ftyp::TYPE, parent)
         { }
 
-        void read(uint32_t size, byte_stream& bs)
+        void read(uint64_t size, byte_stream& bs)
         {
             box::read(size, bs);
             m_major_brand = bs.read_type();
             m_remaining_bytes -= 4;
-            std::cout << m_major_brand << std::endl;
             m_minor_version = bs.read_uint32_t();
             m_remaining_bytes -= 4;
-            std::cout << m_minor_version << std::endl;
 
             assert(m_remaining_bytes % 4 == 0);
 
@@ -44,8 +42,6 @@ namespace box
                 m_compatible_brands.push_back(bs.read_type());
                 m_remaining_bytes -= 4;
             }
-
-            std::cout << m_compatible_brands.size() << std::endl;
             assert(m_remaining_bytes == 0);
         }
         virtual std::string describe() const

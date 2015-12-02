@@ -26,7 +26,7 @@ namespace box
             full_box(mdhd::TYPE, parent)
         { }
 
-        void read(uint32_t size, byte_stream& bs)
+        void read(uint64_t size, byte_stream& bs)
         {
             full_box::read(size, bs);
             if (m_version == 1)

@@ -27,7 +27,7 @@ namespace box
             m_remaining_bytes(0)
         { }
 
-        virtual void read(uint32_t size, byte_stream& bs)
+        virtual void read(uint64_t size, byte_stream& bs)
         {
             m_size = size;
 
@@ -36,7 +36,8 @@ namespace box
                 // if size is 1 then the actual size is in the field
                 // largesize;
                 m_size = bs.read_uint64_t();
-                m_remaining_bytes = m_size - 8;
+                m_remaining_bytes = m_size;
+                m_remaining_bytes -= 8;
             }
             else if (m_size == 0)
             {
@@ -74,7 +75,7 @@ namespace box
             return m_type;
         }
 
-        uint32_t size() const
+        uint64_t size() const
         {
             return m_size;
         }
@@ -176,9 +177,9 @@ namespace box
 
         std::weak_ptr<box> m_parent;
 
-        uint32_t m_size;
+        uint64_t m_size;
 
-        uint32_t m_remaining_bytes;
+        uint64_t m_remaining_bytes;
 
         std::string m_extended_type;
 

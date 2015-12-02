@@ -26,7 +26,7 @@ namespace box
             full_box(smhd::TYPE, parent)
         { }
 
-        void read(uint32_t size, byte_stream& bs)
+        void read(uint64_t size, byte_stream& bs)
         {
             full_box::read(size, bs);
             m_balance = bs.read_fixed_point_88();

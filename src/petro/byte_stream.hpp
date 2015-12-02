@@ -21,7 +21,7 @@ namespace petro
         struct i_byte_stream
         {
             virtual uint8_t read_byte() = 0;
-            virtual void skip(uint32_t bytes) = 0;
+            virtual void skip(uint64_t bytes) = 0;
         };
 
         struct pointer_byte_stream : i_byte_stream
@@ -37,7 +37,7 @@ namespace petro
                 return result;
             }
 
-            void skip(uint32_t bytes)
+            void skip(uint64_t bytes)
             {
                 m_data += bytes;
             }
@@ -58,7 +58,7 @@ namespace petro
                 m_data.read(&result, 1);
                 return result;
             }
-            void skip(uint32_t bytes)
+            void skip(uint64_t bytes)
             {
                 m_data.seekg(bytes, std::ios::cur);
             }
@@ -70,11 +70,11 @@ namespace petro
 
     public:
 
-        byte_stream(const uint8_t* data, uint32_t size);
+        byte_stream(const uint8_t* data, uint64_t size);
         byte_stream(const std::string& filename);
-        byte_stream(byte_stream& bs, uint32_t size);
+        byte_stream(byte_stream& bs, uint64_t size);
 
-        void skip(uint32_t bytes);
+        void skip(uint64_t bytes);
 
         uint8_t read_uint8_t();
 
@@ -97,7 +97,7 @@ namespace petro
         std::string read_time32();
         std::string read_time64();
 
-        uint32_t remaining_bytes() const;
+        uint64_t remaining_bytes() const;
 
     private:
 
@@ -106,6 +106,6 @@ namespace petro
     private:
 
         std::shared_ptr<i_byte_stream> m_data;
-        uint32_t m_remaining_bytes;
+        uint64_t m_remaining_bytes;
     };
 }

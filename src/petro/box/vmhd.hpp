@@ -26,7 +26,7 @@ namespace box
             full_box(vmhd::TYPE, parent)
         { }
 
-        void read(uint32_t size, byte_stream& bs)
+        void read(uint64_t size, byte_stream& bs)
         {
             full_box::read(size, bs);
             m_graphics_mode = bs.read_uint16_t();

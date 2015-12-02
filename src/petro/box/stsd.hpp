@@ -32,7 +32,7 @@ namespace box
                 box(format, parent)
             { }
 
-            void read(uint32_t size, byte_stream& bs)
+            void read(uint64_t size, byte_stream& bs)
             {
                 box::read(size, bs);
                 // reserved
@@ -70,7 +70,7 @@ namespace box
                 sample_entry(coding_name, parent)
             { }
 
-            void read(uint32_t size, byte_stream& bs)
+            void read(uint64_t size, byte_stream& bs)
             {
                 sample_entry::read(size, bs);
                 // pre_defined
@@ -176,7 +176,7 @@ namespace box
                 sample_entry(coding_name, parent)
             { }
 
-            void read(uint32_t size, byte_stream& bs)
+            void read(uint64_t size, byte_stream& bs)
             {
                 sample_entry::read(size, bs);
                 // reserved
@@ -237,7 +237,7 @@ namespace box
                 sample_entry(protocol, parent)
             { }
 
-            void read(uint32_t size, byte_stream& bs)
+            void read(uint64_t size, byte_stream& bs)
             {
                 sample_entry::read(size, bs);
                 bs.skip(m_remaining_bytes);
@@ -265,7 +265,7 @@ namespace box
                 sample_entry(format, parent)
             { }
 
-            void read(uint32_t size, byte_stream& bs)
+            void read(uint64_t size, byte_stream& bs)
             {
                 sample_entry::read(size, bs);
                 bs.skip(m_remaining_bytes);
@@ -281,7 +281,7 @@ namespace box
             full_box(stsd::TYPE, parent)
         { }
 
-        void read(uint32_t size, byte_stream& bs)
+        void read(uint64_t size, byte_stream& bs)
         {
             full_box::read(size, bs);
             m_entry_count = bs.read_uint32_t();

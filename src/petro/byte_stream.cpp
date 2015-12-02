@@ -14,7 +14,7 @@
 
 namespace petro
 {
-    byte_stream::byte_stream(const uint8_t* data, uint32_t size):
+    byte_stream::byte_stream(const uint8_t* data, uint64_t size):
         m_data(std::make_shared<pointer_byte_stream>(data)),
         m_remaining_bytes(size)
     { }
@@ -26,14 +26,14 @@ namespace petro
         m_remaining_bytes = f.tellg();
     }
 
-    byte_stream::byte_stream(byte_stream& bs, uint32_t size):
+    byte_stream::byte_stream(byte_stream& bs, uint64_t size):
         m_data(bs.m_data),
         m_remaining_bytes(size)
     {
         bs.m_remaining_bytes -= size;
     }
 
-    void byte_stream::skip(uint32_t bytes)
+    void byte_stream::skip(uint64_t bytes)
     {
         assert(m_remaining_bytes >= bytes);
         m_data->skip(bytes);
@@ -182,7 +182,7 @@ namespace petro
         return ss.str();
     }
 
-    uint32_t byte_stream::remaining_bytes() const
+    uint64_t byte_stream::remaining_bytes() const
     {
         return m_remaining_bytes;
     }

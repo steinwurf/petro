@@ -35,7 +35,7 @@ TEST(test_byte_stream, create)
     }
 }
 
-TEST(test_byte_stream, create_from_bytestream)
+TEST(test_byte_stream, create_from_byte_stream)
 {
     // create source byte_stream
     uint32_t size = 42;
@@ -480,11 +480,13 @@ TEST(test_byte_stream, read_fixed_point_88)
 TEST(test_byte_stream, read_iso639)
 {
     std::vector<uint16_t> data = {
-        0xC455
+        0xC455,
+        0xB21C
     };
 
     std::vector<std::string> expected = {
-        "und"
+        "und",
+        "ger"
     };
 
     // create byte_stream

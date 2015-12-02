@@ -39,7 +39,7 @@ namespace box
             full_box(stts::TYPE, parent)
         { }
 
-        void read(uint32_t size, byte_stream& bs)
+        void read(uint64_t size, byte_stream& bs)
         {
             full_box::read(size, bs);
             m_entry_count = bs.read_uint32_t();
@@ -62,15 +62,19 @@ namespace box
             ss << "  entry_count: " << m_entry_count << std::endl;
             ss << "  entries (count, delta): ";
             auto seperator = "";
-            for (const auto& entry : m_entries)
+            uint32_t max_print = 5;
+            for (uint32_t i = 0; i < std::min(
+                (uint32_t)m_entries.size(), max_print); ++i)
             {
+                auto entry = m_entries[i];
                 ss << seperator;
                 ss << "(" << entry.sample_count << ", "
                    << entry.sample_delta << ")";
                 seperator =  ", ";
             }
+            if (m_entries.size() > max_print)
+                ss << "...";
             ss << std::endl;
-
             return ss.str();
         }
 
@@ -108,10 +112,6 @@ namespace box
         uint32_t m_entry_count;
 
         /// a vector containing each entry's sample count and sample delta.
-        /// The sample count is an integer that counts the number of consecutive
-        /// samples that have the given duration.
-        /// The sample delta is an integer that gives the delta of these samples
-        /// in the time-scale of the media.
         std::vector<entry_type> m_entries;
     };
 }
