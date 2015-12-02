@@ -359,6 +359,9 @@ TEST(test_byte_stream, read_type)
 
 TEST(test_byte_stream, read_fixed_point_1616)
 {
+    // the test data for this test is created based on an implementation which
+    // is thought to be correct.
+    // The point of this test is to get notified if the result changes.
     std::vector<uint32_t> data = {
         0x00000000,
         0xFFFFFFFF
@@ -386,6 +389,9 @@ TEST(test_byte_stream, read_fixed_point_1616)
 
 TEST(test_byte_stream, read_fixed_point_0230)
 {
+    // the test data for this test is created based on an implementation which
+    // is thought to be correct.
+    // The point of this test is to get notified if the result changes.
     std::vector<uint32_t> data = {
         0x00000000,
         0xFFFFFFFF
@@ -393,7 +399,7 @@ TEST(test_byte_stream, read_fixed_point_0230)
 
     std::vector<double> expected = {
         0.0,
-        4.0
+        4.0 // ?
     };
 
     // create byte_stream
@@ -413,6 +419,9 @@ TEST(test_byte_stream, read_fixed_point_0230)
 
 TEST(test_byte_stream, read_fixed_point_88)
 {
+    // the test data for this test is created based on an implementation which
+    // is thought to be correct.
+    // The point of this test is to get notified if the result changes.
     std::vector<uint16_t> data = {
         0x0000,
         0xFFFF
