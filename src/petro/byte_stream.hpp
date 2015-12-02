@@ -6,6 +6,10 @@
 #include <string>
 #include <istream>
 #include <memory>
+#include <cassert>
+#include <vector>
+#include <fstream>
+#include <iostream>
 
 namespace petro
 {
@@ -14,7 +18,60 @@ namespace petro
     {
     public:
 
+        struct i_byte_stream
+        {
+            virtual uint8_t read_byte() = 0;
+            virtual void skip(uint32_t bytes) = 0;
+        };
+
+        struct pointer_byte_stream : i_byte_stream
+        {
+            pointer_byte_stream(const uint8_t* data):
+                m_data(data)
+            { }
+
+            uint8_t read_byte()
+            {
+                uint8_t result = m_data[0];
+                m_data += 1;
+                return result;
+            }
+
+            void skip(uint32_t bytes)
+            {
+                m_data += bytes;
+            }
+
+        private:
+            const uint8_t* m_data;
+        };
+
+        struct file_byte_stream : i_byte_stream
+        {
+            file_byte_stream(const std::string& filename):
+                m_data(filename, std::ios::binary)
+            { }
+
+            uint8_t read_byte()
+            {
+                char result;
+                m_data.read(&result, 1);
+                return result;
+            }
+            void skip(uint32_t bytes)
+            {
+                m_data.seekg(bytes, std::ios::cur);
+            }
+
+        private:
+            std::ifstream m_data;
+        };
+
+
+    public:
+
         byte_stream(const uint8_t* data, uint32_t size);
+        byte_stream(const std::string& filename);
         byte_stream(byte_stream& bs, uint32_t size);
 
         void skip(uint32_t bytes);
@@ -40,7 +97,6 @@ namespace petro
         std::string read_time32();
         std::string read_time64();
 
-        uint32_t size() const;
         uint32_t remaining_bytes() const;
 
     private:
@@ -49,8 +105,7 @@ namespace petro
 
     private:
 
-        const uint8_t* m_data;
-        const uint32_t m_size;
+        std::shared_ptr<i_byte_stream> m_data;
         uint32_t m_remaining_bytes;
     };
 }

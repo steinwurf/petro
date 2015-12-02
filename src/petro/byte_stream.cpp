@@ -15,32 +15,35 @@
 namespace petro
 {
     byte_stream::byte_stream(const uint8_t* data, uint32_t size):
-        m_data(data),
-        m_size(size),
+        m_data(std::make_shared<pointer_byte_stream>(data)),
         m_remaining_bytes(size)
+    { }
+
+    byte_stream::byte_stream(const std::string& filename):
+        m_data(std::make_shared<file_byte_stream>(filename))
     {
+        std::ifstream f(filename, std::ifstream::ate | std::ifstream::binary);
+        m_remaining_bytes = f.tellg();
     }
 
     byte_stream::byte_stream(byte_stream& bs, uint32_t size):
         m_data(bs.m_data),
-        m_size(size),
         m_remaining_bytes(size)
     {
-        bs.skip(size);
+        bs.m_remaining_bytes -= size;
     }
 
     void byte_stream::skip(uint32_t bytes)
     {
         assert(m_remaining_bytes >= bytes);
-        m_data += bytes;
+        m_data->skip(bytes);
         m_remaining_bytes -= bytes;
     }
 
     uint8_t byte_stream::read_uint8_t()
     {
         assert(m_remaining_bytes >= 1);
-        uint8_t result = m_data[0];
-        m_data += 1;
+        uint8_t result = m_data->read_byte();
         m_remaining_bytes -= 1;
         return result;
     }
@@ -49,126 +52,97 @@ namespace petro
     {
         assert(m_remaining_bytes >= 2);
 
-        int16_t result =
-            (int16_t) m_data[0] << 8 |
-            (int16_t) m_data[1];
-
-        m_data += 2;
-        m_remaining_bytes -= 2;
-        return result;
+        return
+            (int16_t) read_uint8_t() << 8 |
+            (int16_t) read_uint8_t();
     }
 
     uint16_t byte_stream::read_uint16_t()
     {
         assert(m_remaining_bytes >= 2);
 
-        uint16_t result =
-            (uint16_t) m_data[0] << 8 |
-            (uint16_t) m_data[1];
-
-        m_data += 2;
-        m_remaining_bytes -= 2;
-        return result;
+        return
+            (uint16_t) read_uint8_t() << 8 |
+            (uint16_t) read_uint8_t();
     }
 
     int32_t byte_stream::read_int32_t()
     {
         assert(m_remaining_bytes >= 4);
 
-        int32_t result =
-           (int32_t) m_data[0] << 24 |
-           (int32_t) m_data[1] << 16 |
-           (int32_t) m_data[2] << 8 |
-           (int32_t) m_data[3];
-
-        m_data += 4;
-        m_remaining_bytes -= 4;
-        return result;
+        return
+           (int32_t) read_uint8_t() << 24 |
+           (int32_t) read_uint8_t() << 16 |
+           (int32_t) read_uint8_t() << 8 |
+           (int32_t) read_uint8_t();
     }
 
     uint32_t byte_stream::read_uint32_t()
     {
         assert(m_remaining_bytes >= 4);
 
-        uint32_t result =
-           (uint32_t) m_data[0] << 24 |
-           (uint32_t) m_data[1] << 16 |
-           (uint32_t) m_data[2] << 8 |
-           (uint32_t) m_data[3];
-        m_data += 4;
-        m_remaining_bytes -= 4;
-        return result;
+        return
+           (uint32_t) read_uint8_t() << 24 |
+           (uint32_t) read_uint8_t() << 16 |
+           (uint32_t) read_uint8_t() << 8 |
+           (uint32_t) read_uint8_t();
     }
 
     int64_t byte_stream::read_int64_t()
     {
         assert(m_remaining_bytes >= 8);
 
-        int64_t result =
-           (int64_t) m_data[0] << 56 |
-           (int64_t) m_data[1] << 48 |
-           (int64_t) m_data[2] << 40 |
-           (int64_t) m_data[3] << 32 |
-           (int64_t) m_data[4] << 24 |
-           (int64_t) m_data[5] << 16 |
-           (int64_t) m_data[6] << 8 |
-           (int64_t) m_data[7];
-
-        m_data += 8;
-        m_remaining_bytes -= 8;
-        return result;
+        return
+           (int64_t) read_uint8_t() << 56 |
+           (int64_t) read_uint8_t() << 48 |
+           (int64_t) read_uint8_t() << 40 |
+           (int64_t) read_uint8_t() << 32 |
+           (int64_t) read_uint8_t() << 24 |
+           (int64_t) read_uint8_t() << 16 |
+           (int64_t) read_uint8_t() << 8 |
+           (int64_t) read_uint8_t();
     }
 
     uint64_t byte_stream::read_uint64_t()
     {
         assert(m_remaining_bytes >= 8);
 
-        uint64_t result =
-           (uint64_t) m_data[0] << 56 |
-           (uint64_t) m_data[1] << 48 |
-           (uint64_t) m_data[2] << 40 |
-           (uint64_t) m_data[3] << 32 |
-           (uint64_t) m_data[4] << 24 |
-           (uint64_t) m_data[5] << 16 |
-           (uint64_t) m_data[6] << 8 |
-           (uint64_t) m_data[7];
-
-        m_data += 8;
-        m_remaining_bytes -= 8;
-        return result;
+        return
+           (uint64_t) read_uint8_t() << 56 |
+           (uint64_t) read_uint8_t() << 48 |
+           (uint64_t) read_uint8_t() << 40 |
+           (uint64_t) read_uint8_t() << 32 |
+           (uint64_t) read_uint8_t() << 24 |
+           (uint64_t) read_uint8_t() << 16 |
+           (uint64_t) read_uint8_t() << 8 |
+           (uint64_t) read_uint8_t();
     }
 
     std::string byte_stream::read_type()
     {
         assert(m_remaining_bytes >= 4);
+        char c1 = read_uint8_t();
+        char c2 = read_uint8_t();
+        char c3 = read_uint8_t();
+        char c4 = read_uint8_t();
 
-        std::stringstream result;
-
-        result << read_uint8_t();
-        result << read_uint8_t();
-        result << read_uint8_t();
-        result << read_uint8_t();
-
-        return result.str();
+        return {c1, c2, c3, c4};
     }
 
     double byte_stream::read_fixed_point_1616()
     {
-        auto result = read_uint32_t();
-        return ((double) result) / (1 << 16);
+        return ((double) read_uint32_t()) / (1 << 16);
     }
 
 
     double byte_stream::read_fixed_point_0230()
     {
-        auto result = read_uint32_t();
-        return ((double) result) / (1 << 30);
+        return ((double) read_uint32_t()) / (1 << 30);
     }
 
     float byte_stream::read_fixed_point_88()
     {
-        auto result = read_uint16_t();
-        return ((float) result) / (1 << 8);
+        return ((float) read_uint16_t()) / (1 << 8);
     }
 
     std::string byte_stream::read_iso639()
@@ -206,11 +180,6 @@ namespace petro
         // chars.
         ss << std::string(time_chars, 24);
         return ss.str();
-    }
-
-    uint32_t byte_stream::size() const
-    {
-        return m_size;
     }
 
     uint32_t byte_stream::remaining_bytes() const

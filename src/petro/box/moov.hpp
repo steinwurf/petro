@@ -6,6 +6,7 @@
 #include "../byte_stream.hpp"
 #include "box.hpp"
 
+#include <cassert>
 #include <string>
 #include <vector>
 
@@ -33,6 +34,7 @@ namespace box
             Parser p;
             auto branched_bs = byte_stream(bs, m_remaining_bytes);
             p.read(shared_from_this(), branched_bs);
+            assert(branched_bs.remaining_bytes() == 0);
         }
     };
 

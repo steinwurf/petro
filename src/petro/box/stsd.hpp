@@ -119,6 +119,7 @@ namespace box
                 parser<avcc> p;
                 auto branched_bs = byte_stream(bs, m_remaining_bytes);
                 p.read(shared_from_this(), branched_bs);
+                assert(branched_bs.remaining_bytes() == 0);
             }
 
             std::string describe() const
@@ -201,6 +202,7 @@ namespace box
                 parser<> p;
                 auto branched_bs = byte_stream(bs, m_remaining_bytes);
                 p.read(shared_from_this(), branched_bs);
+                assert(branched_bs.remaining_bytes() == 0);
             }
 
             std::string describe() const

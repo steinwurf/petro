@@ -19,13 +19,6 @@ namespace petro
     {
     public:
 
-        void read(std::weak_ptr<box::box> parent, const uint8_t* byte_data,
-            uint32_t byte_size)
-        {
-            byte_stream bs(byte_data, byte_size);
-            read(parent, bs);
-        }
-
         void read(std::weak_ptr<box::box> parent, byte_stream& bs)
         {
             while(bs.remaining_bytes() != 0)
@@ -39,7 +32,6 @@ namespace petro
             // size is an integer that specifies the number of bytes in this
             // box, including all its fields and contained boxes.
             uint32_t size = bs.read_uint32_t();
-
 
             // type identifies the box type; standard boxes use a compact type,
             // which is normally four printable characters,

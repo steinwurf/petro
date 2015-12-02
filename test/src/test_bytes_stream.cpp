@@ -23,11 +23,10 @@ TEST(test_byte_stream, create)
     auto bs = petro::byte_stream(data.data(), size);
 
     // check vitals
-    EXPECT_EQ(size, bs.size());
     EXPECT_EQ(size, bs.remaining_bytes());
 
     // check contents
-    uint32_t last_remaing_bytes = bs.size();
+    uint32_t last_remaing_bytes = bs.remaining_bytes();
     while(bs.remaining_bytes() != 0)
     {
         EXPECT_EQ(content, bs.read_uint8_t());
@@ -57,7 +56,7 @@ TEST(test_byte_stream, create_from_bytestream)
     EXPECT_EQ(size / 2, bs2.remaining_bytes());
 
     // check content of byte_stream 1 and 2
-    uint32_t last_remaing_bytes1 = bs1.size();
+    uint32_t last_remaing_bytes1 = bs1.remaining_bytes();
     while(bs1.remaining_bytes() != 0)
     {
         EXPECT_EQ(content, bs1.read_uint8_t());
@@ -65,7 +64,7 @@ TEST(test_byte_stream, create_from_bytestream)
         last_remaing_bytes1 = bs1.remaining_bytes();
     }
 
-    uint32_t last_remaing_bytes2 = bs2.size();
+    uint32_t last_remaing_bytes2 = bs2.remaining_bytes();
     while(bs2.remaining_bytes() != 0)
     {
         EXPECT_EQ(content, bs2.read_uint8_t());
@@ -555,14 +554,6 @@ TEST(test_byte_stream, read_time64)
     }
 
     EXPECT_EQ(0U, bs.remaining_bytes());
-}
-
-TEST(test_byte_stream, size)
-{
-    uint32_t size = 100;
-    std::vector<uint8_t> data(size);
-    auto bs = petro::byte_stream(data.data(), size);
-    EXPECT_EQ(size, bs.size());
 }
 
 TEST(test_byte_stream, remaining_bytes)

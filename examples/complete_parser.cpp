@@ -37,18 +37,14 @@ int main(int argc, char* argv[])
         std::cout << usage << std::endl;
         return 0;
     }
+    auto filename = std::string(argv[1]);
+    std::ifstream check(filename, std::ios::binary);
 
-    std::ifstream mp4_file(argv[1], std::ios::binary);
-
-    if (!mp4_file.is_open() || !mp4_file.good())
+    if (!check.is_open() || !check.good())
     {
-        std::cerr << "Error reading file" << std::endl;
+        std::cerr << "Error reading file: " << filename << std::endl;
         return 1;
     }
-
-    std::vector<char> data((
-        std::istreambuf_iterator<char>(mp4_file)),
-        std::istreambuf_iterator<char>());
 
     petro::parser<
         petro::box::ftyp,
@@ -149,7 +145,9 @@ int main(int argc, char* argv[])
     > parser;
 
     auto root = std::make_shared<petro::box::root>();
-    parser.read(root, (uint8_t*)data.data(), data.size());
+
+    petro::byte_stream bs(filename);
+    parser.read(root, bs);
 
     for (auto box : root->children())
     {
