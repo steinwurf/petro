@@ -91,45 +91,6 @@ TEST(test_byte_stream, skip)
     EXPECT_EQ(remaining_bytes, bs.remaining_bytes());
 }
 
-namespace
-{
-    template<class T>
-    T to_big_endian(uint8_t* data)
-    {
-        auto length = sizeof(T);
-        uint32_t i = 0;
-        T result = 0;
-        while(length != 0)
-        {
-            length--;
-            result |= data[i] << (8 * length);
-            i++;
-        }
-        return result;
-    }
-
-    template<class ReadType, class ReadFunction>
-    void read_test_helper(uint32_t data_buffer_size, ReadFunction read_function)
-    {
-        std::vector<ReadType> data(data_buffer_size);
-        std::generate(data.begin(), data.end(), rand);
-
-        // create byte_stream
-        uint32_t size = data.size() * sizeof(ReadType);
-        auto bs = petro::byte_stream((uint8_t*)data.data(), size);
-
-        // check vitals
-        EXPECT_EQ(size, bs.remaining_bytes());
-
-        for (uint32_t i = 0; i < data.size(); ++i)
-        {
-            EXPECT_EQ(to_big_endian<ReadType>((uint8_t*)data.data() + i), read_function(bs));
-        }
-
-        EXPECT_EQ(0U, bs.remaining_bytes());
-    }
-}
-
 TEST(test_byte_stream, read_uint8_t)
 {
     std::vector<uint8_t> data = {0xFF, 0x00, 0x37, 0xAF, 0xC4};
