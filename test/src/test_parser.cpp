@@ -16,24 +16,23 @@
 
 TEST(test_parser, read_data)
 {
-    std::ifstream test_mp4("test.mp4", std::ios::binary);
+    auto test_filename = "test.mp4";
+    std::ifstream test_mp4(test_filename, std::ios::binary);
     EXPECT_TRUE(test_mp4.is_open());
-    std::vector<char> data((std::istreambuf_iterator<char>(test_mp4)),
-                            std::istreambuf_iterator<char>());
+
     petro::parser<
         petro::box::mdat,
         petro::box::moov<petro::parser<petro::box::ftyp>>,
         petro::box::free,
         petro::box::ftyp> p;
 
-    std::vector<petro::box::box*> boxes;
-
     auto root = std::make_shared<petro::box::root>();
-    petro::byte_stream bs((uint8_t*)data.data(), data.size());
+    petro::byte_stream bs(test_filename);
     p.read(root, bs);
 
-    for(const auto& box : root->children())
-    {
-        std::cout << box->type() << std::endl;
-    }
+    EXPECT_NE(nullptr, root->get_child("mdat"));
+    EXPECT_NE(nullptr, root->get_child("moov"));
+    EXPECT_NE(nullptr, root->get_child("ftyp"));
+    EXPECT_NE(nullptr, root->get_child("free"));
+    EXPECT_NE(nullptr, root->get_child("ftyp"));
 }
