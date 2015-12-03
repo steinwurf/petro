@@ -39,14 +39,14 @@ namespace petro
             return ss.str();
         }
 
-        float a;
-        float b;
-        float u;
-        float c;
-        float d;
-        float v;
-        float x;
-        float y;
-        float w;
+        double a;
+        double b;
+        double u;
+        double c;
+        double d;
+        double v;
+        double x;
+        double y;
+        double w;
     };
 }

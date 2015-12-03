@@ -31,9 +31,9 @@ namespace box
         {
             full_box::read(size, bs);
 
-            m_track_enabled = m_flags.m_data[2] & 0x01;
-            m_track_in_movie = m_flags.m_data[2] & 0x02;
-            m_track_in_preview = m_flags.m_data[2] & 0x04;
+            m_track_enabled = (m_flags.m_data[2] & 0x01) != 0;
+            m_track_in_movie = (m_flags.m_data[2] & 0x02) != 0;
+            m_track_in_preview = (m_flags.m_data[2] & 0x04) != 0;
 
             if (m_version == 1)
             {

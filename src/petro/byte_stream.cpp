@@ -150,7 +150,7 @@ namespace petro
         uint16_t n = read_uint16_t();
         char c1 = 0x60 + ((n & 0x7C00) >> 10);  // Mask is 0111 1100 0000 0000
         char c2 = 0x60 + ((n & 0x03E0) >> 5);   // Mask is 0000 0011 1110 0000
-        char c3 = 0x60 + (n & 0x001F);        // Mask is 0000 0000 0001 1111
+        char c3 = 0x60 + (n & 0x001F);          // Mask is 0000 0000 0001 1111
         return {c1, c2, c3};
     }
 
@@ -168,18 +168,13 @@ namespace petro
     {
         // 2082844800 seconds between 01/01/1904 & 01/01/1970
         // 2081376000 + 1468800 (66 years + 17 leap days)
-        total_time -= 2082844800;
+        std::time_t t = total_time - 2082844800;
 
-        // asctime creates a char* with the following format:
-        //     Www Mmm dd hh:mm:ss yyyy\n
-        std::time_t t = total_time;
-        char* time_chars = std::asctime(std::localtime(&t));
+        // // 2001-08-23 14:55:02
+        char buffer[20];
+        std::strftime(buffer, 20, "%F %T", std::localtime(&t));
 
-        std::stringstream ss;
-        // We don't want the trailing newline so we only pick the first 24
-        // chars.
-        ss << std::string(time_chars, 24);
-        return ss.str();
+        return std::string(buffer);
     }
 
     uint64_t byte_stream::remaining_bytes() const
