@@ -30,6 +30,11 @@ namespace box
             box::read(size, bs);
             bs.skip(m_remaining_bytes);
         }
+
+        virtual std::string type() const
+        {
+            return m_type + "?";
+        }
     };
 }
 }
