@@ -43,7 +43,9 @@ namespace box
             {
                 // if size is 0, then this box is the last one in the file,
                 // and its contents extend to the end of the file
-                // (normally only used for a Media Data Box (mdat))
+                // (normally only used for a Media Data Box (mdat)).
+                // This will not work for nested boxes (lucky mdat is never
+                // nested)
                 m_size = bs.remaining_bytes();
                 m_remaining_bytes = m_size;
             }
@@ -62,17 +64,23 @@ namespace box
 
             if (m_type == "uuid")
             {
-                for (int i = 0; i < 16; ++i)
+                assert(m_remaining_bytes >= 16);
+                for (uint32_t i = 0; i < 16; ++i)
                 {
                     m_extended_type += bs.read_uint8_t();
-                    m_remaining_bytes -= 1;
                 }
+                m_remaining_bytes -= 16;
             }
         }
 
         virtual std::string type() const
         {
             return m_type;
+        }
+
+        virtual std::string extended_type() const
+        {
+            return m_extended_type;
         }
 
         uint64_t size() const

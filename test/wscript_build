@@ -2,7 +2,7 @@
 
 bld.program(
     features='cxx test',
-    source=['petro_tests.cpp'] + bld.path.ant_glob('src/*.cpp'),
+    source=bld.path.ant_glob('**/*.cpp'),
     target='petro_tests',
     test_files=['test.mp4'],
     use=['petro', 'gtest'])

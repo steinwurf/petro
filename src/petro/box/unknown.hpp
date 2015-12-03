@@ -22,7 +22,7 @@ namespace box
     public:
 
         unknown(const std::string& type, std::weak_ptr<box> parent):
-            box(type + "?", parent)
+            box(type, parent)
         { }
 
         void read(uint64_t size, byte_stream& bs)
