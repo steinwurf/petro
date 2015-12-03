@@ -168,11 +168,15 @@ namespace petro
     {
         // 2082844800 seconds between 01/01/1904 & 01/01/1970
         // 2081376000 + 1468800 (66 years + 17 leap days)
-        std::time_t t = total_time - 2082844800;
+        // std::time_t t = total_time - 2082844800;
+
+        std::chrono::time_point<std::chrono::system_clock> epoch;
+        std::time_t t = std::chrono::system_clock::to_time_t(
+            epoch + std::chrono::seconds(total_time - 2082844800));
 
         auto timeinfo = std::localtime(&t);
 
-        // 2001-08-23 14:55:02
+        // // 2001-08-23 14:55:02
         char buffer[20];
         std::strftime(buffer, 20, "%F %T", timeinfo);
 
