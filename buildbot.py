@@ -14,7 +14,7 @@ project_name = 'petro'
 def run_command(args):
     print("Running: {}".format(args))
     sys.stdout.flush()
-    # subprocess.check_call(args)
+    subprocess.check_call(args)
 
 
 def get_tool_options(properties):
