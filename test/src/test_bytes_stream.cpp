@@ -9,7 +9,6 @@
 #include <memory>
 #include <fstream>
 #include <iterator>
-#include <arpa/inet.h>
 #include <petro/box/all.hpp>
 
 #include <gtest/gtest.h>

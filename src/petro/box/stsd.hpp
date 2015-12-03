@@ -147,8 +147,8 @@ namespace box
 
             /// fields give the resolution of the image in pixels-per-inch, as a
             /// fixed 16.16 number
-            uint32_t m_horizontal_resolution;
-            uint32_t m_vertical_resolution;
+            double m_horizontal_resolution;
+            double m_vertical_resolution;
 
             /// how many frames of compressed video are stored in each sample.
             /// The default is 1, for one frame per sample; it may be more than
