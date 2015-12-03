@@ -150,7 +150,7 @@ namespace petro
         uint16_t n = read_uint16_t();
         char c1 = 0x60 + ((n & 0x7C00) >> 10);  // Mask is 0111 1100 0000 0000
         char c2 = 0x60 + ((n & 0x03E0) >> 5);   // Mask is 0000 0011 1110 0000
-        char c3 = 0x60 + (n & 0x001F);        // Mask is 0000 0000 0001 1111
+        char c3 = 0x60 + (n & 0x001F);          // Mask is 0000 0000 0001 1111
         return {c1, c2, c3};
     }
 
