@@ -16,6 +16,31 @@ namespace box
     /// an edit list
     class elst : public full_box
     {
+    public:
+
+        struct entry_type
+        {
+
+            /// specifies the duration of this edit segment in units of the
+            /// timescale in the mvhd.
+            uint64_t segment_duration;
+
+            /// The starting time within the media of this edit segment
+            /// (in media time scale units, in composition time).
+            /// If this field is set to -1, it is an empty edit.
+            /// The last edit in a track shall never be an empty edit. Any
+            /// difference between the duration in the mvhd, and the track's
+            /// duration is expressed as an implicit empty edit at the end.
+            int64_t media_time;
+
+            /// the relative rate at which to play the media corresponding to
+            /// this edit segment.
+            /// If this value is 0, then the edit is specifying a "dwell":
+            /// the media at media-time is presented for the segment-duration.
+            /// Otherwise this field shall contain the value 1.
+            uint16_t media_rate_integer;
+            uint16_t media_rate_fraction;
+        };
 
     public:
 
@@ -47,12 +72,11 @@ namespace box
                     media_time = bs.read_int32_t();
                     m_remaining_bytes -= 8;
                 }
-                m_entries.push_back(
-                    std::tuple<uint64_t,int64_t,uint16_t,uint16_t>(
+                m_entries.push_back({
                         segment_duration,
                         media_time,
                         bs.read_uint16_t(),  // media_rate_integer
-                        bs.read_uint16_t())); // media_rate_fraction
+                        bs.read_uint16_t()}); // media_rate_fraction
                 m_remaining_bytes -= 4;
             }
             bs.skip(m_remaining_bytes);
@@ -76,10 +100,10 @@ namespace box
                 auto entry = m_entries[i];
                 ss << seperator;
                 ss << "("
-                    << std::get<0>(entry) << ","
-                    << std::get<1>(entry) << ","
-                    << std::get<2>(entry) << ","
-                    << std::get<3>(entry) << ")";
+                    << entry.segment_duration << ","
+                    << entry.media_time << ","
+                    << entry.media_rate_integer << ","
+                    << entry.media_rate_fraction << ")";
                 seperator =  ", ";
             }
             if (m_entries.size() > max_print)
@@ -93,22 +117,9 @@ namespace box
         /// an integer that gives the number of entries in the following table
         uint32_t m_entry_count;
 
-        /// a vector containg tuples with the following attibutes:
-        /// segment_duration, an integer that specifies the duration of this
-        /// edit segment in units of the timescale in the mvhd.
-        /// media_time, an integer containing the starting time within the
-        /// media of this edit segment (in media time scale units, in
-        /// composition time). If this field is set to –1, it is an empty edit.
-        /// The last edit in a track shall never be an empty edit. Any
-        /// difference between the duration in the mvhd, and
-        /// the track's duration is expressed as an implicit empty edit at the
-        /// end.
-        /// media_rate specifies the relative rate at which to play the media
-        /// corresponding to this edit segment. If this value is 0, then the
-        /// edit is specifying a ‘dwell’: the media at media-time is presented
-        /// for the segment-duration.
-        /// Otherwise this field shall contain the value 1.
-        std::vector<std::tuple<uint64_t,int64_t,uint16_t,uint16_t>> m_entries;
+        /// a vector containing each entry's segment duration, media time,
+        /// media rate integer, and media rate fraction.
+        std::vector<entry_type> m_entries;
     };
 }
 }
