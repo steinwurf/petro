@@ -168,12 +168,11 @@ namespace petro
     {
         // 2082844800 seconds between 01/01/1904 & 01/01/1970
         // 2081376000 + 1468800 (66 years + 17 leap days)
-        total_time -= 2082844800;
+        std::time_t t = total_time - 2082844800;
 
-        // asctime creates a char* with the following format:
+        // ctime creates a char* with the following format:
         //     Www Mmm dd hh:mm:ss yyyy\n
-        std::time_t t = total_time;
-        char* time_chars = std::asctime(std::localtime(&t));
+        char* time_chars = std::ctime(&t);
 
         std::stringstream ss;
         // We don't want the trailing newline so we only pick the first 24

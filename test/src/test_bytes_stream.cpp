@@ -25,7 +25,7 @@ TEST(test_byte_stream, create)
     EXPECT_EQ(size, bs.remaining_bytes());
 
     // check contents
-    uint32_t last_remaing_bytes = bs.remaining_bytes();
+    uint64_t last_remaing_bytes = bs.remaining_bytes();
     while(bs.remaining_bytes() != 0)
     {
         EXPECT_EQ(content, bs.read_uint8_t());
@@ -55,7 +55,7 @@ TEST(test_byte_stream, create_from_byte_stream)
     EXPECT_EQ(size / 2, bs2.remaining_bytes());
 
     // check content of byte_stream 1 and 2
-    uint32_t last_remaing_bytes1 = bs1.remaining_bytes();
+    uint64_t last_remaing_bytes1 = bs1.remaining_bytes();
     while(bs1.remaining_bytes() != 0)
     {
         EXPECT_EQ(content, bs1.read_uint8_t());
@@ -63,7 +63,7 @@ TEST(test_byte_stream, create_from_byte_stream)
         last_remaing_bytes1 = bs1.remaining_bytes();
     }
 
-    uint32_t last_remaing_bytes2 = bs2.remaining_bytes();
+    uint64_t last_remaing_bytes2 = bs2.remaining_bytes();
     while(bs2.remaining_bytes() != 0)
     {
         EXPECT_EQ(content, bs2.read_uint8_t());
