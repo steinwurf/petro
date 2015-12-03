@@ -358,19 +358,11 @@ TEST(test_byte_stream, read_type)
 
 namespace
 {
+    // Gtest's floating point comparision is not very well handled by windows.
     bool floating_point_equal(double expected, double actual,
         double allowed_diviation=0.01)
     {
         double diff = std::abs(expected - actual);
-        std::stringstream ss;
-        ss << std::endl;
-        ss << "Actual:            " << actual << std::endl;
-        ss << "Expected:          " << expected << std::endl;
-        ss << "Diff:              " << diff;
-        ss << "Allowed Diviation: " << allowed_diviation;
-
-
-        SCOPED_TRACE(ss.str());
         EXPECT_TRUE(diff < allowed_diviation);
     }
 }
