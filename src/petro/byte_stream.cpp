@@ -170,15 +170,13 @@ namespace petro
         // 2081376000 + 1468800 (66 years + 17 leap days)
         std::time_t t = total_time - 2082844800;
 
-        // ctime creates a char* with the following format:
-        //     Www Mmm dd hh:mm:ss yyyy\n
-        char* time_chars = std::ctime(&t);
+        auto timeinfo = std::localtime(&t);
 
-        std::stringstream ss;
-        // We don't want the trailing newline so we only pick the first 24
-        // chars.
-        ss << std::string(time_chars, 24);
-        return ss.str();
+        // 2001-08-23 14:55:02
+        char buffer[20];
+        std::strftime(buffer, 20, "%F %T", timeinfo);
+
+        return std::string(buffer);
     }
 
     uint64_t byte_stream::remaining_bytes() const

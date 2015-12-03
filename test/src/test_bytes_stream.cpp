@@ -485,8 +485,8 @@ TEST(test_byte_stream, read_time32)
     };
 
     std::vector<std::string> expected = {
-        "Wed Sep  7 08:06:38 2011",
-        "Wed Sep  7 08:06:39 2011"
+        "2011-09-07 08:06:38",
+        "2011-09-07 08:06:39"
     };
 
     // create byte_stream
@@ -512,8 +512,8 @@ TEST(test_byte_stream, read_time64)
     };
 
     std::vector<std::string> expected = {
-        "Wed Sep  7 08:06:38 2011",
-        "Wed Sep  7 08:06:39 2011"
+        "2011-09-07 08:06:38",
+        "2011-09-07 08:06:39"
     };
 
     // create byte_stream
