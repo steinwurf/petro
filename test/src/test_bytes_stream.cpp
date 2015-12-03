@@ -429,8 +429,8 @@ TEST(test_byte_stream, read_fixed_point_88)
     };
 
     std::vector<float> expected = {
-        0.0,
-        255.99609 // ~(1 << 8)
+        0.0f,
+        255.99609f // ~(1 << 8)
     };
 
     // create byte_stream
