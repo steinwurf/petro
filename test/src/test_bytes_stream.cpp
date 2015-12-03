@@ -356,17 +356,6 @@ TEST(test_byte_stream, read_type)
     EXPECT_EQ(0U, bs.remaining_bytes());
 }
 
-namespace
-{
-    // Gtest's floating point comparision is not very well handled by windows.
-    bool floating_point_equal(double expected, double actual,
-        double allowed_diviation=0.01)
-    {
-        double diff = std::abs(expected - actual);
-        EXPECT_TRUE(diff < allowed_diviation);
-    }
-}
-
 TEST(test_byte_stream, read_fixed_point_1616)
 {
     // the test data for this test is created based on an implementation which
@@ -391,7 +380,8 @@ TEST(test_byte_stream, read_fixed_point_1616)
 
     for (uint32_t i = 0; i < data.size(); ++i)
     {
-        floating_point_equal(expected[i], bs.read_fixed_point_1616());
+        double diff = std::abs(expected[i] - bs.read_fixed_point_1616());
+        EXPECT_TRUE(diff < 0.01);
     }
 
     EXPECT_EQ(0U, bs.remaining_bytes());
@@ -421,7 +411,8 @@ TEST(test_byte_stream, read_fixed_point_0230)
 
     for (uint32_t i = 0; i < data.size(); ++i)
     {
-        floating_point_equal(expected[i], bs.read_fixed_point_0230());
+        double diff = std::abs(expected[i] - bs.read_fixed_point_0230());
+        EXPECT_TRUE(diff < 0.01);
     }
 
     EXPECT_EQ(0U, bs.remaining_bytes());
@@ -451,7 +442,8 @@ TEST(test_byte_stream, read_fixed_point_88)
 
     for (uint32_t i = 0; i < data.size(); ++i)
     {
-        floating_point_equal(expected[i], bs.read_fixed_point_88());
+        double diff = std::abs(expected[i] - bs.read_fixed_point_88());
+        EXPECT_TRUE(diff < 0.01);
     }
 
     EXPECT_EQ(0U, bs.remaining_bytes());
