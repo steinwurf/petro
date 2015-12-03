@@ -25,7 +25,6 @@ TEST(box_test_unknown, describe)
     auto found_type = description.find(type);
     EXPECT_NE(std::string::npos, found_type);
     auto found_question_mark = description.find("?");
-    std::cout << description << std::endl;
     EXPECT_NE(std::string::npos, found_question_mark);
 }
 

@@ -356,6 +356,25 @@ TEST(test_byte_stream, read_type)
     EXPECT_EQ(0U, bs.remaining_bytes());
 }
 
+namespace
+{
+    bool floating_point_equal(double expected, double actual,
+        double allowed_diviation=0.01)
+    {
+        double diff = std::abs(expected - actual);
+        std::stringstream ss;
+        ss << std::endl;
+        ss << "Actual:            " << actual << std::endl;
+        ss << "Expected:          " << expected << std::endl;
+        ss << "Diff:              " << diff;
+        ss << "Allowed Diviation: " << allowed_diviation;
+
+
+        SCOPED_TRACE(ss.str());
+        EXPECT_TRUE(diff < allowed_diviation);
+    }
+}
+
 TEST(test_byte_stream, read_fixed_point_1616)
 {
     // the test data for this test is created based on an implementation which
@@ -380,7 +399,7 @@ TEST(test_byte_stream, read_fixed_point_1616)
 
     for (uint32_t i = 0; i < data.size(); ++i)
     {
-        EXPECT_FLOAT_EQ(expected[i], bs.read_fixed_point_1616());
+        floating_point_equal(expected[i], bs.read_fixed_point_1616());
     }
 
     EXPECT_EQ(0U, bs.remaining_bytes());
@@ -410,7 +429,7 @@ TEST(test_byte_stream, read_fixed_point_0230)
 
     for (uint32_t i = 0; i < data.size(); ++i)
     {
-        EXPECT_FLOAT_EQ(expected[i], bs.read_fixed_point_0230());
+        floating_point_equal(expected[i], bs.read_fixed_point_0230());
     }
 
     EXPECT_EQ(0U, bs.remaining_bytes());
@@ -440,7 +459,7 @@ TEST(test_byte_stream, read_fixed_point_88)
 
     for (uint32_t i = 0; i < data.size(); ++i)
     {
-        EXPECT_FLOAT_EQ(expected[i], bs.read_fixed_point_88());
+        floating_point_equal(expected[i], bs.read_fixed_point_88());
     }
 
     EXPECT_EQ(0U, bs.remaining_bytes());
