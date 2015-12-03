@@ -8,6 +8,7 @@
 #include <sstream>
 #include <memory>
 #include <fstream>
+#include <cmath>
 #include <iterator>
 #include <petro/box/all.hpp>
 
