@@ -144,29 +144,29 @@ TEST(test_byte_stream, read_int16_t)
 
 TEST(test_byte_stream, read_uint16_t)
 {
-    std::vector<uint16_t> data = {
+    std::vector<uint8_t> data = {
+        0xFF, 0x00,
+        0x37, 0xAF,
+        0xAF, 0x37,
+        0x00, 0xC4,
+        0xC4, 0xFF
+    };
+    std::vector<uint16_t> expected = {
         0xFF00,
         0x37AF,
         0xAF37,
         0x00C4,
         0xC4FF
     };
-    std::vector<uint16_t> expected = {
-        0x00FF,
-        0xAF37,
-        0x37AF,
-        0xC400,
-        0xFFC4
-    };
 
     // create byte_stream
-    auto size = data.size() * sizeof(uint16_t);
-    auto bs = petro::byte_stream((uint8_t*)data.data(), size);
+    auto size = data.size();
+    auto bs = petro::byte_stream(data.data(), size);
 
     // check vitals
     EXPECT_EQ(size, bs.remaining_bytes());
 
-    for (uint32_t i = 0; i < data.size(); ++i)
+    for (uint32_t i = 0; i < data.size() / sizeof(uint16_t); ++i)
     {
         EXPECT_EQ(expected[i], bs.read_uint16_t());
     }
