@@ -483,14 +483,14 @@ TEST(test_byte_stream, read_time32)
         0x00000000,
         0x6EBA8CCA,
         0x6FBA8CCA,
-        0xFEFFFFFF
+        0xEFF1FFFF
     };
 
     std::vector<std::string> expected = {
         "1904-01-01 01:00:00",
         "2011-09-07 08:06:38",
         "2011-09-07 08:06:39",
-        "2040-02-06 07:28:14"
+        "2040-02-06 06:28:15"
     };
 
     // create byte_stream
@@ -514,14 +514,14 @@ TEST(test_byte_stream, read_time64)
         0x0000000000000000,
         0x6EBA8CCA00000000,
         0x6FBA8CCA00000000,
-        0xFEFFFFFF00000000
+        0xEFF1FFFF00000000
     };
 
     std::vector<std::string> expected = {
         "1904-01-01 01:00:00",
         "2011-09-07 08:06:38",
         "2011-09-07 08:06:39",
-        "2040-02-06 07:28:14"
+        "2040-02-06 06:28:15"
     };
 
     // create byte_stream
