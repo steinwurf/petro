@@ -71,8 +71,6 @@ int main(int argc, char* argv[])
         avc1->get_child("avcC"));
     assert(avcc != nullptr);
 
-    std::cout << (uint32_t)avcc->length_size() << std::endl;
-
     auto trak = avc1->get_parent("trak");
     assert(trak != nullptr);
 
