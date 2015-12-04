@@ -8,6 +8,7 @@
 #include <string>
 
 #include "avcc.hpp"
+#include "esds.hpp"
 #include "full_box.hpp"
 #include "hdlr.hpp"
 #include "../byte_stream.hpp"
@@ -199,7 +200,7 @@ namespace box
                 m_sample_rate = bs.read_fixed_point_1616();
                 m_remaining_bytes -= 4;
 
-                parser<> p;
+                parser<esds> p;
                 auto branched_bs = byte_stream(bs, m_remaining_bytes);
                 p.read(shared_from_this(), branched_bs);
                 assert(branched_bs.remaining_bytes() == 0);
