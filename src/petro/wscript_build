@@ -1,6 +1,5 @@
 # encoding: utf-8
 
-print bld.env
 bld.env['CXXFLAGS'] += ['-std=c++1y']
 
 bld.stlib(
