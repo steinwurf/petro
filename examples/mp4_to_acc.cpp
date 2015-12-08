@@ -9,6 +9,16 @@
 #include <string>
 #include <memory>
 
+/// How to generate the AAC ADTS elementary stream with Android MediaCodec
+// http://stackoverflow.com/questions/18862715/how-to-generate-the-aac-adts-elementary-stream-with-android-mediacodec
+
+/// Decoding AAC using MediaCodec API on Android
+// http://stackoverflow.com/questions/12942201/decoding-aac-using-mediacodec-api-on-android
+
+/// How to initialize MediaFormat to configure a MediaCodec to decode raw AAC data?
+// http://stackoverflow.com/questions/18784781/how-to-initialize-mediaformat-to-configure-a-mediacodec-to-decode-raw-aac-data
+
+
 uint32_t read_sample_size(std::istream& file)
 {
     std::vector<uint8_t> data(4);
@@ -21,6 +31,49 @@ uint32_t read_sample_size(std::istream& file)
        (uint32_t) data[3];
     return result;
 }
+
+void print_box(std::shared_ptr<petro::box::box> b, uint32_t level = 0)
+{
+    std::stringstream ss(b->describe());
+    std::string line;
+    while(std::getline(ss, line))
+    {
+        for (uint32_t i = 0; i < level; ++i)
+        {
+            std::cout << "    ";
+        }
+        std::cout << line << std::endl;
+    }
+
+    for(auto child : b->children())
+    {
+        print_box(child, level + 1);
+    }
+}
+// http://wiki.multimedia.cx/index.php?title=ADTS
+// writes 7 - 9 bytes
+// uint32_t write_adts(
+//     uint8_t* data,
+//     uint8_t mpeg_version,
+//     uint8_t protection,
+//     uint8_t mpeg_audio_object_type,
+//     uint8_t sampling_frequency_index,
+//     uint8_t mpeg_channel_configuration
+//     uint16_t frame_length,
+//     uint8_t number_of_aac_frames,
+//     uint16_t crc)
+// {
+//     uint32_t written = 0;
+
+//     data[0] = 0xFF;
+
+//     assert(protection == 0 || protection == 1);
+//     data[0] = 0xF0 + protection;
+
+
+    // FrameLength = (ProtectionAbsent == 1 ? 7 : 9) + size(AACFrame)
+    //(RDBs) in ADTS frame minus 1, for maximum compatibility always use 1 AAC frame per ADTS frame
+// }
 
 int main(int argc, char* argv[])
 {
@@ -48,7 +101,10 @@ int main(int argc, char* argv[])
                     petro::box::hdlr,
                     petro::box::minf<petro::parser<
                         petro::box::stbl<petro::parser<
-                            petro::box::stsd
+                            petro::box::stsd,
+                            petro::box::stsc,
+                            petro::box::stco,
+                            petro::box::stsz
                         >>
                     >>
                 >>
@@ -69,6 +125,41 @@ int main(int argc, char* argv[])
     {
         std::cout << c->describe() << std::endl;
     }
+
+    auto trak = mp4a->get_parent("trak");
+    assert(trak != nullptr);
+
+    auto stco = std::dynamic_pointer_cast<const petro::box::stco>(
+        trak->get_child("stco"));
+    assert(stco != nullptr);
+
+    auto stsc = std::dynamic_pointer_cast<const petro::box::stsc>(
+        trak->get_child("stsc"));
+    assert(stsc != nullptr);
+
+    auto stsz = std::dynamic_pointer_cast<const petro::box::stsz>(
+        trak->get_child("stsz"));
+    assert(stsz != nullptr);
+
+    // create output file
+    std::ofstream aac_file(argv[2], std::ios::binary);
+
+    std::ifstream mp4_file(filename, std::ios::binary);
+    auto found_samples = 0;
+    for (uint32_t i = 0; i < stco->entry_count(); ++i)
+    {
+        mp4_file.seekg(stco->chunk_offset(i));
+        for (uint32_t j = 0; j < stsc->samples_for_chunk(i); ++j)
+        {
+            auto sample_size = stsz->sample_size(found_samples);
+            std::vector<char> temp(sample_size);
+            mp4_file.read(temp.data(), sample_size);
+            aac_file.write(temp.data(), sample_size);
+            found_samples += 1;
+        }
+    }
+
+    aac_file.close();
 
     return 0;
 }

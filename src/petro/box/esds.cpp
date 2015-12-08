@@ -13,109 +13,122 @@ namespace box
 
 
     esds::esds(std::weak_ptr<box> parent):
-        box(esds::TYPE, parent)
+        full_box(esds::TYPE, parent)
     { }
-
-
-    uint8_t esds::read_section_length(byte_stream& bs)
-    {
-        // The next byte is either the section length or the first of
-        // a three bytes optional extended descriptor type tag string.
-        // The tag types are 0x80,0x81,0xFE.
-        auto section_length = bs.read_uint8_t();
-        m_remaining_bytes -= 1;
-
-        if (section_length == 0x80 ||
-            section_length == 0x81 ||
-            section_length == 0xFE)
-        {
-            // appearently we are reading the optional extended descriptor type
-            // tag string - let's throw it away...
-            bs.skip(2);
-            m_remaining_bytes -= 2;
-            // ... and read the section length.
-            section_length = bs.read_uint8_t();
-            m_remaining_bytes -= 1;
-        }
-        return section_length;
-    }
 
     void esds::read(uint64_t size, byte_stream& bs)
     {
-        box::read(size, bs);
-        m_version = bs.read_uint32_t();
-        m_remaining_bytes -= 4;
-        auto section = bs.read_uint8_t();
+        full_box::read(size, bs);
+
+        uint8_t tag = bs.read_uint8_t();
         m_remaining_bytes -= 1;
 
-        // we currently only handle section 3(?)
-        if (section == 3)
-        {
-            auto section_length = read_section_length(bs);
-            std::cout << (uint32_t)section_length << std::endl;
-            std::cout << m_remaining_bytes << std::endl;
-            m_es_id = bs.read_uint16_t();
-            m_remaining_bytes -= 2;
-            m_byte_stream_priority = bs.read_uint8_t();
-            m_remaining_bytes -= 1;
-            assert(m_byte_stream_priority < 31);
+        m_descriptor = std::make_shared<elemetary_stream_descriptor>(bs, tag);
+        std::cout << m_descriptor->remaining_bytes() << std::endl;
 
-            section = bs.read_uint8_t();
-            m_remaining_bytes -= 1;
-        }
+        bs.skip(m_descriptor->remaining_bytes());
+        m_remaining_bytes -= m_descriptor->length();
 
-        if (section == 4)
-        {
-            auto section_length = read_section_length(bs);
-            std::cout << (uint32_t)section_length << std::endl;
-            std::cout << m_remaining_bytes << std::endl;
-            auto byte_object_type_ID = bs.read_uint8_t();
-            m_remaining_bytes -= 1;
-            auto d = bs.read_uint8_t();
-            m_remaining_bytes -= 1;
-            auto stream_type = d & 0b00111111;
-            auto upstream = d & 0b01000000;
-            auto reserved = d & 0b10000000;
-            assert(reserved == 0);
+        // // Read mp4 elementary stream descriptor
+        // {
+        //     auto tag = bs.read_uint8_t();
+        //     m_remaining_bytes -= 1;
+        //     assert(tag == 3);
 
-            uint32_t buffer_size =
-                (uint32_t) bs.read_uint8_t() << 16 |
-                (uint32_t) bs.read_uint8_t() << 8 |
-                (uint32_t) bs.read_uint8_t();
-            m_remaining_bytes -= 3;
+        //     auto descriptor_length = read_descriptor_length(bs);
+        //     m_es_id = bs.read_uint16_t();
+        //     m_remaining_bytes -= 2;
 
-            auto maximum_bit_rate = bs.read_uint32_t();
-            m_remaining_bytes -= 4;
-            auto average_bit_rate = bs.read_uint32_t();
-            m_remaining_bytes -= 4;
-            section = bs.read_uint8_t();
-            m_remaining_bytes -= 1;
-        }
+        //     auto d = bs.read_uint8_t();
+        //     m_remaining_bytes -= 1;
 
-        std::cout << (uint32_t)section << std::endl;
+        //     auto stream_dependence_flag = (d & 0b00000001) == 1;
+        //     auto url_flag = ((d & 0b00000010) >> 1) == 1;
+        //     auto ocr_stream_flag = ((d & 0b00000100) >> 2) == 1;
 
-        if (section == 5)
-        {
-            auto section_length = read_section_length(bs);
-            std::cout << (uint32_t)section_length << std::endl;
-            std::cout << m_remaining_bytes << std::endl;
+        //     m_byte_stream_priority = d & 0b11111000 >> 3);
 
-            auto audio_profile_id = bs.read_uint8_t();
-            m_remaining_bytes -= 1;
+        //     if (stream_dependence_flag)
+        //     {
+        //         m_depends_on_esid = bs.read_uint16_t();
+        //         m_remaining_bytes -= 2;
+        //     }
 
-            auto no_of_channels = bs.read_uint8_t();
-            m_remaining_bytes -= 1;
+        //     if (url_flag)
+        //     {
+        //         auto url_length = bs.read_uint8_t();
+        //         m_remaining_bytes -= 1;
 
-            section = bs.read_uint8_t();
-            m_remaining_bytes -= 1;
-        }
+        //         for (uint8_t i = 0; i < url_length; ++i)
+        //         {
+        //             m_url += bs.read_uint8_t();
+        //             m_remaining_bytes -= 1;
+        //         }
+        //     }
 
-        if (section == 6)
-        {
-            auto section_length = read_section_length(bs);
-            auto sl_value = bs.read_uint8_t();
-            m_remaining_bytes -= 1;
-        }
+        //     if (ocr_stream_flag)
+        //     {
+        //         m_ocr_es_id = bs.read_uint16_t();
+        //         m_remaining_bytes -= 2;
+        //     }
+        // }
+
+        // // Read decoder configuration descriptor (this is stored inside the
+        // // above mp4 ES)
+        // {
+        //     auto tag = bs.read_uint8_t();
+        //     m_remaining_bytes -= 1;
+        //     assert(tag == 4);
+
+        //     auto descriptor_length = read_descriptor_length(bs);
+
+        //     auto byte_object_type_ID = bs.read_uint8_t();
+        //     m_remaining_bytes -= 1;
+        //     auto d = bs.read_uint8_t();
+        //     m_remaining_bytes -= 1;
+        //     auto stream_type = d & 0b00111111;
+        //     auto upstream = d & 0b01000000;
+        //     auto reserved = d & 0b10000000;
+        //     assert(reserved == 0);
+
+        //     uint32_t buffer_size =
+        //         (uint32_t) bs.read_uint8_t() << 16 |
+        //         (uint32_t) bs.read_uint8_t() << 8 |
+        //         (uint32_t) bs.read_uint8_t();
+        //     m_remaining_bytes -= 3;
+
+        //     auto maximum_bit_rate = bs.read_uint32_t();
+        //     m_remaining_bytes -= 4;
+        //     auto average_bit_rate = bs.read_uint32_t();
+        //     m_remaining_bytes -= 4;
+        //     tag = bs.read_uint8_t();
+        //     m_remaining_bytes -= 1;
+        // }
+
+        // // std::cout << (uint32_t)tag << std::endl;
+
+        // if (tag == 5)
+        // {
+        //     auto descriptor_length = read_descriptor_length(bs);
+        //     // std::cout << (uint32_t)descriptor_length << std::endl;
+        //     // std::cout << m_remaining_bytes << std::endl;
+
+        //     auto audio_profile_id = bs.read_uint8_t();
+        //     m_remaining_bytes -= 1;
+
+        //     auto no_of_channels = bs.read_uint8_t();
+        //     m_remaining_bytes -= 1;
+
+        //     tag = bs.read_uint8_t();
+        //     m_remaining_bytes -= 1;
+        // }
+
+        // if (tag == 6)
+        // {
+        //     auto descriptor_length = read_descriptor_length(bs);
+        //     auto sl_value = bs.read_uint8_t();
+        //     m_remaining_bytes -= 1;
+        // }
 
 
         bs.skip(m_remaining_bytes);
@@ -124,11 +137,7 @@ namespace box
     std::string esds::describe() const
     {
         std::stringstream ss;
-        ss << box::describe() << std::endl;
-        ss << "  version: " << m_version << std::endl;
-        ss << "  es_id: " << (uint32_t)m_es_id << std::endl;
-        ss << "  byte_stream_priority: " << (uint32_t)m_byte_stream_priority << std::endl;
-        ss << "  data: " << m_data << std::endl;
+        ss << full_box::describe() << std::endl;
         return ss.str();
     }
 }

@@ -287,10 +287,13 @@ namespace box
             full_box::read(size, bs);
             m_entry_count = bs.read_uint32_t();
             m_remaining_bytes -= 4;
+
+            // get handler to know which kind of sample we are reading.
             auto mdia = get_parent("mdia");
             assert(mdia != nullptr);
-            auto hdlr =
-                std::dynamic_pointer_cast<const petro::box::hdlr>(mdia->get_child("hdlr"));
+            auto hdlr = std::dynamic_pointer_cast<const petro::box::hdlr>(
+                mdia->get_child("hdlr"));
+
             for (uint32_t i = 0; i < m_entry_count; ++i)
             {
                 uint32_t entry_size = bs.read_uint32_t();
