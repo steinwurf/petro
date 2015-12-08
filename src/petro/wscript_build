@@ -1,8 +1,5 @@
 # encoding: utf-8
 
-if 'clang' not in bld.env['CXX']:
-    bld.env['CXXFLAGS'] += ['-std=c++1y']
-
 bld.stlib(
     features='cxx',
     source=bld.path.ant_glob('**/*.cpp'),
