@@ -1,6 +1,7 @@
 # encoding: utf-8
 
-bld.env['CXXFLAGS'] += ['-std=c++1y']
+if 'clang' not in bld.env['CXX']:
+    bld.env['CXXFLAGS'] += ['-std=c++1y']
 
 bld.stlib(
     features='cxx',

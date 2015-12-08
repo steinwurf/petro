@@ -29,7 +29,7 @@ namespace box
         bs.skip(m_descriptor->remaining_bytes());
         m_remaining_bytes -= m_descriptor->length();
 
-        // // Read mp4 elementary stream descriptor
+        // Read mp4 elementary stream descriptor
         // {
         //     auto tag = bs.read_uint8_t();
         //     m_remaining_bytes -= 1;
