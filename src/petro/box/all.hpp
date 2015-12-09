@@ -13,6 +13,7 @@
 #include "dref.hpp"
 #include "edts.hpp"
 #include "elst.hpp"
+#include "esds.hpp"
 #include "free.hpp"
 #include "frma.hpp"
 #include "ftyp.hpp"
