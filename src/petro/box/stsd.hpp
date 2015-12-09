@@ -216,6 +216,11 @@ namespace box
                 return ss.str();
             }
 
+            double sample_rate() const
+            {
+                return m_sample_rate;
+            }
+
         private:
 
             /// either 1 (mono) or 2 (stereo)
