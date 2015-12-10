@@ -27,7 +27,10 @@ namespace descriptor
 
     public:
         elemetary_stream_descriptor(byte_stream& bs, uint8_t tag):
-            descriptor(bs, tag)
+            descriptor(bs, tag),
+            m_depends_on_esid(0),
+            m_ocr_es_id(0)
+
         {
             assert(m_tag == 0x03);
             m_es_id = bs.read_uint16_t();
@@ -89,6 +92,31 @@ namespace descriptor
             decoder_config_descriptor() const
         {
             return m_decoder_config_descriptor;
+        }
+
+        uint16_t es_id() const
+        {
+            return m_es_id;
+        }
+
+        uint8_t byte_stream_priority() const
+        {
+            return m_byte_stream_priority;
+        }
+
+        uint16_t depends_on_esid() const
+        {
+            return m_depends_on_esid;
+        }
+
+        std::string url() const
+        {
+            return m_url;
+        }
+
+        uint16_t ocr_es_id() const
+        {
+            return m_ocr_es_id;
         }
 
     private:

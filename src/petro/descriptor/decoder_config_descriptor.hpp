@@ -106,6 +106,59 @@ namespace descriptor
             return m_object_type_id;
         }
 
+        uint8_t stream_type() const
+        {
+            return m_stream_type;
+        }
+
+        bool up_stream() const
+        {
+            return m_up_stream;
+        }
+
+        uint32_t buffer_size_db() const
+        {
+            return m_buffer_size_db;
+        }
+
+        uint32_t max_bitrate() const
+        {
+            return m_max_bitrate;
+        }
+
+        uint32_t average_bitrate() const
+        {
+            return m_average_bitrate;
+        }
+
+        /// returns the mpeg audio object type or 0 if something went wrong.
+        uint8_t mpeg_audio_object_type() const
+        {
+            // verify that track is an MPEG-4 audio track
+            auto MP4_MPEG4_AUDIO_TYPE = 0x40;
+            if (m_object_type_id != MP4_MPEG4_AUDIO_TYPE)
+                return 0;
+
+            if (m_decoder_specific_info_descriptor == nullptr)
+                return 0;
+
+            return m_decoder_specific_info_descriptor->mpeg_audio_object_type();
+        }
+
+        uint32_t frequency_index() const
+        {
+            if (m_decoder_specific_info_descriptor == nullptr)
+                return 0;
+            return m_decoder_specific_info_descriptor->frequency_index();
+        }
+
+        uint8_t channel_configuration() const
+        {
+            if (m_decoder_specific_info_descriptor == nullptr)
+                return 0;
+            return m_decoder_specific_info_descriptor->channel_configuration();
+        }
+
         std::shared_ptr<decoder_specific_info_descriptor_type>
             decoder_specific_info_descriptor() const
         {

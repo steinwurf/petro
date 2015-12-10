@@ -51,6 +51,55 @@ void print_box(std::shared_ptr<petro::box::box> b, uint32_t level = 0)
         print_box(child, level + 1);
     }
 }
+
+std::vector<uint8_t> create_adts(
+    std::shared_ptr<const petro::box::esds> esds, uint16_t aac_frame_length,
+    uint8_t number_of_raw_data_blocks = 1)
+{
+    auto descriptor = esds->descriptor()->decoder_config_descriptor();
+
+    std::vector<uint8_t> adts;
+    adts.push_back(0xFF); // syncword 0xFF, all bits must be 1 // byte1
+    // ____
+    // 1111 0000 syncword 0xF0, all bits must be 1
+    //      _
+    // 0000 1000 (assuming) mpeg 2
+    //       __
+    // 0000 0000 Layer: always 0
+    //         _
+    // 0000 0001 protection absent, 1 if there is no CRC and 0 if there is CRC
+    // anded, this gives: 11111001 = 0xF9
+    adts.push_back(0xF9); // byte2
+
+    uint8_t byte3 = 0;
+
+    byte3 |= descriptor->mpeg_audio_object_type() << 6;
+    byte3 |= descriptor->frequency_index() << 2;
+    auto channel_configuration = descriptor->channel_configuration();
+    byte3 |= (channel_configuration & 0x04) >> 2;
+    adts.push_back(byte3);
+
+    uint8_t byte4 = 0;
+
+    byte4 |= (channel_configuration & 0x03) << 6;
+    // frame length, this value must include the 7 bytes of header length
+    uint16_t frame_length = aac_frame_length + 7;
+    byte4 |= (frame_length & 0x1800) >> 11;
+
+    adts.push_back(byte4);
+
+    adts.push_back((frame_length & 0x07F8) >> 3); // byte5
+
+    uint8_t byte6 = 0xFF;
+    byte6 &= (frame_length & 0x0003) << 5;
+    number_of_raw_data_blocks -= 1;
+    uint8_t byte7 = 0xFF;
+    byte7 &= number_of_raw_data_blocks & 0x03;
+    adts.push_back(byte7);
+
+    return adts;
+}
+
 // http://wiki.multimedia.cx/index.php?title=ADTS
 // writes 7 - 9 bytes
 // uint32_t write_adts(
@@ -75,69 +124,6 @@ void print_box(std::shared_ptr<petro::box::box> b, uint32_t level = 0)
     // FrameLength = (ProtectionAbsent == 1 ? 7 : 9) + size(AACFrame)
     //(RDBs) in ADTS frame minus 1, for maximum compatibility always use 1 AAC frame per ADTS frame
 // }
-namespace
-{
-uint8_t get_sampling_frequency_index(
-    std::shared_ptr<const petro::box::stsd::audio_sample_entry> mp4a)
-{
-    std::map<uint32_t, uint8_t> frequencies {
-        { 96000, 0 },
-        { 88200, 1 },
-        { 64000, 2 },
-        { 48000, 3 },
-        { 44100, 4 },
-        { 32000, 5 },
-        { 24000, 6 },
-        { 22050, 7 },
-        { 16000, 8 },
-        { 12000, 9 },
-        { 11025, 10 },
-        { 8000, 11 },
-        { 7350, 12 }
-    };
-
-    auto sample_rate = mp4a->sample_rate();
-
-    auto sampling_frequency_index = frequencies.find(sample_rate);
-    if (sampling_frequency_index != frequencies.end())
-    {
-        return sampling_frequency_index->second;
-    }
-    return 15; // frequency is written explictly
-
-
-}
-
-uint8_t get_mpeg_audio_object_type(std::shared_ptr<const petro::box::esds> esds)
-{
-    auto es_descriptor = esds->descriptor();
-    auto decoder_config_descriptor = es_descriptor->decoder_config_descriptor();
-
-    // verify that track is an MPEG-4 audio track
-    if (decoder_config_descriptor->object_type_id() != 0x40)
-        return 0;
-
-    auto decoder_specific_info_descriptor =
-        decoder_config_descriptor->decoder_specific_info_descriptor();
-    auto specific_info = decoder_specific_info_descriptor->specific_info();
-
-    uint8_t mpeg_audio_object_type = ((specific_info[0] >> 3) & 0x1f);
-
-    // TTTT TXXX XXX  potentially 6 bits of extension.
-    if (mpeg_audio_object_type == 0x1f)
-    {
-        if (specific_info.size() < 2)
-        {
-            return 0;
-        }
-
-        mpeg_audio_object_type = 32 +
-            (((specific_info[0] & 0x7) << 3) | ((specific_info[1] >> 5) & 0x7));
-    }
-
-    return mpeg_audio_object_type;
-}
-}
 
 int main(int argc, char* argv[])
 {
@@ -182,20 +168,12 @@ int main(int argc, char* argv[])
     parser.read(root, bs);
 
     // get needed boxes
-    auto mp4a = std::dynamic_pointer_cast<const petro::box::stsd::audio_sample_entry>(
-        root->get_child("mp4a"));
+    auto mp4a = root->get_child("mp4a");
     assert(mp4a != nullptr);
-
-    auto sampling_frequency_index = get_sampling_frequency_index(mp4a);
 
     auto esds = std::dynamic_pointer_cast<const petro::box::esds>(
         mp4a->get_child("esds"));
     assert(esds != nullptr);
-
-    auto mpeg_audio_object_type = get_mpeg_audio_object_type(esds);
-
-    std::cout << "sampling_frequency_index " << (uint32_t) sampling_frequency_index << std::endl;
-    std::cout << "mpeg_audio_object_type " << (uint32_t) mpeg_audio_object_type << std::endl;
 
     std::cout << mp4a->describe() << std::endl;
     for (auto c : mp4a->children())
@@ -228,7 +206,10 @@ int main(int argc, char* argv[])
         mp4_file.seekg(stco->chunk_offset(i));
         for (uint32_t j = 0; j < stsc->samples_for_chunk(i); ++j)
         {
-            auto sample_size = stsz->sample_size(found_samples);
+            uint16_t sample_size = stsz->sample_size(found_samples);
+
+            auto adts = create_adts(esds, sample_size);
+            aac_file.write((char*)adts.data(), adts.size());
             std::vector<char> temp(sample_size);
             mp4_file.read(temp.data(), sample_size);
             aac_file.write(temp.data(), sample_size);
