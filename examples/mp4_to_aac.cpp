@@ -5,138 +5,104 @@
 #include <petro/box/all.hpp>
 
 #include <fstream>
-#include <sstream>
 #include <string>
 #include <memory>
-#include <map>
 
-/// How to generate the AAC ADTS elementary stream with Android MediaCodec
-// http://stackoverflow.com/questions/18862715/how-to-generate-the-aac-adts-elementary-stream-with-android-mediacodec
-
-/// Decoding AAC using MediaCodec API on Android
-// http://stackoverflow.com/questions/12942201/decoding-aac-using-mediacodec-api-on-android
-
-/// How to initialize MediaFormat to configure a MediaCodec to decode raw AAC data?
-// http://stackoverflow.com/questions/18784781/how-to-initialize-mediaformat-to-configure-a-mediacodec-to-decode-raw-aac-data
-
-
-uint32_t read_sample_size(std::istream& file)
+namespace
 {
-    std::vector<uint8_t> data(4);
-    file.read((char*)data.data(), data.size());
+    // supported mpeg versions (?)
+    uint8_t MPEG_4_VERSION = 0;
+    uint8_t MPEG_2_VERSION = 1;
 
-    uint32_t result =
-       (uint32_t) data[0] << 24 |
-       (uint32_t) data[1] << 16 |
-       (uint32_t) data[2] << 8  |
-       (uint32_t) data[3];
-    return result;
-}
-
-void print_box(std::shared_ptr<petro::box::box> b, uint32_t level = 0)
-{
-    std::stringstream ss(b->describe());
-    std::string line;
-    while(std::getline(ss, line))
+    /// Creates an Audio Data Transport Stream (ADTS) header which is to be
+    /// placed before every AAC sample.
+    /// Header consists of 7 bytes.
+    /// Structure
+    /// AAAAAAAA AAAABCCD EEFFFFGH HHIJKLMM MMMMMMMM MMMOOOOO OOOOOOPP
+    ///
+    /// Letter Bits Description
+    /// A      12   syncword 0xFFF, all bits must be 1
+    /// B      1    MPEG Version: 0 for MPEG-4, 1 for MPEG-2
+    /// C      2    Layer: always 0
+    /// D      1    protection absent, Warning, set to 1 if there is no CRC
+    ///             and 0 if there is CRC
+    /// E      2    profile, the MPEG-4 Audio Object Type minus 1
+    /// F      4    MPEG-4 Sampling Frequency Index (15 is forbidden)
+    /// G      1    private bit, guaranteed never to be used by MPEG, set to 0
+    ///             when encoding, ignore when decoding
+    /// H      3    MPEG-4 Channel Configuration (in the case of 0, the channel
+    ///             configuration is sent via an inband PCE)
+    /// I      1    originality, set to 0 when encoding, ignore when decoding
+    /// J      1    home, set to 0 when encoding, ignore when decoding
+    /// K      1    copyrighted id bit, the next bit of a centrally registered
+    ///             copyright identifier, set to 0 when encoding, ignore when
+    ///             decoding.
+    /// L      1    copyright id start, signals that this frame's copyright id
+    ///             bit is the first bit of the copyright id, set to 0 when
+    ///             encoding, ignore when decoding.
+    /// M      13   frame length, this value must include 7 or 9 bytes of header
+    ///             length: FrameLength =
+    ///             (ProtectionAbsent == 1 ? 7 : 9) + size(AACFrame)
+    /// O      11   Buffer fullness, can be ignored when decoding.
+    /// P      2    Number of AAC frames (raw data blocks) in ADTS frame
+    ///             minus 1, for maximum compatibility always use 1 AAC frame
+    ///             per ADTS frame.
+    /// Q      16   CRC if protection absent is 0 (not shown in structure)
+    ///
+    /// Source: http://wiki.multimedia.cx/index.php?title=ADTS
+    ///
+    std::vector<uint8_t> create_adts(
+        uint16_t aac_frame_length,
+        uint8_t channel_configuration,
+        uint8_t frequency_index,
+        uint8_t mpeg_audio_object_type,
+        uint8_t mpeg_version = MPEG_4_VERSION,
+        uint8_t number_of_raw_data_blocks = 1)
     {
-        for (uint32_t i = 0; i < level; ++i)
-        {
-            std::cout << "    ";
-        }
-        std::cout << line << std::endl;
-    }
+        assert(mpeg_version == MPEG_4_VERSION || mpeg_version == MPEG_2_VERSION);
+        uint8_t protection_absent = 1;
 
-    for(auto child : b->children())
-    {
-        print_box(child, level + 1);
+        std::vector<uint8_t> adts;
+
+        uint8_t byte1 = 0xFF;
+        adts.push_back(byte1);
+
+        uint8_t byte2 = 0xF0;
+        byte2 |= mpeg_version << 3;
+        byte2 |= protection_absent << 0;
+
+        adts.push_back(byte2);
+
+        uint8_t byte3 = 0x00;
+        byte3 |= (mpeg_audio_object_type - 1) << 6;
+        byte3 |= frequency_index << 2;
+
+        byte3 |= (channel_configuration & 0x04) >> 2;
+        adts.push_back(byte3);
+
+        uint8_t byte4 = 0;
+
+        byte4 |= (channel_configuration & 0x03) << 6;
+        // frame length, this value must include the 7 bytes of header length
+        uint16_t frame_length = aac_frame_length + 7;
+        assert(frame_length <= 0x1FFF);
+        byte4 |= (frame_length & 0x1800) >> 11;
+
+        adts.push_back(byte4);
+
+        adts.push_back((frame_length & 0x07F8) >> 3); // byte5
+
+        uint8_t byte6 = 0xFF;
+        byte6 &= (frame_length & 0x0007) << 5;
+        adts.push_back(byte6);
+
+        uint8_t byte7 = 0xB0;
+        byte7 |= (number_of_raw_data_blocks - 1) & 0x03;
+        adts.push_back(byte7);
+
+        return adts;
     }
 }
-
-std::vector<uint8_t> create_adts(
-    std::shared_ptr<const petro::box::esds> esds, uint16_t aac_frame_length,
-    uint8_t number_of_raw_data_blocks = 1)
-{
-    auto descriptor = esds->descriptor()->decoder_config_descriptor();
-
-    std::vector<uint8_t> adts;
-    adts.push_back(0xFF); // syncword 0xFF, all bits must be 1 // byte1
-    // ____
-    // 1111 0000 syncword 0xF0, all bits must be 1
-    //      _
-    // 0000 0000 (assuming) mpeg 4
-    //       __
-    // 0000 0000 Layer: always 0
-    //         _
-    // 0000 0001 protection absent, 1 if there is no CRC and 0 if there is CRC
-    // anded, this gives: 11110001 = 0xF1
-    adts.push_back(0xF1); // byte2 MPEG-4
-    // adts.push_back(0xF9); // byte2 MPEG-2
-    uint8_t byte3 = 0;
-
-    byte3 |= (descriptor->mpeg_audio_object_type() - 1) << 6;
-    byte3 |= descriptor->frequency_index() << 2;
-    auto channel_configuration = descriptor->channel_configuration();
-    byte3 |= (channel_configuration & 0x04) >> 2;
-    adts.push_back(byte3);
-
-    uint8_t byte4 = 0;
-
-    byte4 |= (channel_configuration & 0x03) << 6;
-    // frame length, this value must include the 7 bytes of header length
-    uint16_t frame_length = aac_frame_length + 7;
-    assert(frame_length <= 0x1FFF);
-    byte4 |= (frame_length & 0x1800) >> 11;
-
-    adts.push_back(byte4);
-
-    adts.push_back((frame_length & 0x07F8) >> 3); // byte5
-
-    uint8_t byte6 = 0xFF;
-    byte6 &= (frame_length & 0x0007) << 5;
-    adts.push_back(byte6);
-
-    uint8_t byte7 = 0xB0;
-    byte7 |= (number_of_raw_data_blocks - 1) & 0x03;
-    adts.push_back(byte7);
-
-    // petro::bit_reader b(adts);
-
-    // for (uint32_t i = 0; i < b.size(); ++i)
-    // {
-    //     if (i % 8 == 0)
-    //         std::cout << " ";
-    //     std::cout << (uint32_t) b.read_1_bit();
-    // }
-    // std::cout << std::endl;
-
-
-    return adts;
-}
-
-// http://wiki.multimedia.cx/index.php?title=ADTS
-// writes 7 - 9 bytes
-// uint32_t write_adts(
-//     uint8_t* data,
-//     uint8_t mpeg_version,
-//     uint8_t protection,
-//     uint8_t mpeg_audio_object_type,
-//     uint8_t sampling_frequency_index,
-//     uint8_t mpeg_channel_configuration
-//     uint16_t frame_length,
-//     uint8_t number_of_aac_frames,
-//     uint16_t crc)
-// {
-//     uint32_t written = 0;
-
-//     data[0] = 0xFF;
-
-//     assert(protection == 0 || protection == 1);
-//     data[0] = 0xF0 + protection;
-
-
-    // FrameLength = (ProtectionAbsent == 1 ? 7 : 9) + size(AACFrame)
-    //(RDBs) in ADTS frame minus 1, for maximum compatibility always use 1 AAC frame per ADTS frame
-// }
 
 int main(int argc, char* argv[])
 {
@@ -187,12 +153,8 @@ int main(int argc, char* argv[])
     auto esds = std::dynamic_pointer_cast<const petro::box::esds>(
         mp4a->get_child("esds"));
     assert(esds != nullptr);
-
-    std::cout << mp4a->describe() << std::endl;
-    for (auto c : mp4a->children())
-    {
-        std::cout << c->describe() << std::endl;
-    }
+    auto decoder_config_descriptor =
+        esds->descriptor()->decoder_config_descriptor();
 
     auto trak = mp4a->get_parent("trak");
     assert(trak != nullptr);
@@ -212,6 +174,7 @@ int main(int argc, char* argv[])
     // create output file
     std::ofstream aac_file(argv[2], std::ios::binary);
 
+    // fill output file with data.
     std::ifstream mp4_file(filename, std::ios::binary);
     uint32_t found_samples = 0;
     for (uint32_t i = 0; i < stco->entry_count(); ++i)
@@ -221,7 +184,11 @@ int main(int argc, char* argv[])
         {
             uint16_t sample_size = stsz->sample_size(found_samples);
 
-            auto adts = create_adts(esds, sample_size);
+            auto adts = create_adts(
+                sample_size,
+                decoder_config_descriptor->channel_configuration(),
+                decoder_config_descriptor->frequency_index(),
+                decoder_config_descriptor->mpeg_audio_object_type());
             aac_file.write((char*)adts.data(), adts.size());
 
             std::vector<char> temp(sample_size);
@@ -230,7 +197,6 @@ int main(int argc, char* argv[])
             found_samples += 1;
         }
     }
-    std::cout << (uint32_t)found_samples << std::endl;
 
     aac_file.close();
 
