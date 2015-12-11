@@ -8,6 +8,7 @@
 #include <string>
 
 #include "avcc.hpp"
+#include "esds.hpp"
 #include "full_box.hpp"
 #include "hdlr.hpp"
 #include "../byte_stream.hpp"
@@ -199,7 +200,7 @@ namespace box
                 m_sample_rate = bs.read_fixed_point_1616();
                 m_remaining_bytes -= 4;
 
-                parser<> p;
+                parser<esds> p;
                 auto branched_bs = byte_stream(bs, m_remaining_bytes);
                 p.read(shared_from_this(), branched_bs);
                 assert(branched_bs.remaining_bytes() == 0);
@@ -213,6 +214,11 @@ namespace box
                 ss << "  sample_size: " << m_sample_size << std::endl;
                 ss << "  sample_rate: " << m_sample_rate;
                 return ss.str();
+            }
+
+            double sample_rate() const
+            {
+                return m_sample_rate;
             }
 
         private:
@@ -286,10 +292,13 @@ namespace box
             full_box::read(size, bs);
             m_entry_count = bs.read_uint32_t();
             m_remaining_bytes -= 4;
+
+            // get handler to know which kind of sample we are reading.
             auto mdia = get_parent("mdia");
             assert(mdia != nullptr);
-            auto hdlr =
-                std::dynamic_pointer_cast<const petro::box::hdlr>(mdia->get_child("hdlr"));
+            auto hdlr = std::dynamic_pointer_cast<const petro::box::hdlr>(
+                mdia->get_child("hdlr"));
+
             for (uint32_t i = 0; i < m_entry_count; ++i)
             {
                 uint32_t entry_size = bs.read_uint32_t();

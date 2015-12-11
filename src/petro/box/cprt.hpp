@@ -31,14 +31,6 @@ namespace box
             box::read(size, bs);
             bs.skip(m_remaining_bytes);
         }
-
-        std::string describe() const
-        {
-            std::stringstream ss;
-            ss << type() << "?" << std::endl;
-            ss << "  size: " << size();
-            return ss.str();
-        }
     };
 }
 }

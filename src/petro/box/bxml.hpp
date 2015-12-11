@@ -22,15 +22,9 @@ namespace box
         static const std::string TYPE;
 
     public:
-        bxml(std::weak_ptr<box> parent):
-            box(bxml::TYPE, parent)
-        { }
+        bxml(std::weak_ptr<box> parent);
 
-        void read(uint64_t size, byte_stream& bs)
-        {
-            box::read(size, bs);
-            bs.skip(m_remaining_bytes);
-        }
+        void read(uint64_t size, byte_stream& bs);
     };
 }
 }
