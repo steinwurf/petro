@@ -63,17 +63,17 @@ std::vector<uint8_t> create_adts(
     // ____
     // 1111 0000 syncword 0xF0, all bits must be 1
     //      _
-    // 0000 1000 (assuming) mpeg 2
+    // 0000 0000 (assuming) mpeg 4
     //       __
     // 0000 0000 Layer: always 0
     //         _
     // 0000 0001 protection absent, 1 if there is no CRC and 0 if there is CRC
-    // anded, this gives: 11111001 = 0xF9
-    adts.push_back(0xF9); // byte2
-
+    // anded, this gives: 11110001 = 0xF1
+    adts.push_back(0xF1); // byte2 MPEG-4
+    // adts.push_back(0xF9); // byte2 MPEG-2
     uint8_t byte3 = 0;
 
-    byte3 |= descriptor->mpeg_audio_object_type() << 6;
+    byte3 |= (descriptor->mpeg_audio_object_type() - 1) << 6;
     byte3 |= descriptor->frequency_index() << 2;
     auto channel_configuration = descriptor->channel_configuration();
     byte3 |= (channel_configuration & 0x04) >> 2;
@@ -84,6 +84,7 @@ std::vector<uint8_t> create_adts(
     byte4 |= (channel_configuration & 0x03) << 6;
     // frame length, this value must include the 7 bytes of header length
     uint16_t frame_length = aac_frame_length + 7;
+    assert(frame_length <= 0x1FFF);
     byte4 |= (frame_length & 0x1800) >> 11;
 
     adts.push_back(byte4);
@@ -91,11 +92,23 @@ std::vector<uint8_t> create_adts(
     adts.push_back((frame_length & 0x07F8) >> 3); // byte5
 
     uint8_t byte6 = 0xFF;
-    byte6 &= (frame_length & 0x0003) << 5;
-    number_of_raw_data_blocks -= 1;
-    uint8_t byte7 = 0xFF;
-    byte7 &= number_of_raw_data_blocks & 0x03;
+    byte6 &= (frame_length & 0x0007) << 5;
+    adts.push_back(byte6);
+
+    uint8_t byte7 = 0xB0;
+    byte7 |= (number_of_raw_data_blocks - 1) & 0x03;
     adts.push_back(byte7);
+
+    // petro::bit_reader b(adts);
+
+    // for (uint32_t i = 0; i < b.size(); ++i)
+    // {
+    //     if (i % 8 == 0)
+    //         std::cout << " ";
+    //     std::cout << (uint32_t) b.read_1_bit();
+    // }
+    // std::cout << std::endl;
+
 
     return adts;
 }
@@ -200,7 +213,7 @@ int main(int argc, char* argv[])
     std::ofstream aac_file(argv[2], std::ios::binary);
 
     std::ifstream mp4_file(filename, std::ios::binary);
-    auto found_samples = 0;
+    uint32_t found_samples = 0;
     for (uint32_t i = 0; i < stco->entry_count(); ++i)
     {
         mp4_file.seekg(stco->chunk_offset(i));
@@ -210,12 +223,14 @@ int main(int argc, char* argv[])
 
             auto adts = create_adts(esds, sample_size);
             aac_file.write((char*)adts.data(), adts.size());
+
             std::vector<char> temp(sample_size);
             mp4_file.read(temp.data(), sample_size);
             aac_file.write(temp.data(), sample_size);
             found_samples += 1;
         }
     }
+    std::cout << (uint32_t)found_samples << std::endl;
 
     aac_file.close();
 
