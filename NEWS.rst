@@ -8,6 +8,11 @@ Latest
 ------
 * tbd
 
+1.0.0
+-----
+* Major: Actual release.
+* Minor: Added example for audio (AAC) extraction.
+
 0.0.0
 -----
 * Major: Initial release.
