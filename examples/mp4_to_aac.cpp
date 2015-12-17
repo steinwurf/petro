@@ -130,9 +130,9 @@ int main(int argc, char* argv[])
                     petro::box::hdlr,
                     petro::box::minf<petro::parser<
                         petro::box::stbl<petro::parser<
-                            petro::box::stsd,
-                            petro::box::stsc,
                             petro::box::stco,
+                            petro::box::stsc,
+                            petro::box::stsd,
                             petro::box::stsz
                         >>
                     >>

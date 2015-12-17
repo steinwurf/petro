@@ -107,19 +107,69 @@ namespace box
             return ss.str();
         }
 
+        bool track_enabled() const
+        {
+            return m_track_enabled;
+        }
+
+        bool track_in_movie() const
+        {
+            return m_track_in_movie;
+        }
+
+        bool track_in_preview() const
+        {
+            return m_track_in_preview;
+        }
+
+        std::string creation_time() const
+        {
+            return m_creation_time;
+        }
+
+        std::string modification_time() const
+        {
+            return m_modification_time;
+        }
+
         uint32_t track_id() const
         {
             return m_track_id;
         }
 
-        double height() const
+        uint64_t duration() const
         {
-            return m_height;
+            return m_duration;
+        }
+
+        int16_t layer() const
+        {
+            return m_layer;
+        }
+
+        int16_t alternate_group() const
+        {
+            return m_alternate_group;
+        }
+
+        float volume() const
+        {
+            return m_volume;
+        }
+
+        petro::matrix matrix() const
+        {
+            return m_matrix;
         }
 
         double width() const
         {
             return m_width;
+        }
+
+        double height() const
+        {
+            return m_height;
         }
 
     private:
@@ -181,7 +231,7 @@ namespace box
 
         /// provides a transformation matrix for the video; (u,v,w) are
         /// restricted here to (0,0,1), hex (0,0,0x40000000).
-        matrix m_matrix;
+        petro::matrix m_matrix;
 
         /// specifies the track's visual presentation size as fixed-point 16.16
         /// values. These need not be the same as the pixel dimensions of the

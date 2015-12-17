@@ -69,6 +69,31 @@ namespace box
             return ss.str();
         }
 
+        std::string creation_time() const
+        {
+            return m_creation_time;
+        }
+
+        std::string modification_time() const
+        {
+            return m_modification_time;
+        }
+
+        uint32_t timescale() const
+        {
+            return m_timescale;
+        }
+
+        uint64_t duration() const
+        {
+            return m_duration;
+        }
+
+        std::string language() const
+        {
+            return m_language;
+        }
+
     private:
 
         /// an integer that declares the creation time of the media in this
