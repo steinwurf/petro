@@ -8,6 +8,10 @@ Latest
 ------
 * tbd
 
+1.1.0
+-----
+* Minor: Added more getters.
+
 1.0.0
 -----
 * Major: Actual release.
