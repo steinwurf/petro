@@ -45,6 +45,14 @@ namespace box
 
         virtual std::string describe() const;
 
+    public:
+
+        template<class Child>
+        std::shared_ptr<const Child> get_child(const std::string& type) const
+        {
+            return std::dynamic_pointer_cast<const Child>(get_child(type));
+        }
+
     protected:
 
         std::string m_type;

@@ -150,8 +150,7 @@ int main(int argc, char* argv[])
     auto mp4a = root->get_child("mp4a");
     assert(mp4a != nullptr);
 
-    auto esds = std::dynamic_pointer_cast<const petro::box::esds>(
-        mp4a->get_child("esds"));
+    auto esds = mp4a->get_child<petro::box::esds>("esds");
     assert(esds != nullptr);
     auto decoder_config_descriptor =
         esds->descriptor()->decoder_config_descriptor();
@@ -159,16 +158,13 @@ int main(int argc, char* argv[])
     auto trak = mp4a->get_parent("trak");
     assert(trak != nullptr);
 
-    auto stco = std::dynamic_pointer_cast<const petro::box::stco>(
-        trak->get_child("stco"));
+    auto stco = trak->get_child<petro::box::stco>("stco"));
     assert(stco != nullptr);
 
-    auto stsc = std::dynamic_pointer_cast<const petro::box::stsc>(
-        trak->get_child("stsc"));
+    auto stsc = trak->get_child<petro::box::stsc>("stsc"));
     assert(stsc != nullptr);
 
-    auto stsz = std::dynamic_pointer_cast<const petro::box::stsz>(
-        trak->get_child("stsz"));
+    auto stsz = trak->get_child<petro::box::stsz>("stsz"));
     assert(stsz != nullptr);
 
     // create output file
