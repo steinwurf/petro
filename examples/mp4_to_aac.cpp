@@ -158,13 +158,13 @@ int main(int argc, char* argv[])
     auto trak = mp4a->get_parent("trak");
     assert(trak != nullptr);
 
-    auto stco = trak->get_child<petro::box::stco>("stco"));
+    auto stco = trak->get_child<petro::box::stco>("stco");
     assert(stco != nullptr);
 
-    auto stsc = trak->get_child<petro::box::stsc>("stsc"));
+    auto stsc = trak->get_child<petro::box::stsc>("stsc");
     assert(stsc != nullptr);
 
-    auto stsz = trak->get_child<petro::box::stsz>("stsz"));
+    auto stsz = trak->get_child<petro::box::stsz>("stsz");
     assert(stsz != nullptr);
 
     // create output file
