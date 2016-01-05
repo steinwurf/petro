@@ -67,19 +67,16 @@ int main(int argc, char* argv[])
     auto avc1 = root->get_child("avc1");
     assert(avc1 != nullptr);
 
-    auto avcc = std::dynamic_pointer_cast<const petro::box::avcc>(
-        avc1->get_child("avcC"));
+    auto avcc = avc1->get_child<petro::box::avcc>("avcC");
     assert(avcc != nullptr);
 
     auto trak = avc1->get_parent("trak");
     assert(trak != nullptr);
 
-    auto stco = std::dynamic_pointer_cast<const petro::box::stco>(
-        trak->get_child("stco"));
+    auto stco = trak->get_child<petro::box::stco>("stco");
     assert(stco != nullptr);
 
-    auto stsc = std::dynamic_pointer_cast<const petro::box::stsc>(
-        trak->get_child("stsc"));
+    auto stsc = trak->get_child<petro::box::stsc>("stsc");
     assert(stsc != nullptr);
 
     // create output file

@@ -6,7 +6,7 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Minor: Added templated member function for getting children of a certain type.
 
 1.1.0
 -----
