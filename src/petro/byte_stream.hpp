@@ -50,7 +50,10 @@ namespace petro
         {
             file_byte_stream(const std::string& filename):
                 m_data(filename, std::ios::binary)
-            { }
+            {
+                // @todo probably should be handled differently.
+                assert(m_data.good());
+            }
 
             uint8_t read_byte()
             {
