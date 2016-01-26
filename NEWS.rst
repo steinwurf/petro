@@ -6,7 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+
+1.2.1
+-----
+* Patch: Added assert which checks if the given file exists.
 
 1.2.0
 -----
