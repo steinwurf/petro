@@ -6,6 +6,13 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+2.0.0
+-----
+* Major: Removed redundant type string when getting specific child.
+* Minor: Added free function to calculate the presentation time in microseconds.
+* Minor: Extended ctts and stts API to easier extract compressed data.
 
 1.2.1
 -----
