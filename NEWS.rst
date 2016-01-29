@@ -8,6 +8,10 @@ Latest
 ------
 * tbd
 
+2.0.1
+-----
+* Patch: Added missing files.
+
 2.0.0
 -----
 * Major: Removed redundant type string when getting specific child.
