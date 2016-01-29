@@ -67,16 +67,16 @@ int main(int argc, char* argv[])
     auto avc1 = root->get_child("avc1");
     assert(avc1 != nullptr);
 
-    auto avcc = avc1->get_child<petro::box::avcc>("avcC");
+    auto avcc = avc1->get_child<petro::box::avcc>();
     assert(avcc != nullptr);
 
     auto trak = avc1->get_parent("trak");
     assert(trak != nullptr);
 
-    auto stco = trak->get_child<petro::box::stco>("stco");
+    auto stco = trak->get_child<petro::box::stco>();
     assert(stco != nullptr);
 
-    auto stsc = trak->get_child<petro::box::stsc>("stsc");
+    auto stsc = trak->get_child<petro::box::stsc>();
     assert(stsc != nullptr);
 
     // create output file
