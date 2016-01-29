@@ -150,7 +150,7 @@ int main(int argc, char* argv[])
     auto mp4a = root->get_child("mp4a");
     assert(mp4a != nullptr);
 
-    auto esds = mp4a->get_child<petro::box::esds>("esds");
+    auto esds = mp4a->get_child<petro::box::esds>();
     assert(esds != nullptr);
     auto decoder_config_descriptor =
         esds->descriptor()->decoder_config_descriptor();
@@ -158,13 +158,13 @@ int main(int argc, char* argv[])
     auto trak = mp4a->get_parent("trak");
     assert(trak != nullptr);
 
-    auto stco = trak->get_child<petro::box::stco>("stco");
+    auto stco = trak->get_child<petro::box::stco>();
     assert(stco != nullptr);
 
-    auto stsc = trak->get_child<petro::box::stsc>("stsc");
+    auto stsc = trak->get_child<petro::box::stsc>();
     assert(stsc != nullptr);
 
-    auto stsz = trak->get_child<petro::box::stsz>("stsz");
+    auto stsz = trak->get_child<petro::box::stsz>();
     assert(stsz != nullptr);
 
     // create output file

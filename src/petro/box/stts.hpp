@@ -44,14 +44,30 @@ namespace box
             full_box::read(size, bs);
             m_entry_count = bs.read_uint32_t();
             m_remaining_bytes -= 4;
+
+            uint32_t decoding_time = 0;
             for (uint32_t i = 0; i < m_entry_count; ++i)
             {
+                uint32_t sample_count = bs.read_uint32_t();
+                uint32_t sample_delta = bs.read_uint32_t();
                 m_entries.push_back(entry_type{
-                    bs.read_uint32_t(),
-                    bs.read_uint32_t()
+                    sample_count,
+                    sample_delta
                 });
                 m_remaining_bytes -= 8;
+
+                for (uint32_t i = 0; i < sample_count; ++i)
+                {
+                    decoding_time += sample_delta;
+                    m_decoding_times.push_back(decoding_time);
+                }
+
+                for (uint32_t i = 0; i < sample_count; ++i)
+                {
+                    m_durations.push_back(sample_delta);
+                }
             }
+            assert(m_decoding_times.size() == m_durations.size());
             bs.skip(m_remaining_bytes);
         }
 
@@ -78,32 +94,21 @@ namespace box
             return ss.str();
         }
 
-        const std::vector<entry_type>& entries() const
+        uint32_t samples() const
         {
-            return m_entries;
+            return m_decoding_times.size();
         }
 
-        uint32_t sample_delta(uint32_t sample_index) const
+        uint32_t decoding_time(uint32_t sample_index) const
         {
-            auto total_sample_count = 0U;
-            // initialize this value to the value of the first entry
-            auto previous_delta = m_entries[0].sample_delta;
-            // loop until we have incremented the total_sample_count to a number
-            // which is higher than the sample_index.
-            for (const auto& entry : m_entries)
-            {
-                total_sample_count += entry.sample_count;
-                if (total_sample_count > sample_index)
-                    return previous_delta;
+            assert(sample_index < m_decoding_times.size());
+            return m_decoding_times[sample_index];
+        }
 
-                // keep updating the delta - we know that we've got the right
-                // delta in the previous iteration if the total sample count is
-                // larger than the given sample index.
-                previous_delta = entry.sample_delta;
-            }
-            // a too high sample index was given.
-            assert(0);
-            return 0;
+        uint32_t duration(uint32_t sample_index) const
+        {
+            assert(sample_index < m_durations.size());
+            return m_durations[sample_index];
         }
 
     private:
@@ -113,6 +118,16 @@ namespace box
 
         /// a vector containing each entry's sample count and sample delta.
         std::vector<entry_type> m_entries;
+
+        /// the decoding time for each sample.
+        /// this field is not part of the standard, and is simply a result of
+        /// the extraction of the data in the entries.
+        std::vector<uint32_t> m_decoding_times;
+
+        /// the duration for each sample.
+        /// this field is not part of the standard, and is simply a result of
+        /// the extraction of the data in the entries.
+        std::vector<uint32_t> m_durations;
     };
 }
 }

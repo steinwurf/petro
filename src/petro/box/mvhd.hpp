@@ -86,6 +86,47 @@ namespace box
             return ss.str();
         }
 
+        std::string creation_time() const
+        {
+            return m_creation_time;
+        }
+
+        std::string modification_time() const
+        {
+            return m_modification_time;
+        }
+
+        uint32_t timescale() const
+        {
+            return m_timescale;
+        }
+
+        uint64_t duration() const
+        {
+            return m_duration;
+        }
+
+        double rate() const
+        {
+            return m_rate;
+        }
+
+        float volume() const
+        {
+            return m_volume;
+        }
+
+        petro::matrix matrix() const
+        {
+            return m_matrix;
+        }
+
+        uint32_t next_track_id() const
+        {
+            return m_next_track_id;
+        }
+
+
     private:
 
         /// an integer that declares the creation time of the presentation
@@ -118,7 +159,7 @@ namespace box
 
         /// provides a transformation matrix for the video; (u,v,w) are
         /// restricted here to (0,0,1), hex values (0,0,0x40000000).
-        matrix m_matrix;
+        petro::matrix m_matrix;
 
         /// a non-zero integer that indicates a value to use for the track ID of
         /// the next track to be added to this presentation. Zero is not a valid
