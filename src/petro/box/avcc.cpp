@@ -4,6 +4,10 @@
 #include "avcc.hpp"
 
 #include <string>
+#include <vector>
+#include <memory>
+#include "../sequence_parameter_set.hpp"
+#include "../picture_parameter_set.hpp"
 
 namespace petro
 {
@@ -48,7 +52,8 @@ namespace box
                 sps.push_back(bs.read_uint8_t());
                 m_remaining_bytes -= 1;
             }
-            m_sequence_parameter_sets.push_back(sps);
+            m_sequence_parameter_sets.push_back(
+                std::make_shared<petro::sequence_parameter_set>(sps));
         }
 
         m_num_of_picture_parameter_sets = bs.read_uint8_t();
@@ -65,7 +70,8 @@ namespace box
                 pps.push_back(bs.read_uint8_t());
                 m_remaining_bytes -= 1;
             }
-            m_picture_parameter_sets.push_back(pps);
+            m_picture_parameter_sets.push_back(
+                std::make_shared<petro::picture_parameter_set>(pps));
         }
 
         bs.skip(m_remaining_bytes);
@@ -85,24 +91,26 @@ namespace box
         ss << "  sequence_parameter_sets:" << std::endl;
         for (const auto& sps : m_sequence_parameter_sets)
         {
-            ss << "    sps_length: " << sps.size() << std::endl;
+            ss << "    " << sps->describe();
         }
 
         ss << "  picture_parameter_sets:" << std::endl;
         for (const auto& pps : m_picture_parameter_sets)
         {
-            ss << "    pps_length: " << pps.size() << std::endl;
+            ss << "    " << pps->describe();
         }
         return ss.str();
     }
 
-    std::vector<uint8_t> avcc::sequence_parameter_set(uint32_t index) const
+    std::shared_ptr<petro::sequence_parameter_set> avcc::sequence_parameter_set(
+        uint32_t index) const
     {
         assert(index < m_sequence_parameter_sets.size());
         return m_sequence_parameter_sets[index];
     }
 
-    std::vector<uint8_t> avcc::picture_parameter_set(uint32_t index) const
+    std::shared_ptr<petro::picture_parameter_set> avcc::picture_parameter_set(
+        uint32_t index) const
     {
         assert(index < m_picture_parameter_sets.size());
         return m_picture_parameter_sets[index];

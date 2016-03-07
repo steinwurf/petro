@@ -58,76 +58,81 @@ namespace petro
 
         uint8_t read_1_bit()
         {
-            return read_next_bit();
+            return read_bits(1);
         }
 
         uint8_t read_2_bits()
         {
-            return
-                (read_next_bit() << 1) |
-                (read_next_bit() << 0);
+            return read_bits(2);
         }
         uint8_t read_3_bits()
         {
-            return
-                (read_next_bit() << 2) |
-                (read_next_bit() << 1) |
-                (read_next_bit() << 0);
+            return read_bits(3);
         }
         uint8_t read_4_bits()
         {
-            return
-                (read_next_bit() << 3) |
-                (read_next_bit() << 2) |
-                (read_next_bit() << 1) |
-                (read_next_bit() << 0);
+            return read_bits(4);
         }
         uint8_t read_5_bits()
         {
-            return
-                (read_next_bit() << 4) |
-                (read_next_bit() << 3) |
-                (read_next_bit() << 2) |
-                (read_next_bit() << 1) |
-                (read_next_bit() << 0);
+            return read_bits(5);
         }
         uint8_t read_6_bits()
         {
-            return
-                (read_next_bit() << 5) |
-                (read_next_bit() << 4) |
-                (read_next_bit() << 3) |
-                (read_next_bit() << 2) |
-                (read_next_bit() << 1) |
-                (read_next_bit() << 0);
+            return read_bits(6);
         }
         uint8_t read_7_bits()
         {
-            return
-                (read_next_bit() << 6) |
-                (read_next_bit() << 5) |
-                (read_next_bit() << 4) |
-                (read_next_bit() << 3) |
-                (read_next_bit() << 2) |
-                (read_next_bit() << 1) |
-                (read_next_bit() << 0);
+            return read_bits(7);
         }
         uint8_t read_8_bits()
         {
-            return
-                (read_next_bit() << 7) |
-                (read_next_bit() << 6) |
-                (read_next_bit() << 5) |
-                (read_next_bit() << 4) |
-                (read_next_bit() << 3) |
-                (read_next_bit() << 2) |
-                (read_next_bit() << 1) |
-                (read_next_bit() << 0);
+            return read_bits(8);
+        }
+        uint32_t read_bits(uint32_t bits)
+        {
+            assert(bits <= 32);
+            uint8_t result = 0;
+            for (uint32_t i = 0; i < bits; i++)
+            {
+                result |= (read_next_bit() << (bits - i - 1));
+            }
+            return result;
+        }
+
+        uint32_t read_exponential_golomb_code()
+        {
+            uint32_t i = 0;
+            while ((read_1_bit() == 0) && (i < 32U))
+            {
+                i++;
+            }
+            uint32_t result = read_bits(i);
+            result += (1 << i) - 1;
+            return result;
+        }
+
+        int64_t read_se()
+        {
+            int64_t result = read_exponential_golomb_code();
+            if (result & 0x01)
+            {
+                return (result + 1) / 2;
+            }
+            else
+            {
+                return -(result / 2);
+            }
         }
 
         uint64_t size() const
         {
             return m_bits;
+        }
+
+        uint64_t offset() const
+        {
+            return m_bit_offset;
         }
 
 
@@ -136,6 +141,5 @@ namespace petro
         uint8_t* m_data;
         uint64_t m_bits;
         uint64_t m_bit_offset;
-
     };
 }
