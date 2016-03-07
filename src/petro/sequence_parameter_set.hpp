@@ -362,7 +362,7 @@ namespace petro
         uint32_t m_pic_height_in_map_units;
         uint32_t m_pic_width_in_mbs;
         uint32_t m_num_ref_frames;
-        uint32_t m_num_ref_frames_in_pic_order_cnt_cycle;
+        uint32_t m_num_ref_frames_in_pic_order_cnt_cycle = 0;
         uint32_t m_pic_order_cnt_type;
         uint32_t m_seq_parameter_set_id;
 

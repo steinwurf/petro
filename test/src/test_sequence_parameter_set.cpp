@@ -9,7 +9,8 @@
 
 TEST(test_sequence_parameter_set, check_variables)
 {
-    std::vector<uint8_t> data = {0x67, 0x42, 0x00, 0x0A, 0xF8, 0x41, 0xA2};
+    std::vector<uint8_t> data = {
+        0x67, 0x42, 0x00, 0x0A, 0xF8, 0x41, 0xA2 };
 
     petro::sequence_parameter_set sps(data);
     EXPECT_EQ(66U, sps.profile_idc());
