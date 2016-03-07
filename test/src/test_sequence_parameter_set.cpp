@@ -20,9 +20,9 @@ TEST(test_sequence_parameter_set, check_variables)
     EXPECT_EQ(0U, sps.constraint_set3_flag());
     EXPECT_EQ(10U, sps.level_idc());
     EXPECT_EQ(0U, sps.seq_parameter_set_id());
-    EXPECT_EQ(0U, sps.log2_max_frame_num_minus4());
+    EXPECT_EQ(4U, sps.log2_max_frame_num());
     EXPECT_EQ(0U, sps.pic_order_cnt_type());
-    EXPECT_EQ(0U, sps.log2_max_pic_order_cnt_lsb_minus4());
+    EXPECT_EQ(4U, sps.log2_max_pic_order_cnt_lsb());
     EXPECT_EQ(0U, sps.num_ref_frames_in_pic_order_cnt_cycle());
     EXPECT_EQ(0U, sps.gaps_in_frame_num_value_allowed_flag());
     EXPECT_EQ(8U, sps.pic_width_in_mbs());

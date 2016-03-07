@@ -100,7 +100,7 @@ namespace petro
             return result;
         }
 
-        uint32_t read_exponential_golomb_code()
+        uint32_t read_unsigned_exponential_golomb_code()
         {
             uint32_t i = 0;
             while ((read_1_bit() == 0) && (i < 32U))
@@ -112,9 +112,9 @@ namespace petro
             return result;
         }
 
-        int64_t read_se()
+        int64_t read_signed_exponential_golomb_code()
         {
-            int64_t result = read_exponential_golomb_code();
+            int64_t result = read_unsigned_exponential_golomb_code();
             if (result & 0x01)
             {
                 return (result + 1) / 2;

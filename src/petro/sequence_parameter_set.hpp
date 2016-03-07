@@ -17,6 +17,7 @@
 
 namespace petro
 {
+    /// Based on https://www.itu.int/rec/T-REC-H.264-201402-S/en
     class sequence_parameter_set
     {
 
@@ -42,21 +43,27 @@ namespace petro
             assert(reserved_zero_2bits == 0);
 
             m_level_idc = bits.read_8_bits();
-            m_seq_parameter_set_id = bits.read_exponential_golomb_code();
+            m_seq_parameter_set_id =
+                bits.read_unsigned_exponential_golomb_code();
 
-            if (m_profile_idc == 100 || m_profile_idc == 110 ||
-                m_profile_idc == 118 || m_profile_idc == 122 ||
-                m_profile_idc == 244 || m_profile_idc == 44 ||
-                m_profile_idc == 83  || m_profile_idc == 86)
+            if (m_profile_idc == 44 || m_profile_idc == 83 ||
+                m_profile_idc == 86 || m_profile_idc == 100 ||
+                m_profile_idc == 110 || m_profile_idc == 118 ||
+                m_profile_idc == 122 || m_profile_idc == 128 ||
+                m_profile_idc == 134 || m_profile_idc == 138 ||
+                m_profile_idc == 139 || m_profile_idc == 244)
             {
-                m_chroma_format_idc = bits.read_exponential_golomb_code();
+                m_chroma_format_idc =
+                    bits.read_unsigned_exponential_golomb_code();
                 if (m_chroma_format_idc == 3)
                 {
                     m_separate_colour_plane_flag = bits.read_1_bit();
                 }
 
-                m_bit_depth_luma_minus8 = bits.read_exponential_golomb_code();
-                m_bit_depth_chroma_minus8 = bits.read_exponential_golomb_code();
+                m_bit_depth_luma =
+                    bits.read_unsigned_exponential_golomb_code() + 8;
+                m_bit_depth_chroma =
+                    bits.read_unsigned_exponential_golomb_code() + 8;
                 m_qpprime_y_zero_transform_bypass_flag = bits.read_1_bit();
                 m_seq_scaling_matrix_present_flag = bits.read_1_bit();
 
@@ -76,7 +83,8 @@ namespace petro
                             {
                                 if (next_scale != 0)
                                 {
-                                    auto delta_scale = bits.read_se();
+                                    auto delta_scale =
+                                        bits.read_signed_exponential_golomb_code();
                                     next_scale =
                                         (last_scale + delta_scale + 256) % 256;
                                 }
@@ -88,12 +96,13 @@ namespace petro
                 }
             }
 
-            m_log2_max_frame_num_minus4 = bits.read_exponential_golomb_code();
-            m_pic_order_cnt_type = bits.read_exponential_golomb_code();
+            m_log2_max_frame_num =
+                bits.read_unsigned_exponential_golomb_code() + 4;
+            m_pic_order_cnt_type = bits.read_unsigned_exponential_golomb_code();
             if (m_pic_order_cnt_type == 0)
             {
-                m_log2_max_pic_order_cnt_lsb_minus4 =
-                    bits.read_exponential_golomb_code();
+                m_log2_max_pic_order_cnt_lsb =
+                    bits.read_unsigned_exponential_golomb_code() + 4;
             }
             else if (m_pic_order_cnt_type == 1)
             {
@@ -101,19 +110,22 @@ namespace petro
                 m_offset_for_non_ref_pic = bits.read_1_bit();
                 m_offset_for_top_to_bottom_field = bits.read_1_bit();
                 m_num_ref_frames_in_pic_order_cnt_cycle =
-                    bits.read_exponential_golomb_code();
+                    bits.read_unsigned_exponential_golomb_code();
                 for (uint32_t i = 0;
                      i < m_num_ref_frames_in_pic_order_cnt_cycle; i++)
                 {
-                    bits.read_se(); // offset_for_ref_frame[i]
+                    // offset_for_ref_frame[i]
+                    bits.read_signed_exponential_golomb_code();
                 }
             }
 
-            m_num_ref_frames = bits.read_exponential_golomb_code();
+            m_num_ref_frames = bits.read_unsigned_exponential_golomb_code();
             m_gaps_in_frame_num_value_allowed_flag = bits.read_1_bit();
 
-            m_pic_width_in_mbs = bits.read_exponential_golomb_code() + 1;
-            m_pic_height_in_map_units = bits.read_exponential_golomb_code() + 1;
+            m_pic_width_in_mbs =
+                bits.read_unsigned_exponential_golomb_code() + 1;
+            m_pic_height_in_map_units =
+                bits.read_unsigned_exponential_golomb_code() + 1;
 
             m_frame_mbs_only_flag = bits.read_1_bit();
             if (!m_frame_mbs_only_flag)
@@ -125,19 +137,25 @@ namespace petro
 
             if (m_frame_cropping_flag)
             {
-                m_frame_crop_left_offset = bits.read_exponential_golomb_code();
-                m_frame_crop_right_offset = bits.read_exponential_golomb_code();
-                m_frame_crop_top_offset = bits.read_exponential_golomb_code();
+                m_frame_crop_left_offset =
+                    bits.read_unsigned_exponential_golomb_code();
+                m_frame_crop_right_offset =
+                    bits.read_unsigned_exponential_golomb_code();
+                m_frame_crop_top_offset =
+                    bits.read_unsigned_exponential_golomb_code();
                 m_frame_crop_bottom_offset =
-                    bits.read_exponential_golomb_code();
+                    bits.read_unsigned_exponential_golomb_code();
             }
             m_vui_parameters_present_flag = bits.read_1_bit();
 
             m_width =
-                ((m_pic_width_in_mbs) * 16) -
-                m_frame_crop_left_offset * 2 - m_frame_crop_right_offset * 2;
+                m_pic_width_in_mbs * 16 -
+                m_frame_crop_left_offset * 2 -
+                m_frame_crop_right_offset * 2;
             m_height =
-                ((m_pic_height_in_map_units) * 16 * (2 - m_frame_mbs_only_flag)) - (m_frame_crop_top_offset * 2) - (m_frame_crop_bottom_offset * 2);
+                m_pic_height_in_map_units * 16 * (2 - m_frame_mbs_only_flag) -
+                m_frame_crop_top_offset * 2 -
+                m_frame_crop_bottom_offset * 2;
         }
 
         uint32_t width() const
@@ -215,9 +233,9 @@ namespace petro
             return m_pic_height_in_map_units;
         }
 
-        uint32_t log2_max_frame_num_minus4() const
+        uint32_t log2_max_frame_num() const
         {
-            return m_log2_max_frame_num_minus4;
+            return m_log2_max_frame_num;
         }
 
         uint8_t frame_mbs_only_flag() const
@@ -245,14 +263,14 @@ namespace petro
             return m_separate_colour_plane_flag;
         }
 
-        uint32_t bit_depth_luma_minus8() const
+        uint32_t bit_depth_luma() const
         {
-            return m_bit_depth_luma_minus8;
+            return m_bit_depth_luma;
         }
 
-        uint32_t bit_depth_chroma_minus8() const
+        uint32_t bit_depth_chroma() const
         {
-            return m_bit_depth_chroma_minus8;
+            return m_bit_depth_chroma;
         }
 
         uint8_t qpprime_y_zero_transform_bypass_flag() const
@@ -270,9 +288,9 @@ namespace petro
             return m_seq_scaling_list_present_flag;
         }
 
-        uint32_t log2_max_pic_order_cnt_lsb_minus4() const
+        uint32_t log2_max_pic_order_cnt_lsb() const
         {
-            return m_log2_max_pic_order_cnt_lsb_minus4;
+            return m_log2_max_pic_order_cnt_lsb;
         }
 
         uint8_t delta_pic_order_always_zero_flag() const
@@ -355,10 +373,10 @@ namespace petro
         uint32_t m_height;
         uint32_t m_width;
 
-        uint32_t m_bit_depth_chroma_minus8;
-        uint32_t m_bit_depth_luma_minus8;
-        uint32_t m_log2_max_frame_num_minus4;
-        uint32_t m_log2_max_pic_order_cnt_lsb_minus4;
+        uint32_t m_bit_depth_chroma;
+        uint32_t m_bit_depth_luma;
+        uint32_t m_log2_max_frame_num;
+        uint32_t m_log2_max_pic_order_cnt_lsb;
         uint32_t m_pic_height_in_map_units;
         uint32_t m_pic_width_in_mbs;
         uint32_t m_num_ref_frames;
