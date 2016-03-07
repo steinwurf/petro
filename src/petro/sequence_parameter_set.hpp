@@ -26,23 +26,23 @@ namespace petro
             m_data(data)
         {
             auto bits = bit_reader(m_data);
-            uint8_t forbidden_zero_bit = bits.read_1_bit();
+            uint8_t forbidden_zero_bit = bits.read_bit();
             assert(forbidden_zero_bit == 0);
             bits.skip(2); // nal_ref_idc
-            uint8_t nal_unit_type = bits.read_5_bits();
+            uint8_t nal_unit_type = bits.read_bits(5);
             assert(nal_unit_type == 7U); // should be 7 for SPS
 
-            m_profile_idc = bits.read_8_bits();
-            m_constraint_set0_flag = bits.read_1_bit();
-            m_constraint_set1_flag = bits.read_1_bit();
-            m_constraint_set2_flag = bits.read_1_bit();
-            m_constraint_set3_flag = bits.read_1_bit();
-            m_constraint_set4_flag = bits.read_1_bit();
-            m_constraint_set5_flag = bits.read_1_bit();
-            uint8_t reserved_zero_2bits  = bits.read_2_bits();
+            m_profile_idc = bits.read_bits(8);
+            m_constraint_set0_flag = bits.read_bit();
+            m_constraint_set1_flag = bits.read_bit();
+            m_constraint_set2_flag = bits.read_bit();
+            m_constraint_set3_flag = bits.read_bit();
+            m_constraint_set4_flag = bits.read_bit();
+            m_constraint_set5_flag = bits.read_bit();
+            uint8_t reserved_zero_2bits  = bits.read_bits(2);
             assert(reserved_zero_2bits == 0);
 
-            m_level_idc = bits.read_8_bits();
+            m_level_idc = bits.read_bits(8);
             m_seq_parameter_set_id =
                 bits.read_unsigned_exponential_golomb_code();
 
@@ -57,15 +57,15 @@ namespace petro
                     bits.read_unsigned_exponential_golomb_code();
                 if (m_chroma_format_idc == 3)
                 {
-                    m_separate_colour_plane_flag = bits.read_1_bit();
+                    m_separate_colour_plane_flag = bits.read_bit();
                 }
 
                 m_bit_depth_luma =
                     bits.read_unsigned_exponential_golomb_code() + 8;
                 m_bit_depth_chroma =
                     bits.read_unsigned_exponential_golomb_code() + 8;
-                m_qpprime_y_zero_transform_bypass_flag = bits.read_1_bit();
-                m_seq_scaling_matrix_present_flag = bits.read_1_bit();
+                m_qpprime_y_zero_transform_bypass_flag = bits.read_bit();
+                m_seq_scaling_matrix_present_flag = bits.read_bit();
 
                 if (m_seq_scaling_matrix_present_flag)
                 {
@@ -73,7 +73,7 @@ namespace petro
                         ((m_chroma_format_idc != 3) ? 8 : 12);
                     for (uint8_t i = 0; i < seq_scaling_matrix_size; ++i)
                     {
-                        m_seq_scaling_list_present_flag = bits.read_1_bit();
+                        m_seq_scaling_list_present_flag = bits.read_bit();
                         if (m_seq_scaling_list_present_flag)
                         {
                             uint8_t size_of_scaling_list = (i < 6) ? 16 : 64;
@@ -106,9 +106,9 @@ namespace petro
             }
             else if (m_pic_order_cnt_type == 1)
             {
-                m_delta_pic_order_always_zero_flag = bits.read_1_bit();
-                m_offset_for_non_ref_pic = bits.read_1_bit();
-                m_offset_for_top_to_bottom_field = bits.read_1_bit();
+                m_delta_pic_order_always_zero_flag = bits.read_bit();
+                m_offset_for_non_ref_pic = bits.read_bit();
+                m_offset_for_top_to_bottom_field = bits.read_bit();
                 m_num_ref_frames_in_pic_order_cnt_cycle =
                     bits.read_unsigned_exponential_golomb_code();
                 for (uint32_t i = 0;
@@ -120,20 +120,20 @@ namespace petro
             }
 
             m_num_ref_frames = bits.read_unsigned_exponential_golomb_code();
-            m_gaps_in_frame_num_value_allowed_flag = bits.read_1_bit();
+            m_gaps_in_frame_num_value_allowed_flag = bits.read_bit();
 
             m_pic_width_in_mbs =
                 bits.read_unsigned_exponential_golomb_code() + 1;
             m_pic_height_in_map_units =
                 bits.read_unsigned_exponential_golomb_code() + 1;
 
-            m_frame_mbs_only_flag = bits.read_1_bit();
+            m_frame_mbs_only_flag = bits.read_bit();
             if (!m_frame_mbs_only_flag)
             {
-                m_mb_adaptive_frame_field_flag = bits.read_1_bit();
+                m_mb_adaptive_frame_field_flag = bits.read_bit();
             }
-            m_direct_8x8_inference_flag = bits.read_1_bit();
-            m_frame_cropping_flag = bits.read_1_bit();
+            m_direct_8x8_inference_flag = bits.read_bit();
+            m_frame_cropping_flag = bits.read_bit();
 
             if (m_frame_cropping_flag)
             {
@@ -146,7 +146,7 @@ namespace petro
                 m_frame_crop_bottom_offset =
                     bits.read_unsigned_exponential_golomb_code();
             }
-            m_vui_parameters_present_flag = bits.read_1_bit();
+            m_vui_parameters_present_flag = bits.read_bit();
 
             m_width =
                 m_pic_width_in_mbs * 16 -

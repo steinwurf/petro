@@ -56,39 +56,11 @@ namespace petro
             assert(m_bit_offset < m_bits);
         }
 
-        uint8_t read_1_bit()
+        uint8_t read_bit()
         {
             return read_bits(1);
         }
 
-        uint8_t read_2_bits()
-        {
-            return read_bits(2);
-        }
-        uint8_t read_3_bits()
-        {
-            return read_bits(3);
-        }
-        uint8_t read_4_bits()
-        {
-            return read_bits(4);
-        }
-        uint8_t read_5_bits()
-        {
-            return read_bits(5);
-        }
-        uint8_t read_6_bits()
-        {
-            return read_bits(6);
-        }
-        uint8_t read_7_bits()
-        {
-            return read_bits(7);
-        }
-        uint8_t read_8_bits()
-        {
-            return read_bits(8);
-        }
         uint32_t read_bits(uint32_t bits)
         {
             assert(bits <= 32);
@@ -103,7 +75,7 @@ namespace petro
         uint32_t read_unsigned_exponential_golomb_code()
         {
             uint32_t i = 0;
-            while ((read_1_bit() == 0) && (i < 32U))
+            while ((read_bit() == 0) && (i < 32U))
             {
                 i++;
             }
