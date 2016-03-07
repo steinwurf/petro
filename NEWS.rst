@@ -6,7 +6,9 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Major: Replaced read_N_bits API with read_bits(N) API.
+* Minor: Added `sequence_parameter_set` and `picture_parameter_set`.
+  Note no parsing is done in `picture_parameter_set`.
 
 2.0.1
 -----
