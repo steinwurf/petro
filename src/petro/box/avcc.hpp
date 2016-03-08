@@ -7,9 +7,12 @@
 #include <string>
 #include <cassert>
 #include <vector>
+#include <memory>
 
 #include "box.hpp"
 #include "../byte_stream.hpp"
+#include "../sequence_parameter_set.hpp"
+#include "../picture_parameter_set.hpp"
 
 namespace petro
 {
@@ -30,9 +33,11 @@ namespace box
 
         virtual std::string describe() const;
 
-        std::vector<uint8_t> sequence_parameter_set(uint32_t index) const;
+        std::shared_ptr<petro::sequence_parameter_set> sequence_parameter_set(
+            uint32_t index) const;
 
-        std::vector<uint8_t> picture_parameter_set(uint32_t index) const;
+        std::shared_ptr<petro::picture_parameter_set> picture_parameter_set(
+            uint32_t index) const;
 
         uint8_t length_size() const;
 
@@ -60,14 +65,16 @@ namespace box
         uint8_t m_num_of_sequence_parameter_sets;
 
         /// the SPSs
-        std::vector<std::vector<uint8_t>> m_sequence_parameter_sets;
+        std::vector<std::shared_ptr<petro::sequence_parameter_set>>
+            m_sequence_parameter_sets;
 
         /// the number of PPS that are used as the initial set of PPSs for
         /// decoding the AVC elementary stream
         uint8_t m_num_of_picture_parameter_sets;
 
         /// the SPSs
-        std::vector<std::vector<uint8_t>> m_picture_parameter_sets;
+        std::vector<std::shared_ptr<petro::picture_parameter_set>>
+            m_picture_parameter_sets;
     };
 
 }

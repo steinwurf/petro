@@ -28,20 +28,20 @@ namespace descriptor
             }
 
             auto bit_reader = petro::bit_reader(m_specific_info);
-            m_mpeg_audio_object_type = bit_reader.read_5_bits();
+            m_mpeg_audio_object_type = bit_reader.read_bits(5);
 
             if (m_mpeg_audio_object_type == 0x1f)
-                m_mpeg_audio_object_type = 32 + bit_reader.read_6_bits();
+                m_mpeg_audio_object_type = 32 + bit_reader.read_bits(6);
 
-            m_frequency_index = bit_reader.read_4_bits();
+            m_frequency_index = bit_reader.read_bits(4);
 
             if (m_frequency_index == 15)
                 m_frequency_index =
-                   (uint32_t) bit_reader.read_8_bits() << 16 |
-                   (uint32_t) bit_reader.read_8_bits() << 8 |
-                   (uint32_t) bit_reader.read_8_bits();
+                   (uint32_t) bit_reader.read_bits(8) << 16 |
+                   (uint32_t) bit_reader.read_bits(8) << 8 |
+                   (uint32_t) bit_reader.read_bits(8);
 
-            m_channel_configuration = bit_reader.read_4_bits();
+            m_channel_configuration = bit_reader.read_bits(4);
         }
         std::vector<uint8_t> specific_info() const
         {

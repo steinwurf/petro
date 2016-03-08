@@ -86,10 +86,10 @@ int main(int argc, char* argv[])
     std::vector<char> nalu_seperator = {0, 0, 0, 1};
     auto sps = avcc->sequence_parameter_set(0);
     h264_file.write(nalu_seperator.data(), nalu_seperator.size());
-    h264_file.write((char*)sps.data(), sps.size());
+    h264_file.write((char*)sps->data(), sps->size());
     auto pps = avcc->picture_parameter_set(0);
     h264_file.write(nalu_seperator.data(), nalu_seperator.size());
-    h264_file.write((char*)pps.data(), pps.size());
+    h264_file.write((char*)pps->data(), pps->size());
 
     // write video data
     std::ifstream mp4_file(filename, std::ios::binary);
