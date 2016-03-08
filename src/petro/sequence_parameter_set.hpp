@@ -7,12 +7,6 @@
 #include <sstream>
 #include <vector>
 
-
-
-#include <iostream>
-
-
-
 #include "bit_reader.hpp"
 
 namespace petro
@@ -39,8 +33,8 @@ namespace petro
             m_constraint_set3_flag = bits.read_bit();
             m_constraint_set4_flag = bits.read_bit();
             m_constraint_set5_flag = bits.read_bit();
-            uint8_t reserved_zero_2bits  = bits.read_bits(2);
-            assert(reserved_zero_2bits == 0);
+            // reserved_zero_2bits
+            bits.skip(2);
 
             m_level_idc = bits.read_bits(8);
             m_seq_parameter_set_id =
@@ -148,14 +142,21 @@ namespace petro
             }
             m_vui_parameters_present_flag = bits.read_bit();
 
+            uint32_t pic_width_in_samples = m_pic_width_in_mbs * 16;
             m_width =
-                m_pic_width_in_mbs * 16 -
-                m_frame_crop_left_offset * 2 -
-                m_frame_crop_right_offset * 2;
+                pic_width_in_samples -
+                (m_frame_crop_left_offset * 2) -
+                (m_frame_crop_right_offset * 2);
+
+            // height of each decoded picture in units of macroblocks
+            uint32_t pic_height_in_mbs =
+                m_pic_height_in_map_units * (2 - m_frame_mbs_only_flag);
+
+            uint32_t pic_height_in_samples = pic_height_in_mbs * 16;
             m_height =
-                m_pic_height_in_map_units * 16 * (2 - m_frame_mbs_only_flag) -
-                m_frame_crop_top_offset * 2 -
-                m_frame_crop_bottom_offset * 2;
+                pic_height_in_samples -
+                (m_frame_crop_top_offset * 2) -
+                (m_frame_crop_bottom_offset * 2);
         }
 
         uint32_t width() const
@@ -366,6 +367,7 @@ namespace petro
             ss << "      height: " << m_height << std::endl;
             return ss.str();
         }
+
     private:
 
         std::vector<uint8_t> m_data;
@@ -377,8 +379,13 @@ namespace petro
         uint32_t m_bit_depth_luma;
         uint32_t m_log2_max_frame_num;
         uint32_t m_log2_max_pic_order_cnt_lsb;
+
+        /// The height in slice group map units of a decoded frame or field.
         uint32_t m_pic_height_in_map_units;
+
+        /// The width of each decoded picture in units of macroblocks.
         uint32_t m_pic_width_in_mbs;
+
         uint32_t m_num_ref_frames;
         uint32_t m_num_ref_frames_in_pic_order_cnt_cycle = 0;
         uint32_t m_pic_order_cnt_type;
@@ -401,7 +408,13 @@ namespace petro
         uint8_t m_delta_pic_order_always_zero_flag;
         uint8_t m_direct_8x8_inference_flag;
         uint8_t m_frame_cropping_flag;
+
+        /// 0 specifies that coded pictures of the coded video sequence may
+        /// either be coded fields or coded frames.
+        /// 1 specifies that every coded picture of the coded video sequence is
+        /// a coded frame containing only frame macroblocks.
         uint8_t m_frame_mbs_only_flag;
+
         uint8_t m_gaps_in_frame_num_value_allowed_flag;
         uint8_t m_mb_adaptive_frame_field_flag;
         uint8_t m_qpprime_y_zero_transform_bypass_flag;
@@ -410,6 +423,11 @@ namespace petro
         uint8_t m_seq_scaling_matrix_present_flag;
         uint8_t m_vui_parameters_present_flag;
 
+        /// Specifies the samples of the pictures in the coded video sequence
+        /// that are output from the decoding process, in terms of a rectangular
+        /// region specified in frame coordinates for output.
+        /// When m_frame_cropping_flag is equal to 0, the values of shall be
+        /// inferred to be equal to 0.
         uint32_t m_frame_crop_left_offset = 0;
         uint32_t m_frame_crop_right_offset = 0;
         uint32_t m_frame_crop_top_offset = 0;

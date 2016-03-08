@@ -11,7 +11,6 @@ namespace petro
 {
     class picture_parameter_set
     {
-
     public:
         picture_parameter_set(std::vector<uint8_t> data):
             m_data(data)
@@ -35,6 +34,7 @@ namespace petro
 
             return ss.str();
         }
+
     private:
 
         std::vector<uint8_t> m_data;
