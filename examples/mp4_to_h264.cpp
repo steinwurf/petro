@@ -79,14 +79,20 @@ int main(int argc, char* argv[])
     if (stco != nullptr)
     {
         chunk_offsets.resize(stco->entry_count());
-        std::copy(stco->entries().begin(), stco->entries().end(), chunk_offsets.begin());
+        std::copy(
+            stco->entries().begin(),
+            stco->entries().end(),
+            chunk_offsets.begin());
     }
     else
     {
         auto co64 = trak->get_child<petro::box::co64>();
         assert(co64 != nullptr);
         chunk_offsets.resize(co64->entry_count());
-        std::copy(co64->entries().begin(), co64->entries().end(), chunk_offsets.begin());
+        std::copy(
+            co64->entries().begin(),
+            co64->entries().end(),
+            chunk_offsets.begin());
     }
 
     auto stsc = trak->get_child<petro::box::stsc>();
