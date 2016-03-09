@@ -6,7 +6,8 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Minor: Expose `entry_count`, `entries`, and `chunk_offset` in `co64` box to
+  allow extraction of media data in large mp4 files.
 
 3.0.0
 -----

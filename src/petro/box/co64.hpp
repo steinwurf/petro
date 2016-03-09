@@ -61,6 +61,23 @@ namespace box
             return ss.str();
         }
 
+        const std::vector<uint64_t>& entries() const
+        {
+            return m_entries;
+        }
+
+        uint64_t entry_count() const
+        {
+            return m_entry_count;
+        }
+
+
+        uint64_t chunk_offset(uint32_t chunk_index) const
+        {
+            assert(chunk_index < m_entry_count);
+            return m_entries[chunk_index];
+        }
+
     private:
 
         /// an integer that gives the number of entries in the following table
