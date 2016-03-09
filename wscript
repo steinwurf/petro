@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 APPNAME = 'petro'
-VERSION = '3.0.0'
+VERSION = '3.1.0'
 
 import waflib.extras.wurf_options
 
