@@ -50,7 +50,8 @@ int main(int argc, char* argv[])
                         petro::box::stbl<petro::parser<
                             petro::box::stsd,
                             petro::box::stsc,
-                            petro::box::stco
+                            petro::box::stco,
+                            petro::box::co64
                         >>
                     >>
                 >>
@@ -73,8 +74,20 @@ int main(int argc, char* argv[])
     auto trak = avc1->get_parent("trak");
     assert(trak != nullptr);
 
+    std::vector<uint64_t> chunk_offsets;
     auto stco = trak->get_child<petro::box::stco>();
-    assert(stco != nullptr);
+    if (stco != nullptr)
+    {
+        chunk_offsets.resize(stco->entry_count());
+        std::copy(stco->entries().begin(), stco->entries().end(), chunk_offsets.begin());
+    }
+    else
+    {
+        auto co64 = trak->get_child<petro::box::co64>();
+        assert(co64 != nullptr);
+        chunk_offsets.resize(co64->entry_count());
+        std::copy(co64->entries().begin(), co64->entries().end(), chunk_offsets.begin());
+    }
 
     auto stsc = trak->get_child<petro::box::stsc>();
     assert(stsc != nullptr);
@@ -93,9 +106,9 @@ int main(int argc, char* argv[])
 
     // write video data
     std::ifstream mp4_file(filename, std::ios::binary);
-    for (uint32_t i = 0; i < stco->entry_count(); ++i)
+    for (uint32_t i = 0; i < chunk_offsets.size(); ++i)
     {
-        mp4_file.seekg(stco->chunk_offset(i));
+        mp4_file.seekg(chunk_offsets[i]);
         for (uint32_t j = 0; j < stsc->samples_for_chunk(i); ++j)
         {
             h264_file.write(nalu_seperator.data(), nalu_seperator.size());
