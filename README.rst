@@ -9,4 +9,6 @@ The implementation is based on `ISO/IEC 14496-12 <http://www.iso.org/iso/catalog
 Usage
 =====
 
-An example of how to use petro is located in the examples folder.
+.. image:: https://raw.githubusercontent.com/steinwurf/petro/master/petro.gif
+
+More examples of how to use petro is located in the examples folder.
