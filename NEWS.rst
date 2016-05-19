@@ -6,6 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+3.2.0
+------
 * Minor: Added getters for the private fields of ``sl_config_descriptor``.
 * Patch: Fixed warnings.
 * Minor: Added license.
