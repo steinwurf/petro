@@ -6,6 +6,8 @@ every change, see the Git log.
 
 Latest
 ------
+* Minor: Added getters for the private fields of ``sl_config_descriptor``.
+* Patch: Fixed warnings.
 * Minor: Added license.
 
 3.1.0
