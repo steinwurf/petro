@@ -21,15 +21,14 @@ namespace petro
         h264_extractor(std::ifstream& file);
         ~h264_extractor();
 
-        std::shared_ptr<sequence_parameter_set> sps();
-        std::shared_ptr<picture_parameter_set> pps();
+        const std::shared_ptr<sequence_parameter_set> sps();
+        const std::shared_ptr<picture_parameter_set> pps();
         uint32_t found_samples();
         std::vector<char> next_nalu();
         bool has_next_nalu();
 
-
     private:
-        uint32_t read_nalu_size();
+        uint32_t read_nalu_size(std::istream& file, uint8_t length_size);
 
     private:
         std::ifstream& m_file;

@@ -72,12 +72,12 @@ namespace petro
         assert(m_stsz != nullptr);
     }
 
-    std::shared_ptr<sequence_parameter_set> h264_extractor::sps()
+    const std::shared_ptr<sequence_parameter_set> h264_extractor::sps()
     {
         return m_avcc->sequence_parameter_set(0);
     }
 
-    std::shared_ptr<picture_parameter_set> h264_extractor::pps()
+    const std::shared_ptr<picture_parameter_set> h264_extractor::pps()
     {
         return m_avcc->picture_parameter_set(0);
     }
@@ -99,6 +99,38 @@ namespace petro
 
     std::vector<char> h264_extractor::next_nalu()
     {
-//        if (!sample)
+        if (!(m_sample_size > 0))
+        {
+            m_found_sample_size++;
+            if(has_next_nalu())
+            {
+                m_chunk++;
+                m_file.seekg(m_chunk_offsets[m_chunk]);
+            }
+
+        }
+
+        auto nalu_size = read_nalu_size(m_file, m_avcc->length_size());
+        m_sample_size -= nalu_size;
+        std::vector<char> temp(naul_size);
+        return return temp;
+
+
+    }
+
+    uint32_t h264_extractor::read_nalu_size(
+        std::istream& file,
+        uint8_t length_size)
+    {
+        std::vector<uint8_t> data(length_size);
+        file.read((char*)data.data(), data.size());
+
+        uint32_t result = 0;
+        for (uint8_t i = 0; i < length_size; ++i)
+        {
+            result |= data[i] << ((length_size - 1) - i) * 8;
+        }
+
+        return result;
     }
 }
