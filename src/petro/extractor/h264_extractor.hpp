@@ -30,41 +30,16 @@ namespace petro
 
     private:
         uint32_t read_nalu_size();
-        void setup();
 
     private:
         std::ifstream& m_file;
-        std::string m_filename;
         uint32_t m_found_samples = 0;
+        uint32_t sample = 0;
         uint32_t m_sample_size;
         uint32_t m_chunk = 0;
-        std::shared_ptr<const box::box> m_avc1;
-        std::shared_ptr<const box::avcc> m_avcc;
-        std::shared_ptr<box::box> m_trak;
-        std::shared_ptr<const box::stco> m_stco;
-        std::shared_ptr<const box::stsc> m_stsc;
-        std::shared_ptr<const box::stsz> m_stsz;
-
         std::vector<uint64_t> m_chunk_offsets;
-
-        parser<
-            box::moov<parser<
-            box::trak<parser<
-            box::mdia<parser<
-            box::hdlr,
-                          box::minf<parser<
-                                        box::stbl<
-                                            parser<
-                                                box::stsd,
-                                                box::stsc,
-                                                box::stco,
-                                                box::co64,
-                                                box::stsz
-                                                >>
-                                        >>
-                          >>
-                          >>
-                          >>
-            > m_parser;
-    }
+        std::shared_ptr<petro::box::avcc> m_avcc;
+        std::shared_ptr<petro::box::stsz> m_stsc;
+        std::shared_ptr<petro::box::stsz> m_stsz;
+    };
 }
