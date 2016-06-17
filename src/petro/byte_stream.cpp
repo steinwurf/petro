@@ -21,11 +21,10 @@ namespace petro
         m_remaining_bytes(size)
     { }
 
-    byte_stream::byte_stream(const std::string& filename):
-        m_data(std::make_shared<file_byte_stream>(filename))
+    byte_stream::byte_stream(std::ifstream& data) :
+        m_data(std::make_shared<file_byte_stream>(data))
     {
-        std::ifstream f(filename, std::ifstream::ate | std::ifstream::binary);
-        m_remaining_bytes = f.tellg();
+        m_remaining_bytes = data.tellg();
     }
 
     byte_stream::byte_stream(byte_stream& bs, uint64_t size):
