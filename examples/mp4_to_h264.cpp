@@ -11,16 +11,17 @@
 #include <string>
 #include <memory>
 
-uint32_t read_sample_size(std::istream& file)
+uint32_t read_nalu_size(std::istream& file, uint8_t length_size)
 {
-    std::vector<uint8_t> data(4);
+    std::vector<uint8_t> data(length_size);
     file.read((char*)data.data(), data.size());
 
-    uint32_t result =
-       (uint32_t) data[0] << 24 |
-       (uint32_t) data[1] << 16 |
-       (uint32_t) data[2] << 8  |
-       (uint32_t) data[3];
+    uint32_t result = 0;
+    for (uint8_t i = 0; i < length_size; ++i)
+    {
+        result |= data[i] << ((length_size - 1) - i) * 8;
+    }
+
     return result;
 }
 
@@ -53,7 +54,8 @@ int main(int argc, char* argv[])
                             petro::box::stsd,
                             petro::box::stsc,
                             petro::box::stco,
-                            petro::box::co64
+                            petro::box::co64,
+                            petro::box::stsz
                         >>
                     >>
                 >>
@@ -100,35 +102,50 @@ int main(int argc, char* argv[])
     auto stsc = trak->get_child<petro::box::stsc>();
     assert(stsc != nullptr);
 
+    auto stsz = trak->get_child<petro::box::stsz>();
+    assert(stsz != nullptr);
+
     // create output file
     std::ofstream h264_file(argv[2], std::ios::binary);
 
     // write sps and pps
-    std::vector<char> nalu_seperator = {0, 0, 0, 1};
+    std::vector<char> start_code = {0, 0, 0, 1};
     auto sps = avcc->sequence_parameter_set(0);
-    h264_file.write(nalu_seperator.data(), nalu_seperator.size());
+    h264_file.write(start_code.data(), start_code.size());
     h264_file.write((char*)sps->data(), sps->size());
     auto pps = avcc->picture_parameter_set(0);
-    h264_file.write(nalu_seperator.data(), nalu_seperator.size());
+    h264_file.write(start_code.data(), start_code.size());
     h264_file.write((char*)pps->data(), pps->size());
 
     // write video data
     std::ifstream mp4_file(filename, std::ios::binary);
-    for (uint32_t i = 0; i < chunk_offsets.size(); ++i)
+    uint32_t found_samples = 0;
+    auto length_size = avcc->length_size();
+    for (uint32_t chunk = 0; chunk < chunk_offsets.size(); ++chunk)
     {
-        mp4_file.seekg(chunk_offsets[i]);
-        for (uint32_t j = 0; j < stsc->samples_for_chunk(i); ++j)
+        mp4_file.seekg(chunk_offsets[chunk]);
+        for (uint32_t sample = 0; sample < stsc->samples_for_chunk(chunk);
+             ++sample)
         {
-            h264_file.write(nalu_seperator.data(), nalu_seperator.size());
-
-            auto sample_size = read_sample_size(mp4_file);
-
-            std::vector<char> temp(sample_size);
-            mp4_file.read(temp.data(), sample_size);
-            h264_file.write(temp.data(), sample_size);
+            // The sample size describes the size of the Access Unit (AU) of the
+            // h264 data. This means multiple NALUs can be in the same "sample".
+            // Each of these NALUs needs a preceeding Annex B start code.
+            uint32_t sample_size = stsz->sample_size(found_samples);
+            while (sample_size > 0)
+            {
+                auto nalu_size = read_nalu_size(mp4_file, length_size);
+                sample_size -= length_size;
+                h264_file.write(start_code.data(), start_code.size());
+                std::vector<char> temp(nalu_size);
+                mp4_file.read(temp.data(), nalu_size);
+                sample_size -= nalu_size;
+                h264_file.write(temp.data(), nalu_size);
+            }
+            found_samples++;
         }
     }
 
+    mp4_file.close();
     h264_file.close();
     return 0;
 }
