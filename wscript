@@ -38,7 +38,6 @@ def configure(conf):
 
 
 def build(bld):
-
     bld.load("wurf_common_tools")
 
     bld.env.append_unique(
@@ -52,4 +51,4 @@ def build(bld):
         # Only build tests when executed from the top-level wscript,
         # i.e. not when included as a dependency
         bld.recurse('test')
-#        bld.recurse('examples')
+        bld.recurse('examples')

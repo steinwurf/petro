@@ -108,10 +108,15 @@ namespace petro
             }
         }
 
-        auto nalu_size = read_nalu_size(m_file, m_avcc->length_size());
-        m_sample_size -= nalu_size;
-        std::vector<char> temp(nalu_size);
+        m_current_nalu_size = read_nalu_size(m_file, m_avcc->length_size());
+        m_sample_size -= m_current_nalu_size;
+        std::vector<char> temp(m_current_nalu_size);
         return temp;
+    }
+
+    uint32_t h264_extractor::current_nalu_size()
+    {
+        return m_current_nalu_size;
     }
 
     uint32_t h264_extractor::read_nalu_size(
