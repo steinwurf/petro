@@ -38,7 +38,7 @@ namespace petro
         auto avc1 = root->get_child("avc1");
         assert(avc1 != nullptr);
 
-        auto m_avcc = avc1->get_child<box::avcc>();
+        m_avcc = avc1->get_child<box::avcc>();
         assert(m_avcc != nullptr);
 
         auto trak = avc1->get_parent("trak");
@@ -86,6 +86,7 @@ namespace petro
     // Private methods
     bool h264_extractor::has_next_nalu()
     {
+        std::cout << "m_chunk: " << m_chunk << " and m_chunk_offsets: " << m_chunk_offsets.size() << std::endl;
         if(m_chunk < m_chunk_offsets.size())
         {
             return true;
@@ -109,8 +110,11 @@ namespace petro
         }
 
         m_current_nalu_size = read_nalu_size(m_file, m_avcc->length_size());
-        m_sample_size -= m_current_nalu_size;
+        std::cout << "Current nalu size: " << m_current_nalu_size << std::endl;
+        m_sample_size -= m_avcc->length_size();
         std::vector<char> temp(m_current_nalu_size);
+        m_file.read(temp.data(), m_current_nalu_size);
+        m_sample_size -= m_current_nalu_size;
         return temp;
     }
 

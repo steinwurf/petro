@@ -40,9 +40,8 @@ namespace petro
         uint32_t m_chunk = 0;
         uint32_t m_current_nalu_size = 0;
         std::vector<uint64_t> m_chunk_offsets;
-        std::shared_ptr<petro::box::avcc> m_avcc;
-        std::shared_ptr<petro::box::stsz> m_stsc;
-        std::shared_ptr<petro::box::stsz> m_stsz;
-
+        std::shared_ptr<const box::avcc> m_avcc;
+        std::shared_ptr<const box::stsz> m_stsc;
+        std::shared_ptr<const box::stsz> m_stsz;
     };
 }

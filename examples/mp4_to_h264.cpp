@@ -46,14 +46,15 @@ int main(int argc, char* argv[])
     std::vector<char> start_code = {0, 0, 0, 1};
     h264_file.write(start_code.data(), start_code.size());
     h264_file.write((char*)extractor.sps()->data(), extractor.sps()->size());
-    std::cout << "demo" << std::endl;
     h264_file.write(start_code.data(), start_code.size());
     h264_file.write((char*)extractor.pps()->data(), extractor.pps()->size());
 
+    int nalu_numer = 0;
     while (extractor.has_next_nalu())
     {
+        nalu_numer++;
         h264_file.write(start_code.data(), start_code.size());
-        std::cout << extractor.current_nalu_size() << std::endl;
+        auto next_nalu = extractor.next_nalu();
         //h264_file.write(extractor.next_nalu.data(),  extractor.current_nalu_size());
     }
 
