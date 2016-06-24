@@ -86,7 +86,6 @@ namespace petro
     // Private methods
     bool h264_extractor::has_next_nalu()
     {
-
         if(m_chunk < m_chunk_offsets.size())
         {
             return true;
@@ -107,15 +106,12 @@ namespace petro
                 m_chunk++;
                 m_file.seekg(m_chunk_offsets[m_chunk]);
             }
-
         }
 
         auto nalu_size = read_nalu_size(m_file, m_avcc->length_size());
         m_sample_size -= nalu_size;
         std::vector<char> temp(nalu_size);
         return temp;
-
-
     }
 
     uint32_t h264_extractor::read_nalu_size(
@@ -130,7 +126,6 @@ namespace petro
         {
             result |= data[i] << ((length_size - 1) - i) * 8;
         }
-
         return result;
     }
 }

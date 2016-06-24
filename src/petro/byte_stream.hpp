@@ -55,6 +55,7 @@ namespace petro
             {
                 // @todo probably should be handled differently.
                 assert(m_data.good());
+                assert(0 == m_data.tellg());
             }
 
             uint8_t read_byte()

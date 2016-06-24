@@ -24,7 +24,10 @@ namespace petro
     byte_stream::byte_stream(std::ifstream& data) :
         m_data(std::make_shared<file_byte_stream>(data))
     {
+        data.seekg(0, std::ios::end);
         m_remaining_bytes = data.tellg();
+        data.seekg(0);
+
     }
 
     byte_stream::byte_stream(byte_stream& bs, uint64_t size):
