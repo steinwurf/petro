@@ -1,7 +1,7 @@
 // Copyright (c) Steinwurf ApS 2016.
 // All Rights Reserved
 //
-// Distributed under the "BSD License". See the accompanying LICENSE.rst file.
+// Distributed  under the "BSD License". See the accompanying LICENSE.rst file.
 
 #include "h264_extractor.hpp"
 
@@ -101,7 +101,7 @@ namespace petro
     {
         if (!(m_sample_size > 0))
         {
-            m_found_sample_size++;
+            m_found_samples++;
             if(has_next_nalu())
             {
                 m_chunk++;
@@ -112,8 +112,8 @@ namespace petro
 
         auto nalu_size = read_nalu_size(m_file, m_avcc->length_size());
         m_sample_size -= nalu_size;
-        std::vector<char> temp(naul_size);
-        return return temp;
+        std::vector<char> temp(nalu_size);
+        return temp;
 
 
     }
