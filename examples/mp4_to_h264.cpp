@@ -55,6 +55,7 @@ int main(int argc, char* argv[])
         nalu_numer++;
         h264_file.write(start_code.data(), start_code.size());
         auto next_nalu = extractor.next_nalu();
+        h264_file.write(next_nalu.data(), next_nalu.size());
         //h264_file.write(extractor.next_nalu.data(),  extractor.current_nalu_size());
     }
 

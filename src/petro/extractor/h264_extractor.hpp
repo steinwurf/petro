@@ -35,13 +35,13 @@ namespace petro
     private:
         std::ifstream& m_file;
         uint32_t m_found_samples = 0;
-        uint32_t sample = 0;
+        uint32_t m_sample = 0;
         uint32_t m_sample_size;
         uint32_t m_chunk = 0;
         uint32_t m_current_nalu_size = 0;
         std::vector<uint64_t> m_chunk_offsets;
         std::shared_ptr<const box::avcc> m_avcc;
-        std::shared_ptr<const box::stsz> m_stsc;
+        std::shared_ptr<const box::stsc> m_stsc;
         std::shared_ptr<const box::stsz> m_stsz;
     };
 }

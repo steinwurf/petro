@@ -65,10 +65,10 @@ namespace petro
                 m_chunk_offsets.begin());
         }
 
-        auto m_stsc = trak->get_child<box::stsc>();
+        m_stsc = trak->get_child<box::stsc>();
         assert(m_stsc != nullptr);
 
-        auto m_stsz = trak->get_child<box::stsz>();
+        m_stsz = trak->get_child<box::stsz>();
         assert(m_stsz != nullptr);
     }
 
@@ -86,7 +86,6 @@ namespace petro
     // Private methods
     bool h264_extractor::has_next_nalu()
     {
-        std::cout << "m_chunk: " << m_chunk << " and m_chunk_offsets: " << m_chunk_offsets.size() << std::endl;
         if(m_chunk < m_chunk_offsets.size())
         {
             return true;
@@ -99,14 +98,19 @@ namespace petro
 
     std::vector<char> h264_extractor::next_nalu()
     {
-        if (!(m_sample_size > 0))
+
+        if(!(m_sample_size > 0))
         {
             m_found_samples++;
-            if(has_next_nalu())
-            {
-                m_chunk++;
-                m_file.seekg(m_chunk_offsets[m_chunk]);
-            }
+            m_sample++;
+            m_sample_size = m_stsz->sample_size(m_found_samples);
+        }
+
+
+        if(m_sample = m_stsc->samples_for_chunk(m_chunk))
+        {
+            m_chunk++;
+            m_file.seekg(m_chunk_offsets[m_chunk]);
         }
 
         m_current_nalu_size = read_nalu_size(m_file, m_avcc->length_size());
