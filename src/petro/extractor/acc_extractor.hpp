@@ -4,19 +4,22 @@
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 #include "../parser.hpp"
 #include "../box/all.hpp"
+#include "../descriptor/decoder_config_descriptor.hpp"
+#include "mpeg_versions.hpp"
+
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <memory>
 namespace petro
 {
-    // supported mpeg versions (?)
-    uint8_t MPEG_4_VERSION = 0;
-    uint8_t MPEG_2_VERSION = 1;
     class acc_extractor
     {
     public:
         acc_extractor(std::ifstream& file);
+
+        bool has_next_adts();
+        std::vector<char> next_adts();
 
     private:
         std::vector<uint8_t> create_adts(
@@ -29,5 +32,15 @@ namespace petro
 
     private:
         std::ifstream& m_file;
+
+        uint32_t m_found_samples = 0;
+        uint32_t m_index = 0;
+        uint32_t m_j = 0;
+        std::shared_ptr<const box::stco> m_stco;
+        std::shared_ptr<const box::stsc> m_stsc;
+        std::shared_ptr<const box::stsz> m_stsz;
+        uint8_t m_channel_configuration;
+        uint32_t m_frequency_index;
+        uint8_t m_mpeg_audio_object_type;
     };
 }

@@ -42,7 +42,61 @@ namespace petro
 
         auto esds = mp4a->get_child<petro::box::esds>();
         assert(esds != nullptr);
+        auto decoder_config_descriptor =
+            esds->descriptor()->decoder_config_descriptor();
 
+        m_channel_configuration =
+            decoder_config_descriptor->channel_configuration();
+        m_frequency_index = decoder_config_descriptor->frequency_index();
+        m_mpeg_audio_object_type =
+            decoder_config_descriptor->mpeg_audio_object_type();
+
+        auto trak = mp4a->get_parent("trak");
+        assert(trak != nullptr);
+
+        m_stco = trak->get_child<petro::box::stco>();
+        assert(m_stco != nullptr);
+
+        m_stsc = trak->get_child<petro::box::stsc>();
+        assert(m_stsc != nullptr);
+
+        m_stsz = trak->get_child<petro::box::stsz>();
+        assert(m_stsz != nullptr);
+    }
+
+    bool acc_extractor::has_next_adts()
+    {
+        if(m_index < m_stco->entry_count())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    std::vector<char> acc_extractor::next_adts()
+    {
+        if(!(m_j < m_stsc->samples_for_chunk(m_index)))
+        {
+            m_index++;
+            m_file.seekg(m_stco->chunk_offset(m_index));
+            m_j = 0;
+        }
+
+        uint16_t sample_size = m_stsz->sample_size(m_found_samples);
+
+        auto atds = create_adts(
+            sample_size,
+            m_channel_configuration,
+            m_frequency_index,
+            m_mpeg_audio_object_type);
+
+        std::vector<char> temp(sample_size);
+        m_file.read(temp.data(), sample_size);
+        m_found_samples++;
+        return temp;
     }
 
     std::vector<uint8_t> acc_extractor::create_adts(
