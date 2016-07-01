@@ -7,6 +7,8 @@
 
 namespace petro
 {
+namespace extractor
+{
     h264_extractor::h264_extractor(std::ifstream& file) :
         m_file(file)
     {
@@ -86,14 +88,20 @@ namespace petro
     // Private methods
     bool h264_extractor::has_next_nalu()
     {
-        if(m_chunk < m_chunk_offsets.size())
-        {
-            return true;
-        }
-        else
+        if(m_chunk == m_chunk_offsets.size())
         {
             return false;
         }
+        if(m_chunk < m_chunk_offsets.size() - 1)
+        {
+            return true;
+        }
+        if(m_sample < m_stsc->samples_for_chunk(m_chunk))
+        {
+            return true;
+        }
+        return false;
+
     }
 
     std::vector<char> h264_extractor::next_nalu()
@@ -141,4 +149,5 @@ namespace petro
         }
         return result;
     }
+}
 }

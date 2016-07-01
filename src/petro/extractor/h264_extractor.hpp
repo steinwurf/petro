@@ -15,6 +15,8 @@
 
 namespace petro
 {
+namespace extractor
+{
     class h264_extractor
     {
     public:
@@ -44,4 +46,5 @@ namespace petro
         std::shared_ptr<const box::stsc> m_stsc;
         std::shared_ptr<const box::stsz> m_stsz;
     };
+}
 }

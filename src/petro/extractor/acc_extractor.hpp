@@ -13,6 +13,8 @@
 #include <memory>
 namespace petro
 {
+namespace extractor
+{
     class acc_extractor
     {
     public:
@@ -43,4 +45,5 @@ namespace petro
         uint32_t m_frequency_index;
         uint8_t m_mpeg_audio_object_type;
     };
+}
 }

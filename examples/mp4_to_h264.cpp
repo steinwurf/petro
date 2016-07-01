@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
     // create output file
     std::ofstream h264_file(argv[2], std::ios::binary);
 
-    auto extractor = petro::h264_extractor(mp4_file);
+    auto extractor = petro::extractor::h264_extractor(mp4_file);
 
 
     std::vector<char> start_code = {0, 0, 0, 1};

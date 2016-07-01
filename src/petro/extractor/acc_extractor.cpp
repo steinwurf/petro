@@ -7,8 +7,10 @@
 #include <fstream>
 #include <string>
 #include <memory>
-
+#include <iostream>
 namespace petro
+{
+namespace extractor
 {
     acc_extractor::acc_extractor(std::ifstream& file) :
     m_file(file)
@@ -66,14 +68,23 @@ namespace petro
 
     bool acc_extractor::has_next_adts()
     {
-        if(m_index < m_stco->entry_count())
-        {
-            return true;
-        }
-        else
+        // If
+        if(m_index == m_stco->entry_count())
         {
             return false;
         }
+
+        if(m_index != m_stco->entry_count() - 1)
+        {
+            return true;
+        }
+
+        if(m_j < m_stsc->samples_for_chunk(m_index))
+        {
+            return true;
+        }
+        return false;
+
     }
 
     std::vector<char> acc_extractor::next_adts()
@@ -96,6 +107,7 @@ namespace petro
         std::vector<char> temp(sample_size);
         m_file.read(temp.data(), sample_size);
         m_found_samples++;
+        m_j++;
         return temp;
     }
 
@@ -150,4 +162,5 @@ namespace petro
 
         return adts;
     }
+}
 }
