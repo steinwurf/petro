@@ -21,7 +21,7 @@ namespace petro
         m_remaining_bytes(size)
     { }
 
-    byte_stream::byte_stream(std::ifstream& data) :
+    byte_stream::byte_stream(std::istream& data) :
         m_data(std::make_shared<file_byte_stream>(data))
     {
         data.seekg(0, std::ios::end);

@@ -50,7 +50,7 @@ namespace petro
 
         struct file_byte_stream : i_byte_stream
         {
-            file_byte_stream(std::ifstream& data):
+            file_byte_stream(std::istream& data):
                 m_data(data)
             {
                 // @todo probably should be handled differently.
@@ -70,14 +70,14 @@ namespace petro
             }
 
         private:
-            std::ifstream& m_data;
+            std::istream& m_data;
         };
 
 
     public:
 
         byte_stream(const uint8_t* data, uint64_t size);
-        byte_stream(std::ifstream& data);
+        byte_stream(std::istream& data);
         byte_stream(byte_stream& bs, uint64_t size);
 
         void skip(uint64_t bytes);

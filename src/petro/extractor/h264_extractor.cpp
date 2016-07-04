@@ -9,7 +9,7 @@ namespace petro
 {
 namespace extractor
 {
-    h264_extractor::h264_extractor(std::ifstream& file) :
+    h264_extractor::h264_extractor(std::istream& file) :
         m_file(file)
     {
         auto root = std::make_shared<box::root>();
@@ -115,7 +115,7 @@ namespace extractor
         }
 
 
-        if(m_sample = m_stsc->samples_for_chunk(m_chunk))
+        if(m_sample == m_stsc->samples_for_chunk(m_chunk))
         {
             m_chunk++;
             m_file.seekg(m_chunk_offsets[m_chunk]);

@@ -20,7 +20,7 @@ namespace extractor
     class h264_extractor
     {
     public:
-        h264_extractor(std::ifstream& file);
+        h264_extractor(std::istream& file);
         //~h264_extractor();
 
         const std::shared_ptr<sequence_parameter_set> sps();
@@ -35,7 +35,7 @@ namespace extractor
         uint32_t read_nalu_size(std::istream& file, uint8_t length_size);
 
     private:
-        std::ifstream& m_file;
+        std::istream& m_file;
         uint32_t m_found_samples = 0;
         uint32_t m_sample = 0;
         uint32_t m_sample_size;
