@@ -32,7 +32,7 @@ namespace extractor
 
 
     private:
-        uint32_t read_nalu_size(std::istream& file, uint8_t length_size);
+        uint32_t read_nalu_size();
 
     private:
         std::istream& m_file;

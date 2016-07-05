@@ -9,6 +9,7 @@ namespace petro
 {
 namespace extractor
 {
+
     h264_extractor::h264_extractor(std::istream& file) :
         m_file(file)
     {
@@ -72,6 +73,10 @@ namespace extractor
 
         m_stsz = trak->get_child<box::stsz>();
         assert(m_stsz != nullptr);
+
+        m_sample_size = m_stsz->sample_size(m_found_samples);
+        m_file.seekg(m_chunk_offsets[m_chunk]);
+        std::cout << "m_chunk_offsets: " << m_chunk_offsets.size() << " m_chunk: " << m_chunk << std::endl;
     }
 
     const std::shared_ptr<sequence_parameter_set> h264_extractor::sps()
@@ -107,11 +112,12 @@ namespace extractor
     std::vector<char> h264_extractor::next_nalu()
     {
 
-        if(!(m_sample_size > 0))
+        if(m_sample_size == 0)
         {
             m_found_samples++;
             m_sample++;
             m_sample_size = m_stsz->sample_size(m_found_samples);
+
         }
 
 
@@ -119,11 +125,14 @@ namespace extractor
         {
             m_chunk++;
             m_file.seekg(m_chunk_offsets[m_chunk]);
+            m_sample = 0;
+            std::cout << "m_chunk_offsets: " << m_chunk_offsets.size() << " m_chunk: " << m_chunk << std::endl;
         }
 
-        m_current_nalu_size = read_nalu_size(m_file, m_avcc->length_size());
-        std::cout << "Current nalu size: " << m_current_nalu_size << std::endl;
+
+        m_current_nalu_size = read_nalu_size();
         m_sample_size -= m_avcc->length_size();
+
         std::vector<char> temp(m_current_nalu_size);
         m_file.read(temp.data(), m_current_nalu_size);
         m_sample_size -= m_current_nalu_size;
@@ -135,17 +144,16 @@ namespace extractor
         return m_current_nalu_size;
     }
 
-    uint32_t h264_extractor::read_nalu_size(
-        std::istream& file,
-        uint8_t length_size)
+    uint32_t h264_extractor::read_nalu_size()
     {
-        std::vector<uint8_t> data(length_size);
-        file.read((char*)data.data(), data.size());
+        std::vector<uint8_t> data(m_avcc->length_size());
+
+        m_file.read((char*)data.data(), data.size());
 
         uint32_t result = 0;
-        for (uint8_t i = 0; i < length_size; ++i)
+        for (uint8_t i = 0; i < m_avcc->length_size(); ++i)
         {
-            result |= data[i] << ((length_size - 1) - i) * 8;
+            result |= data[i] << ((m_avcc->length_size() - 1) - i) * 8;
         }
         return result;
     }

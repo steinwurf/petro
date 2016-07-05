@@ -3,7 +3,7 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/extractor/acc_extractor.hpp>
+#include <petro/extractor/aac_extractor.hpp>
 
 #include <fstream>
 #include <string>
@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 {
     if (argc != 3 || std::string(argv[1]) == "--help")
     {
-        auto usage = "./mp4_to_acc MP4_INPUT ACC_OUTPUT";
+        auto usage = "./mp4_to_aac MP4_INPUT AAC_OUTPUT";
         std::cout << usage << std::endl;
         return 0;
     }
@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
     // fill output file with data.
     std::ifstream mp4_file(filename, std::ios::binary);
 
-    petro::extractor::acc_extractor extractor(mp4_file);
+    petro::extractor::aac_extractor extractor(mp4_file);
 
     while(extractor.has_next_adts())
     {
@@ -43,10 +43,6 @@ int main(int argc, char* argv[])
     }
 
     mp4_file.close();
-    aac_file.close();
-
-
-
     aac_file.close();
 
     return 0;
