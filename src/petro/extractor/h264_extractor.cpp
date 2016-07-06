@@ -101,10 +101,6 @@ namespace extractor
         {
             return true;
         }
-        // if(m_sample < m_stsc->samples_for_chunk(m_chunk))
-        // {
-        //     return true;
-        // }
         return false;
 
     }

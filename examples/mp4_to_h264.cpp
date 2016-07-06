@@ -13,17 +13,6 @@
 #include <memory>
 #include <iostream>
 
-// Remove me
-void print_vector(std::vector<char> v)
-{
-    std::cout << "[";
-    for(std::vector<char>::const_iterator i = v.begin(); i != v.end(); ++i)
-    {
-        std::cout << *i << ", ";
-    }
-    std::cout << "]" << std::endl;
-}
-
 int main(int argc, char* argv[])
 {
     if (argc != 3 || std::string(argv[1]) == "--help")
@@ -66,7 +55,6 @@ int main(int argc, char* argv[])
         nalu_number++;
         h264_file.write(start_code.data(), start_code.size());
         auto next_nalu = extractor.next_nalu();
-//        print_vector(next_nalu);
         h264_file.write(next_nalu.data(), next_nalu.size());
     }
 
