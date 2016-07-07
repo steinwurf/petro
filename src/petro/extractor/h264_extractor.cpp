@@ -76,7 +76,6 @@ namespace extractor
 
         m_sample_size = m_stsz->sample_size(m_found_samples);
         m_file.seekg(m_chunk_offsets[m_chunk]);
-        std::cout << "m_chunk_offsets: " << m_chunk_offsets.size() << " m_chunk: " << m_chunk << std::endl;
     }
 
     const std::shared_ptr<sequence_parameter_set> h264_extractor::sps()
@@ -122,7 +121,6 @@ namespace extractor
             m_chunk++;
             m_file.seekg(m_chunk_offsets[m_chunk]);
             m_sample = 0;
-            std::cout << "m_chunk_offsets: " << m_chunk_offsets.size() << " m_chunk: " << m_chunk << std::endl;
         }
 
 
