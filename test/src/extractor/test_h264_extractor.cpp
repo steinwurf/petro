@@ -15,13 +15,17 @@ void compare_vectors(std::vector<char> actual, std::vector<char> expected)
     EXPECT_EQ(expected, output);
 }
 
-
 TEST(test_h264_extractor, test_h264_file)
 {
     auto test_filename = "test.h264";
     std::ifstream test_h264(test_filename, std::ios::binary);
     EXPECT_TRUE(test_h264.is_open());
     EXPECT_TRUE(test_h264.good());
+
+    // Find last bye of test_h264 file enablig us to later
+    // check if we have rad the correct amount of bytes
+    auto last_byte = test_h264.seekg(0, std::ios::end).tellg();
+    test_h264.seekg(0);
 
     auto test_filename_2 = "test.mp4";
     std::ifstream test_mp4(test_filename_2, std::ios::binary);
@@ -35,6 +39,9 @@ TEST(test_h264_extractor, test_h264_file)
     auto sps_end = (char*)extractor.sps()->data() + extractor.sps()->size();
     std::vector<char> test_sps(sps_begin, sps_end);
 
+    // Because we know that we have the start code 00 00 00 01
+    // at the begining of all NALU's in the test data we need
+    // to read 4 extract byte
     std::vector<char> sps_v(test_sps.size() + 4);
     test_h264.read(sps_v.data(), sps_v.size());
     compare_vectors(sps_v, test_sps);
@@ -55,6 +62,9 @@ TEST(test_h264_extractor, test_h264_file)
         test_h264.read(temp.data(), temp.size());
         compare_vectors(temp, nalu);
     }
+
+    // Check if we have read the correct amount of bytes
+    EXPECT_EQ(last_byte, test_h264.tellg());
 
     test_h264.close();
     test_mp4.close();
