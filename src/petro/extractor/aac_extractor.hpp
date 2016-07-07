@@ -20,8 +20,8 @@ namespace extractor
     public:
         aac_extractor(std::ifstream& file);
 
-        bool has_next_adts();
-        std::vector<char> next_adts();
+        bool has_next_sample();
+        std::vector<char> next_sample();
 
     private:
         std::vector<uint8_t> create_adts(

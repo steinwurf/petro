@@ -36,9 +36,9 @@ int main(int argc, char* argv[])
 
     petro::extractor::aac_extractor extractor(mp4_file);
 
-    while(extractor.has_next_adts())
+    while(extractor.has_next_sample())
     {
-        auto next_adts = extractor.next_adts();
+        auto next_adts = extractor.next_sample();
         aac_file.write(next_adts.data(), next_adts.size());
     }
 

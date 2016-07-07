@@ -64,9 +64,10 @@ namespace extractor
 
         m_stsz = trak->get_child<petro::box::stsz>();
         assert(m_stsz != nullptr);
+        m_file.seekg(m_stco->chunk_offset(m_index));
     }
 
-    bool aac_extractor::has_next_adts()
+    bool aac_extractor::has_next_sample()
     {
         // If
         if(m_index == m_stco->entry_count())
@@ -84,10 +85,9 @@ namespace extractor
             return true;
         }
         return false;
-
     }
 
-    std::vector<char> aac_extractor::next_adts()
+    std::vector<char>  aac_extractor::next_sample()
     {
         if(!(m_j < m_stsc->samples_for_chunk(m_index)))
         {
@@ -106,9 +106,13 @@ namespace extractor
 
         std::vector<char> temp(sample_size);
         m_file.read(temp.data(), sample_size);
-        m_found_samples++;
-        m_j++;
-        return temp;
+
+        // Concatenate the ATDS with the sample and return result
+        std::vector<char> result;
+        result.insert(result.end(), atds.begin(), atds.end());
+        result.insert(result.end(), temp.begin(), temp.end());
+        return result;
+
     }
 
     std::vector<uint8_t> aac_extractor::create_adts(
