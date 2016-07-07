@@ -6,7 +6,8 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Patch: Made ``presentation_time`` ``inline`` to prevent multiple definitions
+  linker error.
 
 3.2.0
 ------
