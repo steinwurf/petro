@@ -27,8 +27,7 @@ TEST(test_aac_extractor, test_aac_file)
     // Check that each sample is correct
     while(aac_extractor.has_next_sample())
     {
-        std::cout << "/* message */" << std::endl;
-        // auto sample = aac_extractor.next_sample();
+        auto sample = aac_extractor.next_sample();
         // std::vector<char> temp(sample.size());
         // test_aac.read(temp.data(), temp.size());
         // EXPECT_EQ(sample, temp);

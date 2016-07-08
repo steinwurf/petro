@@ -64,12 +64,12 @@ namespace extractor
 
         m_stsz = trak->get_child<petro::box::stsz>();
         assert(m_stsz != nullptr);
+
         m_file.seekg(m_stco->chunk_offset(m_index));
     }
 
     bool aac_extractor::has_next_sample()
     {
-        // If
         if(m_index == m_stco->entry_count())
         {
             return false;
@@ -111,6 +111,8 @@ namespace extractor
         std::vector<char> result;
         result.insert(result.end(), atds.begin(), atds.end());
         result.insert(result.end(), temp.begin(), temp.end());
+        m_found_samples++;
+        m_j++;
         return result;
 
     }
