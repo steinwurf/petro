@@ -28,14 +28,14 @@ TEST(test_aac_extractor, test_aac_file)
     while(aac_extractor.has_next_sample())
     {
         auto sample = aac_extractor.next_sample();
-        // std::vector<char> temp(sample.size());
-        // test_aac.read(temp.data(), temp.size());
-        // EXPECT_EQ(sample, temp);
+        std::vector<char> temp(sample.size());
+        test_aac.read(temp.data(), temp.size());
+        EXPECT_EQ(sample, temp);
     }
 
     // Check if we are at end of file of test_aac
     //EXPECT_EQ(test_aac.peek(), std::ifstream::traits_type::eof());
 
-    // test_aac.close();
-    // test_mp4.close();
+    test_aac.close();
+    test_mp4.close();
 }
