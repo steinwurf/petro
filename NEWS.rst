@@ -8,6 +8,11 @@ Latest
 ------
 * tbd
 
+3.2.1
+------
+* Patch: Made ``presentation_time`` ``inline`` to prevent multiple definitions
+  linker error.
+
 3.2.0
 ------
 * Minor: Added getters for the private fields of ``sl_config_descriptor``.
