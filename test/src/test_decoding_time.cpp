@@ -3,11 +3,6 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-namespace petro
-{
-    enum class mpeg_versions
-    {
-        version2 = 2,
-        version4 = 4
-    };
-}
+#include <petro/decoding_time.hpp>
+
+#include <gtest/gtest.h>

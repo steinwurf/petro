@@ -329,7 +329,7 @@ TEST(test_byte_stream, read_uint64_t)
 
 TEST(test_byte_stream, read_type)
 {
-    std::vector<char> data = {
+    std::vector<uint8_t> data = {
         't', 'e', 's', 't',
         's', 'h', 'o', ' ',
         'f', 'u', 'l', 'l',

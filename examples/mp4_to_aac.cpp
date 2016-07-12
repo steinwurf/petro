@@ -35,10 +35,10 @@ int main(int argc, char* argv[])
     std::ofstream aac_file(argv[2], std::ios::binary);
 
     // Write the adts samples
-    while (extractor.has_next_sample())
+    while (extractor.advance_to_next_sample())
     {
-        auto next_adts = extractor.next_sample();
-        aac_file.write(next_adts.data(), next_adts.size());
+        auto next_adts = extractor.sample_data();
+        aac_file.write((char*)next_adts.data(), next_adts.size());
     }
 
     mp4_file.close();

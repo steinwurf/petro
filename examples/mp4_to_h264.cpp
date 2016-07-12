@@ -36,25 +36,18 @@ int main(int argc, char* argv[])
     std::ofstream h264_file(argv[2], std::ios::binary);
 
     // Write the sps and pps first
-    std::vector<char> start_code = {0, 0, 0, 1};
-    h264_file.write(start_code.data(), start_code.size());
-    h264_file.write((char*)extractor.sps()->data(), extractor.sps()->size());
-    h264_file.write(start_code.data(), start_code.size());
-    h264_file.write((char*)extractor.pps()->data(), extractor.pps()->size());
+    h264_file.write((char*)extractor.sps().data(), extractor.sps().size());
+    h264_file.write((char*)extractor.pps().data(), extractor.pps().size());
 
     // Write the video samples
-    int nalu_number = 0;
-    while (extractor.has_next_nalu())
+    while (extractor.advance_to_next_sample())
     {
-        nalu_number++;
-        h264_file.write(start_code.data(), start_code.size());
-        auto next_nalu = extractor.next_nalu();
-        h264_file.write(next_nalu.data(), next_nalu.size());
+        auto sample = extractor.sample_data();
+        h264_file.write((char*)sample.data(), sample.size());
     }
-
-    std::cout << "Amount of nalus: " << nalu_number << std::endl;
 
     mp4_file.close();
     h264_file.close();
+
     return 0;
 }

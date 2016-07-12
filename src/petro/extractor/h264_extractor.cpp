@@ -5,13 +5,31 @@
 
 #include "h264_extractor.hpp"
 
+#include <cassert>
+#include <algorithm>
+#include <iterator>
+
+#include "../parser.hpp"
+#include "../decoding_time.hpp"
+#include "../presentation_time.hpp"
+
 namespace petro
 {
 namespace extractor
 {
-    h264_extractor::h264_extractor(std::istream& file) :
-        m_file(file)
+    h264_extractor::h264_extractor(std::ifstream& file, bool loop) :
+        m_file(file),
+        m_chunk_index(0),
+        m_chunk_sample(0),
+        m_sample(0),
+        m_presentation_timestamp(0),
+        m_decoding_timestamp(0),
+        m_sample_delta(0),
+        m_loop(loop),
+        m_loop_offset(0)
     {
+        assert(m_file.good() && "Invalid input file");
+
         parser<
             box::moov<parser<
                 box::trak<parser<
@@ -24,6 +42,7 @@ namespace extractor
                                 box::stsc,
                                 box::stsd,
                                 box::co64,
+                                box::ctts,
                                 box::stts,
                                 box::stsz
                             >>
@@ -70,63 +89,129 @@ namespace extractor
         m_stsz = trak->get_child<box::stsz>();
         assert(m_stsz != nullptr);
 
-        m_sample_size = m_stsz->sample_size(m_found_samples);
-        m_file.seekg(m_chunk_offsets[m_chunk]);
+        auto mdhd = trak->get_child<box::mdhd>();
+        assert(mdhd != nullptr);
+        m_timescale = mdhd->timescale();
+
+        m_stts = trak->get_child<box::stts>();
+        assert(m_stts != nullptr);
+
+        m_ctts = trak->get_child<box::ctts>();
+
+        // Seek to the first chunk in the file
+        m_file.seekg(m_chunk_offsets[m_chunk_index]);
     }
 
-    const std::shared_ptr<sequence_parameter_set> h264_extractor::sps()
+    std::vector<uint8_t> h264_extractor::sps()
     {
-        return m_avcc->sequence_parameter_set(0);
+        // The sps buffer is returned with the start code
+        std::vector<uint8_t> buffer = {0, 0, 0, 1};
+        auto sps = m_avcc->sequence_parameter_set(0);
+        std::copy(sps->data(), sps->data() + sps->size(),
+                  std::back_inserter(buffer));
+        return buffer;
     }
 
-    const std::shared_ptr<picture_parameter_set> h264_extractor::pps()
+    std::vector<uint8_t> h264_extractor::pps()
     {
-        return m_avcc->picture_parameter_set(0);
+        // The pps buffer is returned with the start code
+        std::vector<uint8_t> buffer = {0, 0, 0, 1};
+        auto pps = m_avcc->picture_parameter_set(0);
+        std::copy(pps->data(), pps->data() + pps->size(),
+                  std::back_inserter(buffer));
+        return buffer;
     }
 
-    // Private methods
-    bool h264_extractor::has_next_nalu()
+    uint32_t h264_extractor::video_width()
     {
-        if (m_chunk == m_chunk_offsets.size())
-        {
+        auto sps = m_avcc->sequence_parameter_set(0);
+        return sps->width();
+    }
+
+    uint32_t h264_extractor::video_height()
+    {
+        auto sps = m_avcc->sequence_parameter_set(0);
+        return sps->height();
+    }
+
+    bool h264_extractor::advance_to_next_sample()
+    {
+        if (m_sample >= m_stsz->sample_count())
             return false;
-        }
-        if (m_chunk < m_chunk_offsets.size() - 1)
+
+        uint32_t sample_size = m_stsz->sample_size(m_sample);
+        m_sample_data.resize(sample_size);
+
+        // Read multiple NALUs and replace the AVCC headers with the start code
+        std::vector<uint8_t> start_code = {0, 0, 0, 1};
+        uint32_t nalu_offset = 0;
+        while (nalu_offset < sample_size)
         {
-            return true;
+            uint32_t nalu_size = read_nalu_size();
+            std::copy_n(start_code.begin(), 4, &m_sample_data[nalu_offset]);
+            nalu_offset += sizeof(uint32_t);
+            m_file.read((char*)&m_sample_data[nalu_offset], nalu_size);
+            nalu_offset += nalu_size;
         }
 
-        return false;
+        m_presentation_timestamp =
+            petro::presentation_time(m_stts, m_ctts, m_timescale, m_sample) +
+            m_loop_offset;
+
+        uint64_t decoding_timestamp =
+            decoding_time(m_stts, m_timescale, m_sample) +
+            m_loop_offset;
+
+        m_sample_delta = decoding_timestamp - m_decoding_timestamp;
+        m_decoding_timestamp = decoding_timestamp;
+        m_sample++;
+
+        m_chunk_sample += 1;
+        if (m_chunk_sample >= m_stsc->samples_for_chunk(m_chunk_index))
+        {
+            m_chunk_index += 1;
+            m_chunk_sample = 0;
+            if (m_chunk_index >= m_chunk_offsets.size())
+            {
+                if (m_loop)
+                {
+                    m_sample = 0;
+                    m_chunk_index = 0;
+                    m_loop_offset = m_decoding_timestamp;
+                    m_file.seekg(m_chunk_offsets[m_chunk_index]);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                m_file.seekg(m_chunk_offsets[m_chunk_index]);
+            }
+        }
+
+        return true;
     }
 
-    std::vector<char> h264_extractor::next_nalu()
+    std::vector<uint8_t> h264_extractor::sample_data()
     {
-        if (m_sample_size == 0)
-        {
-            m_found_samples++;
-            m_sample++;
-            m_sample_size = m_stsz->sample_size(m_found_samples);
-        }
-
-        if (m_sample == m_stsc->samples_for_chunk(m_chunk))
-        {
-            m_chunk++;
-            m_file.seekg(m_chunk_offsets[m_chunk]);
-            m_sample = 0;
-        }
-
-        m_current_nalu_size = read_nalu_size();
-        m_sample_size -= m_avcc->length_size();
-
-        std::vector<char> temp(m_current_nalu_size);
-        m_file.read(temp.data(), m_current_nalu_size);
-        m_sample_size -= m_current_nalu_size;
-        return temp;
+        return m_sample_data;
     }
 
-    uint32_t h264_extractor::current_nalu_size()
+    uint64_t h264_extractor::decoding_timestamp()
     {
-        return m_current_nalu_size;
+        return m_decoding_timestamp;
+    }
+
+    uint64_t h264_extractor::presentation_timestamp()
+    {
+        return m_presentation_timestamp;
+    }
+
+    uint64_t h264_extractor::sample_delta()
+    {
+        return m_sample_delta;
     }
 
     uint32_t h264_extractor::read_nalu_size()

@@ -1,3 +1,8 @@
+// Copyright (c) Steinwurf ApS 2016.
+// All Rights Reserved
+//
+// Distributed under the "BSD License". See the accompanying LICENSE.rst file.
+
 #include <petro/extractor/aac_extractor.hpp>
 
 #include <cstdint>
@@ -5,7 +10,7 @@
 #include <sstream>
 #include <memory>
 #include <fstream>
-#include <iterator>
+
 
 #include <gtest/gtest.h>
 
@@ -25,16 +30,13 @@ TEST(test_aac_extractor, test_aac_file)
     petro::extractor::aac_extractor aac_extractor(test_mp4);
 
     // Check that each sample is correct
-    while(aac_extractor.has_next_sample())
+    while (aac_extractor.advance_to_next_sample())
     {
-        auto sample = aac_extractor.next_sample();
-        std::vector<char> temp(sample.size());
-        test_aac.read(temp.data(), temp.size());
+        auto sample = aac_extractor.sample_data();
+        std::vector<uint8_t> temp(sample.size());
+        test_aac.read((char*)temp.data(), temp.size());
         EXPECT_EQ(sample, temp);
     }
-
-    // Check if we are at end of file of test_aac
-    //EXPECT_EQ(test_aac.peek(), std::ifstream::traits_type::eof());
 
     test_aac.close();
     test_mp4.close();

@@ -1,19 +1,15 @@
+// Copyright (c) Steinwurf ApS 2016.
+// All Rights Reserved
+//
+// Distributed under the "BSD License". See the accompanying LICENSE.rst file.
+
 #include <petro/extractor/h264_extractor.hpp>
 
 #include <cstdint>
 #include <vector>
-#include <sstream>
-#include <memory>
 #include <fstream>
-#include <iterator>
 
 #include <gtest/gtest.h>
-
-void compare_vectors(std::vector<char> actual, std::vector<char> expected)
-{
-    std::vector<char> output(actual.begin() + 4, actual.end());
-    EXPECT_EQ(expected, output);
-}
 
 TEST(test_h264_extractor, test_h264_file)
 {
@@ -22,7 +18,7 @@ TEST(test_h264_extractor, test_h264_file)
     EXPECT_TRUE(test_h264.is_open());
     EXPECT_TRUE(test_h264.good());
 
-    // Find last bye of test_h264 file enablig us to later
+    // Find the last byte of test_h264 file enabling us to later
     // check if we have rad the correct amount of bytes
     auto last_byte = test_h264.seekg(0, std::ios::end).tellg();
     test_h264.seekg(0);
@@ -34,34 +30,26 @@ TEST(test_h264_extractor, test_h264_file)
 
     petro::extractor::h264_extractor extractor(test_mp4);
 
-    // Get the SPS data from the extractor
-    auto sps_begin = (char*)extractor.sps()->data();
-    auto sps_end = (char*)extractor.sps()->data() + extractor.sps()->size();
-    std::vector<char> test_sps(sps_begin, sps_end);
-
-    // Because we know that we have the start code 00 00 00 01
-    // at the begining of all NALU's in the test data we need
-    // to read 4 extract byte
-    std::vector<char> sps_v(test_sps.size() + 4);
-    test_h264.read(sps_v.data(), sps_v.size());
-    compare_vectors(sps_v, test_sps);
+    // Each NALU has the 4-byte start code: 00 00 00 01
 
     // Get the SPS data from the extractor
-    auto pps_begin = (char*)extractor.pps()->data();
-    auto pps_end = (char*)extractor.pps()->data() + extractor.pps()->size();
-    std::vector<char> test_pps(pps_begin, pps_end);
+    std::vector<uint8_t> extracted_sps = extractor.sps();
+    std::vector<uint8_t> correct_sps(extracted_sps.size());
+    test_h264.read((char*)correct_sps.data(), correct_sps.size());
+    EXPECT_EQ(correct_sps, extracted_sps);
 
-    std::vector<char> pps_v(test_pps.size() + 4);
-    test_h264.read(pps_v.data(), pps_v.size());
+    // Get the PPS data from the extractor
+    std::vector<uint8_t> extracted_pps = extractor.pps();
+    std::vector<uint8_t> correct_pps(extracted_pps.size());
+    test_h264.read((char*)correct_pps.data(), correct_pps.size());
+    EXPECT_EQ(correct_pps, extracted_pps);
 
-    compare_vectors(pps_v, test_pps);
-
-    while (extractor.has_next_nalu())
+    while (extractor.advance_to_next_sample())
     {
-        auto nalu = extractor.next_nalu();
-        std::vector<char> temp(nalu.size() + 4);
-        test_h264.read(temp.data(), temp.size());
-        compare_vectors(temp, nalu);
+        auto sample = extractor.sample_data();
+        std::vector<uint8_t> temp(sample.size());
+        test_h264.read((char*)temp.data(), temp.size());
+        EXPECT_EQ(temp, sample);
     }
 
     // Check if we have read the correct amount of bytes
