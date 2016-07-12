@@ -9,31 +9,32 @@ namespace petro
 {
 namespace extractor
 {
-
     h264_extractor::h264_extractor(std::istream& file) :
         m_file(file)
     {
-        auto root = std::make_shared<box::root>();
-        byte_stream bs(m_file);
-
         parser<
             box::moov<parser<
                 box::trak<parser<
                     box::mdia<parser<
                         box::hdlr,
-                            box::minf<parser<
-                                box::stbl<parser<
-                                    box::stsd,
-                                    box::stsc,
-                                    box::stco,
-                                    box::co64,
-                                    box::stsz
-                                  >>
-                                >>
-                              >>
+                        box::mdhd,
+                        box::minf<parser<
+                            box::stbl<parser<
+                                box::stco,
+                                box::stsc,
+                                box::stsd,
+                                box::co64,
+                                box::stts,
+                                box::stsz
                             >>
-                         >>
-            > parser;
+                        >>
+                    >>
+                >>
+            >>
+        > parser;
+
+        auto root = std::make_shared<box::root>();
+        byte_stream bs(m_file);
 
         parser.read(root, bs);
 
@@ -50,22 +51,17 @@ namespace extractor
         auto stco = trak->get_child<box::stco>();
         if (stco != nullptr)
         {
-
-        m_chunk_offsets.resize(stco->entry_count());
-        std::copy(
-            stco->entries().begin(),
-            stco->entries().end(),
-            m_chunk_offsets.begin());
+            m_chunk_offsets.resize(stco->entry_count());
+            std::copy(stco->entries().begin(), stco->entries().end(),
+                      m_chunk_offsets.begin());
         }
         else
         {
             auto co64 = trak->get_child<box::co64>();
             assert(co64 != nullptr);
             m_chunk_offsets.resize(co64->entry_count());
-            std::copy(
-                co64->entries().begin(),
-                co64->entries().end(),
-                m_chunk_offsets.begin());
+            std::copy(co64->entries().begin(), co64->entries().end(),
+                      m_chunk_offsets.begin());
         }
 
         m_stsc = trak->get_child<box::stsc>();
@@ -88,41 +84,36 @@ namespace extractor
         return m_avcc->picture_parameter_set(0);
     }
 
-
     // Private methods
     bool h264_extractor::has_next_nalu()
     {
-        if(m_chunk == m_chunk_offsets.size())
+        if (m_chunk == m_chunk_offsets.size())
         {
             return false;
         }
-        if(m_chunk < m_chunk_offsets.size() - 1)
+        if (m_chunk < m_chunk_offsets.size() - 1)
         {
             return true;
         }
-        return false;
 
+        return false;
     }
 
     std::vector<char> h264_extractor::next_nalu()
     {
-
-        if(m_sample_size == 0)
+        if (m_sample_size == 0)
         {
             m_found_samples++;
             m_sample++;
             m_sample_size = m_stsz->sample_size(m_found_samples);
-
         }
 
-
-        if(m_sample == m_stsc->samples_for_chunk(m_chunk))
+        if (m_sample == m_stsc->samples_for_chunk(m_chunk))
         {
             m_chunk++;
             m_file.seekg(m_chunk_offsets[m_chunk]);
             m_sample = 0;
         }
-
 
         m_current_nalu_size = read_nalu_size();
         m_sample_size -= m_avcc->length_size();

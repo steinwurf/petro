@@ -3,15 +3,12 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/parser.hpp>
-#include <petro/box/all.hpp>
-#include <petro/extractor/h264_extractor.hpp>
-
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <memory>
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+
+#include <petro/extractor/h264_extractor.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -24,7 +21,6 @@ int main(int argc, char* argv[])
 
     auto filename = std::string(argv[1]);
 
-
     std::ifstream check(filename, std::ios::binary);
 
     if (!check.is_open() || !check.good())
@@ -33,22 +29,20 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-
-    // write video data
     std::ifstream mp4_file(filename, std::ios::binary);
-
-    // create output file
-    std::ofstream h264_file(argv[2], std::ios::binary);
-
     auto extractor = petro::extractor::h264_extractor(mp4_file);
 
+    // Create the h264 output file
+    std::ofstream h264_file(argv[2], std::ios::binary);
 
+    // Write the sps and pps first
     std::vector<char> start_code = {0, 0, 0, 1};
     h264_file.write(start_code.data(), start_code.size());
     h264_file.write((char*)extractor.sps()->data(), extractor.sps()->size());
     h264_file.write(start_code.data(), start_code.size());
     h264_file.write((char*)extractor.pps()->data(), extractor.pps()->size());
 
+    // Write the video samples
     int nalu_number = 0;
     while (extractor.has_next_nalu())
     {

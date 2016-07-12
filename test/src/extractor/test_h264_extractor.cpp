@@ -56,7 +56,8 @@ TEST(test_h264_extractor, test_h264_file)
 
     compare_vectors(pps_v, test_pps);
 
-    while (extractor.has_next_nalu()) {
+    while (extractor.has_next_nalu())
+    {
         auto nalu = extractor.next_nalu();
         std::vector<char> temp(nalu.size() + 4);
         test_h264.read(temp.data(), temp.size());

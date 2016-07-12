@@ -2,30 +2,35 @@
 // All Rights Reserved
 //
 // Distributed under the "BSD License". See the aacompanying LICENSE.rst file.
+
 #include "aac_extractor.hpp"
 
 #include <fstream>
 #include <string>
 #include <memory>
 #include <iostream>
+
 namespace petro
 {
 namespace extractor
 {
     aac_extractor::aac_extractor(std::ifstream& file) :
-    m_file(file)
+        m_file(file)
     {
-        petro::parser<
-            petro::box::moov<petro::parser<
-                petro::box::trak<petro::parser<
-                    petro::box::mdia<petro::parser<
-                        petro::box::hdlr,
-                        petro::box::minf<petro::parser<
-                            petro::box::stbl<petro::parser<
-                                petro::box::stco,
-                                petro::box::stsc,
-                                petro::box::stsd,
-                                petro::box::stsz
+        parser<
+            box::moov<parser<
+                box::trak<parser<
+                    box::mdia<parser<
+                        box::hdlr,
+                        box::mdhd,
+                        box::minf<parser<
+                            box::stbl<parser<
+                                box::stco,
+                                box::stsc,
+                                box::stsd,
+                                box::co64,
+                                box::stts,
+                                box::stsz
                             >>
                         >>
                     >>
@@ -33,8 +38,8 @@ namespace extractor
             >>
         > parser;
 
-        auto root = std::make_shared<petro::box::root>();
-        petro::byte_stream bs(m_file);
+        auto root = std::make_shared<box::root>();
+        byte_stream bs(m_file);
 
         parser.read(root, bs);
 
@@ -42,7 +47,7 @@ namespace extractor
         auto mp4a = root->get_child("mp4a");
         assert(mp4a != nullptr);
 
-        auto esds = mp4a->get_child<petro::box::esds>();
+        auto esds = mp4a->get_child<box::esds>();
         assert(esds != nullptr);
         auto decoder_config_descriptor =
             esds->descriptor()->decoder_config_descriptor();
@@ -56,13 +61,13 @@ namespace extractor
         auto trak = mp4a->get_parent("trak");
         assert(trak != nullptr);
 
-        m_stco = trak->get_child<petro::box::stco>();
+        m_stco = trak->get_child<box::stco>();
         assert(m_stco != nullptr);
 
-        m_stsc = trak->get_child<petro::box::stsc>();
+        m_stsc = trak->get_child<box::stsc>();
         assert(m_stsc != nullptr);
 
-        m_stsz = trak->get_child<petro::box::stsz>();
+        m_stsz = trak->get_child<box::stsz>();
         assert(m_stsz != nullptr);
 
         m_file.seekg(m_stco->chunk_offset(m_index));
@@ -70,26 +75,26 @@ namespace extractor
 
     bool aac_extractor::has_next_sample()
     {
-        if(m_index == m_stco->entry_count())
+        if (m_index == m_stco->entry_count())
         {
             return false;
         }
 
-        if(m_index != m_stco->entry_count() - 1)
+        if (m_index != m_stco->entry_count() - 1)
         {
             return true;
         }
 
-        if(m_j < m_stsc->samples_for_chunk(m_index))
+        if (m_j < m_stsc->samples_for_chunk(m_index))
         {
             return true;
         }
         return false;
     }
 
-    std::vector<char>  aac_extractor::next_sample()
+    std::vector<char> aac_extractor::next_sample()
     {
-        if(!(m_j < m_stsc->samples_for_chunk(m_index)))
+        if (!(m_j < m_stsc->samples_for_chunk(m_index)))
         {
             m_index++;
             m_file.seekg(m_stco->chunk_offset(m_index));
@@ -114,7 +119,6 @@ namespace extractor
         m_found_samples++;
         m_j++;
         return result;
-
     }
 
     std::vector<uint8_t> aac_extractor::create_adts(
@@ -125,7 +129,8 @@ namespace extractor
         mpeg_versions mpeg_version,
         uint8_t number_of_raw_data_blocks)
     {
-        assert(mpeg_version == mpeg_versions::version4 || mpeg_version == mpeg_versions::version2);
+        assert(mpeg_version == mpeg_versions::version4 ||
+               mpeg_version == mpeg_versions::version2);
         uint8_t protection_absent = 1;
 
         std::vector<uint8_t> adts;

@@ -12,7 +12,8 @@
 
 TEST(test_bit_reader, read_bit)
 {
-    std::vector<uint8_t> data {
+    std::vector<uint8_t> data
+    {
         0x00, //0000 0000
         0xFF, //1111 1111
         0xF0, //1111 0000
@@ -161,7 +162,8 @@ TEST(test_bit_reader, read_bits_2)
 
 TEST(test_bit_reader, read_bits_3)
 {
-    std::vector<uint8_t> data {
+    std::vector<uint8_t> data
+    {
         0x00, //0000 0000
         0xFF, //1111 1111
         0xF0, //1111 0000
@@ -225,7 +227,8 @@ TEST(test_bit_reader, read_bits_3)
 
 TEST(test_bit_reader, read_bits_4)
 {
-    std::vector<uint8_t> data {
+    std::vector<uint8_t> data
+    {
         0x00, //0000 0000
         0xFF, //1111 1111
         0xF0, //1111 0000
@@ -286,7 +289,8 @@ TEST(test_bit_reader, read_bits_4)
 
 TEST(test_bit_reader, read_bits_5)
 {
-    std::vector<uint8_t> data {
+    std::vector<uint8_t> data
+    {
         0x00, //0000 0000
         0xFF, //1111 1111
         0xF0, //1111 0000
@@ -308,7 +312,8 @@ TEST(test_bit_reader, read_bits_5)
 
 TEST(test_bit_reader, read_bits_6)
 {
-    std::vector<uint8_t> data {
+    std::vector<uint8_t> data
+    {
         0x00, //0000 0000
         0xFF, //1111 1111
         0xF0, //1111 0000
@@ -331,7 +336,8 @@ TEST(test_bit_reader, read_bits_6)
 
 TEST(test_bit_reader, read_bits_7)
 {
-    std::vector<uint8_t> data {
+    std::vector<uint8_t> data
+    {
         0x00, //0000 0000
         0xFF, //1111 1111
         0xF0, //1111 0000
@@ -355,7 +361,8 @@ TEST(test_bit_reader, read_bits_7)
 
 TEST(test_bit_reader, read_bits_8)
 {
-    std::vector<uint8_t> data {
+    std::vector<uint8_t> data
+    {
         0x00, //0000 0000
         0xFF, //1111 1111
         0xF0, //1111 0000

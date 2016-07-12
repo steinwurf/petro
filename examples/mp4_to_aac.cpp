@@ -3,12 +3,11 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/extractor/aac_extractor.hpp>
-
+#include <iostream>
 #include <fstream>
 #include <string>
-#include <memory>
-#include <iostream>
+
+#include <petro/extractor/aac_extractor.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -28,15 +27,15 @@ int main(int argc, char* argv[])
         std::cerr << "Error reading file: " << filename << std::endl;
         return 1;
     }
-    // create output file
-    std::ofstream aac_file(argv[2], std::ios::binary);
 
-    // fill output file with data.
     std::ifstream mp4_file(filename, std::ios::binary);
-
     petro::extractor::aac_extractor extractor(mp4_file);
 
-    while(extractor.has_next_sample())
+    // Create the aac output file
+    std::ofstream aac_file(argv[2], std::ios::binary);
+
+    // Write the adts samples
+    while (extractor.has_next_sample())
     {
         auto next_adts = extractor.next_sample();
         aac_file.write(next_adts.data(), next_adts.size());

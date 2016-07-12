@@ -2,15 +2,17 @@
 // All Rights Reserved
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
-#include "../parser.hpp"
-#include "../box/all.hpp"
-#include "../descriptor/decoder_config_descriptor.hpp"
-#include "mpeg_versions.hpp"
 
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <memory>
+
+#include "../parser.hpp"
+#include "../box/all.hpp"
+#include "../descriptor/decoder_config_descriptor.hpp"
+#include "mpeg_versions.hpp"
+
 namespace petro
 {
 namespace extractor
@@ -18,12 +20,14 @@ namespace extractor
     class aac_extractor
     {
     public:
+
         aac_extractor(std::ifstream& file);
 
         bool has_next_sample();
         std::vector<char> next_sample();
 
     private:
+
         std::vector<uint8_t> create_adts(
             uint16_t aac_frame_length,
             uint8_t channel_configuration,
@@ -33,6 +37,7 @@ namespace extractor
             uint8_t number_of_raw_data_blocks = 1);
 
     private:
+
         std::ifstream& m_file;
 
         uint32_t m_found_samples = 0;
