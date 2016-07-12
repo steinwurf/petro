@@ -122,10 +122,10 @@ namespace extractor
         uint8_t channel_configuration,
         uint8_t frequency_index,
         uint8_t mpeg_audio_object_type,
-        uint8_t mpeg_version,
+        mpeg_versions mpeg_version,
         uint8_t number_of_raw_data_blocks)
     {
-        assert(mpeg_version == MPEG_4_VERSION || mpeg_version == MPEG_2_VERSION);
+        assert(mpeg_version == mpeg_versions::version4 || mpeg_version == mpeg_versions::version2);
         uint8_t protection_absent = 1;
 
         std::vector<uint8_t> adts;
@@ -134,7 +134,7 @@ namespace extractor
         adts.push_back(byte1);
 
         uint8_t byte2 = 0xF0;
-        byte2 |= mpeg_version << 3;
+        byte2 |= static_cast<uint8_t>(mpeg_version) << 3;
         byte2 |= protection_absent << 0;
 
         adts.push_back(byte2);

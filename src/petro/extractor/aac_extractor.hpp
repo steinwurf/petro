@@ -29,7 +29,7 @@ namespace extractor
             uint8_t channel_configuration,
             uint8_t frequency_index,
             uint8_t mpeg_audio_object_type,
-            uint8_t mpeg_version = MPEG_4_VERSION,
+            mpeg_versions mpeg_version = mpeg_versions::version4,
             uint8_t number_of_raw_data_blocks = 1);
 
     private:
