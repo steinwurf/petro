@@ -25,7 +25,8 @@ namespace extractor
         m_decoding_timestamp(0),
         m_sample_delta(0),
         m_loop(loop),
-        m_loop_offset(0)
+        m_loop_offset(0),
+        m_use_adts_header(true)
     {
         assert(m_file->is_open() && "Cannot open input file");
         assert(m_file->good() && "Invalid input file");
@@ -107,6 +108,11 @@ namespace extractor
         m_file->seekg(m_chunk_offsets[m_chunk_index]);
     }
 
+    void aac_extractor::use_adts_header(bool enabled)
+    {
+        m_use_adts_header = enabled;
+    }
+
     bool aac_extractor::at_end() const
     {
         return (m_sample >= m_stsz->sample_count());
@@ -119,17 +125,25 @@ namespace extractor
 
         uint32_t sample_size = m_stsz->sample_size(m_sample);
 
-        // Create ADTS header
-        m_sample_data = create_adts(
-            sample_size,
-            m_channel_configuration,
-            m_frequency_index,
-            m_mpeg_audio_object_type);
+        if (m_use_adts_header)
+        {
+            // Create the ADTS header
+            m_sample_data = create_adts(
+                sample_size,
+                m_channel_configuration,
+                m_frequency_index,
+                m_mpeg_audio_object_type);
 
-        // Append the sample data to the header
-        uint32_t header_size = m_sample_data.size();
-        m_sample_data.resize(header_size + sample_size);
-        m_file->read((char*)&m_sample_data[header_size], sample_size);
+            // Append the sample data to the header
+            uint32_t header_size = m_sample_data.size();
+            m_sample_data.resize(header_size + sample_size);
+            m_file->read((char*)&m_sample_data[header_size], sample_size);
+        }
+        else
+        {
+            m_sample_data.resize(sample_size);
+            m_file->read((char*)m_sample_data.data(), sample_size);
+        }
 
         uint64_t decoding_timestamp =
             decoding_time(m_stts, m_timescale, m_sample) +
@@ -179,6 +193,59 @@ namespace extractor
         return m_sample_delta;
     }
 
+    uint32_t aac_extractor::frequency_index() const
+    {
+        return m_frequency_index;
+    }
+
+    uint8_t aac_extractor::channel_configuration() const
+    {
+        return m_channel_configuration;
+    }
+
+    uint8_t aac_extractor::mpeg_audio_object_type() const
+    {
+        return m_mpeg_audio_object_type;
+    }
+
+    /// Creates an Audio Data Transport Stream (ADTS) header which is to be
+    /// placed before every AAC sample.
+    /// Header consists of 7 bytes.
+    ///
+    /// Structure
+    /// AAAAAAAA AAAABCCD EEFFFFGH HHIJKLMM MMMMMMMM MMMOOOOO OOOOOOPP
+    ///
+    /// Letter Bits Description
+    /// A      12   syncword 0xFFF, all bits must be 1
+    /// B      1    MPEG Version: 0 for MPEG-4, 1 for MPEG-2
+    /// C      2    Layer: always 0
+    /// D      1    protection absent, Warning, set to 1 if there is no CRC
+    ///             and 0 if there is CRC
+    /// E      2    profile, the MPEG-4 Audio Object Type minus 1
+    /// F      4    MPEG-4 Sampling Frequency Index (15 is forbidden)
+    /// G      1    private bit, guaranteed never to be used by MPEG, set to 0
+    ///             when encoding, ignore when decoding
+    /// H      3    MPEG-4 Channel Configuration (in the case of 0, the channel
+    ///             configuration is sent via an inband PCE)
+    /// I      1    originality, set to 0 when encoding, ignore when decoding
+    /// J      1    home, set to 0 when encoding, ignore when decoding
+    /// K      1    copyrighted id bit, the next bit of a centrally registered
+    ///             copyright identifier, set to 0 when encoding, ignore when
+    ///             decoding.
+    /// L      1    copyright id start, signals that this frame's copyright id
+    ///             bit is the first bit of the copyright id, set to 0 when
+    ///             encoding, ignore when decoding.
+    /// M      13   frame length, this value must include 7 or 9 bytes of header
+    ///             length: FrameLength =
+    ///             (ProtectionAbsent == 1 ? 7 : 9) + size(AACFrame)
+    /// O      11   Buffer fullness, can be ignored when decoding.
+    /// P      2    Number of AAC frames (raw data blocks) in ADTS frame
+    ///             minus 1, for maximum compatibility always use 1 AAC frame
+    ///             per ADTS frame.
+    /// Q      16   CRC if protection absent is 0 (not shown in structure)
+    ///
+    /// Source: http://wiki.multimedia.cx/index.php?title=ADTS
+    ///
     std::vector<uint8_t> aac_extractor::create_adts(
         uint16_t aac_frame_length,
         uint8_t channel_configuration,
@@ -187,8 +254,8 @@ namespace extractor
         mpeg_versions mpeg_version,
         uint8_t number_of_raw_data_blocks)
     {
-        assert(mpeg_version == mpeg_versions::version4 ||
-               mpeg_version == mpeg_versions::version2);
+        assert(mpeg_version == mpeg_versions::mpeg4 ||
+               mpeg_version == mpeg_versions::mpeg2);
         uint8_t protection_absent = 1;
 
         std::vector<uint8_t> adts;

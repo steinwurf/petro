@@ -7,7 +7,7 @@ namespace petro
 {
     enum class mpeg_versions
     {
-        version2 = 2,
-        version4 = 4
+        mpeg4 = 0,
+        mpeg2 = 1
     };
 }

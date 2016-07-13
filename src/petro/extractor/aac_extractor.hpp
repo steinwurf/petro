@@ -23,6 +23,10 @@ namespace extractor
 
         aac_extractor(const std::string& filename, bool loop = false);
 
+        // Set if the ADTS header should be added to the extracted samples.
+        // The default setting is enabled (the ADTS headers are added).
+        void use_adts_header(bool enabled);
+
         /// @return true if there are no more samples
         bool at_end() const;
 
@@ -40,6 +44,12 @@ namespace extractor
         /// current and the previous sample
         uint64_t sample_delta() const;
 
+        uint32_t frequency_index() const;
+
+        uint8_t channel_configuration() const;
+
+        uint8_t mpeg_audio_object_type() const;
+
     private:
 
         std::vector<uint8_t> create_adts(
@@ -47,7 +57,7 @@ namespace extractor
             uint8_t channel_configuration,
             uint8_t frequency_index,
             uint8_t mpeg_audio_object_type,
-            mpeg_versions mpeg_version = mpeg_versions::version4,
+            mpeg_versions mpeg_version = mpeg_versions::mpeg4,
             uint8_t number_of_raw_data_blocks = 1);
 
     private:
@@ -70,6 +80,9 @@ namespace extractor
         bool m_loop;
         // The loop offset stores the timestamp upon the completion of a loop
         uint32_t m_loop_offset;
+
+        // True if the ADTS header should be added to the extracted samples
+        bool m_use_adts_header;
 
         std::vector<uint64_t> m_chunk_offsets;
         std::shared_ptr<const box::stsc> m_stsc;
