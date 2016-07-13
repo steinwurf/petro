@@ -42,6 +42,7 @@ TEST(test_aac_extractor, test_aac_file)
         last_timestamp = timestamp;
         sample_number++;
     }
+    EXPECT_EQ(true, aac_extractor.at_end());
 
     test_aac.close();
 }

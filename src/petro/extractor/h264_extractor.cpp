@@ -137,9 +137,14 @@ namespace extractor
         return sps->height();
     }
 
+    bool h264_extractor::at_end() const
+    {
+        return (m_sample >= m_stsz->sample_count());
+    }
+
     bool h264_extractor::advance_to_next_sample()
     {
-        if (m_sample >= m_stsz->sample_count())
+        if (at_end())
             return false;
 
         uint32_t sample_size = m_stsz->sample_size(m_sample);

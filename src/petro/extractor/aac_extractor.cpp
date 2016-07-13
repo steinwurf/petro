@@ -107,9 +107,14 @@ namespace extractor
         m_file->seekg(m_chunk_offsets[m_chunk_index]);
     }
 
+    bool aac_extractor::at_end() const
+    {
+        return (m_sample >= m_stsz->sample_count());
+    }
+
     bool aac_extractor::advance_to_next_sample()
     {
-        if (m_sample >= m_stsz->sample_count())
+        if (at_end())
             return false;
 
         uint32_t sample_size = m_stsz->sample_size(m_sample);

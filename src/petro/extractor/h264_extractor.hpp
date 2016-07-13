@@ -26,15 +26,36 @@ namespace extractor
 
         h264_extractor(const std::string& filename, bool loop = false);
 
+        /// @return true if there are no more samples
+        bool at_end() const;
+
+        /// Go to the next sample
+        /// @return true if a new sample was successfully extracted
         bool advance_to_next_sample();
+
+        /// @return Sample data of the current sample
         std::vector<uint8_t> sample_data() const;
+
+        /// @return The decoding timestamp of the current sample
         uint64_t decoding_timestamp() const;
+
+        /// @return The presentation timestamp of the current sample
         uint64_t presentation_timestamp() const;
+
+        /// @return The difference between the decoding timestamps of the
+        /// current and the previous sample
         uint64_t sample_delta() const;
 
+        /// @return The SPS data with the 00 00 00 01 start code
         std::vector<uint8_t> sps() const;
+
+        /// @return The PPS data with the 00 00 00 01 start code
         std::vector<uint8_t> pps() const;
+
+        /// @return The video width (determined from the SPS)
         uint32_t video_width() const;
+
+        /// @return The video height (determined from the SPS)
         uint32_t video_height() const;
 
     private:

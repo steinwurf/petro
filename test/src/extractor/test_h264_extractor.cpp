@@ -54,6 +54,7 @@ TEST(test_h264_extractor, test_h264_file)
         last_timestamp = timestamp;
         sample_number++;
     }
+    EXPECT_EQ(true, extractor.at_end());
 
     test_h264.close();
 }
