@@ -24,13 +24,23 @@ TEST(test_aac_extractor, test_aac_file)
 
     petro::extractor::aac_extractor aac_extractor("test.mp4");
 
-    // Check that each sample is correct
+    uint32_t sample_number = 0;
+    uint64_t last_timestamp = 0;
     while (aac_extractor.advance_to_next_sample())
     {
+        // Check that each sample is correct
         auto sample = aac_extractor.sample_data();
         std::vector<uint8_t> temp(sample.size());
         test_aac.read((char*)temp.data(), temp.size());
         EXPECT_EQ(sample, temp);
+
+        // Check that the decoding timestamps are monotonically increasing
+        uint64_t timestamp = aac_extractor.decoding_timestamp();
+        if (sample_number > 0)
+            EXPECT_GT(timestamp, last_timestamp);
+        EXPECT_EQ(last_timestamp + aac_extractor.sample_delta(), timestamp);
+        last_timestamp = timestamp;
+        sample_number++;
     }
 
     test_aac.close();

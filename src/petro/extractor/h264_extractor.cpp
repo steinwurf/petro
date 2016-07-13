@@ -19,7 +19,7 @@ namespace petro
 namespace extractor
 {
     h264_extractor::h264_extractor(const std::string& filename, bool loop) :
-        m_file(filename, std::ios::binary),
+        m_file(std::make_shared<std::ifstream>(filename, std::ios::binary)),
         m_chunk_index(0),
         m_chunk_sample(0),
         m_sample(0),
@@ -29,8 +29,8 @@ namespace extractor
         m_loop(loop),
         m_loop_offset(0)
     {
-        assert(m_file.is_open() && "Cannot open input file");
-        assert(m_file.good() && "Invalid input file");
+        assert(m_file->is_open() && "Cannot open input file");
+        assert(m_file->good() && "Invalid input file");
 
         parser<
             box::moov<parser<
@@ -55,7 +55,7 @@ namespace extractor
         > parser;
 
         auto root = std::make_shared<box::root>();
-        byte_stream bs(m_file);
+        byte_stream bs(*m_file);
 
         parser.read(root, bs);
 
@@ -101,7 +101,7 @@ namespace extractor
         m_ctts = trak->get_child<box::ctts>();
 
         // Seek to the first chunk in the file
-        m_file.seekg(m_chunk_offsets[m_chunk_index]);
+        m_file->seekg(m_chunk_offsets[m_chunk_index]);
     }
 
     std::vector<uint8_t> h264_extractor::sps()
@@ -154,7 +154,7 @@ namespace extractor
             std::copy_n(start_code.begin(), start_code.size(),
                         &m_sample_data[nalu_offset]);
             nalu_offset += sizeof(uint32_t);
-            m_file.read((char*)&m_sample_data[nalu_offset], nalu_size);
+            m_file->read((char*)&m_sample_data[nalu_offset], nalu_size);
             nalu_offset += nalu_size;
         }
 
@@ -182,7 +182,7 @@ namespace extractor
                     m_sample = 0;
                     m_chunk_index = 0;
                     m_loop_offset = m_decoding_timestamp;
-                    m_file.seekg(m_chunk_offsets[m_chunk_index]);
+                    m_file->seekg(m_chunk_offsets[m_chunk_index]);
                 }
                 else
                 {
@@ -191,7 +191,7 @@ namespace extractor
             }
             else
             {
-                m_file.seekg(m_chunk_offsets[m_chunk_index]);
+                m_file->seekg(m_chunk_offsets[m_chunk_index]);
             }
         }
 
@@ -222,7 +222,7 @@ namespace extractor
     {
         std::vector<uint8_t> data(m_avcc->length_size());
 
-        m_file.read((char*)data.data(), data.size());
+        m_file->read((char*)data.data(), data.size());
 
         uint32_t result = 0;
         for (uint8_t i = 0; i < m_avcc->length_size(); ++i)

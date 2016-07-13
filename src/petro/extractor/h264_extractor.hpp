@@ -39,7 +39,7 @@ namespace extractor
 
     private:
 
-        std::ifstream m_file;
+        std::shared_ptr<std::ifstream> m_file;
         std::vector<uint8_t> m_sample_data;
 
         uint32_t m_chunk_index;

@@ -32,12 +32,23 @@ TEST(test_h264_extractor, test_h264_file)
     test_h264.read((char*)correct_pps.data(), correct_pps.size());
     EXPECT_EQ(correct_pps, extracted_pps);
 
+    uint32_t sample_number = 0;
+    uint64_t last_timestamp = 0;
     while (extractor.advance_to_next_sample())
     {
+        // Check that each sample is correct
         auto sample = extractor.sample_data();
         std::vector<uint8_t> temp(sample.size());
         test_h264.read((char*)temp.data(), temp.size());
         EXPECT_EQ(temp, sample);
+
+        // Check that the decoding timestamps are monotonically increasing
+        uint64_t timestamp = extractor.decoding_timestamp();
+        if (sample_number > 0)
+            EXPECT_GT(timestamp, last_timestamp);
+        EXPECT_EQ(last_timestamp + extractor.sample_delta(), timestamp);
+        last_timestamp = timestamp;
+        sample_number++;
     }
 
     test_h264.close();

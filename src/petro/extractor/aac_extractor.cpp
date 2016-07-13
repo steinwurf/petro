@@ -17,7 +17,7 @@ namespace petro
 namespace extractor
 {
     aac_extractor::aac_extractor(const std::string& filename, bool loop) :
-        m_file(filename, std::ios::binary),
+        m_file(std::make_shared<std::ifstream>(filename, std::ios::binary)),
         m_chunk_index(0),
         m_chunk_sample(0),
         m_sample(0),
@@ -26,8 +26,8 @@ namespace extractor
         m_loop(loop),
         m_loop_offset(0)
     {
-        assert(m_file.is_open() && "Cannot open input file");
-        assert(m_file.good() && "Invalid input file");
+        assert(m_file->is_open() && "Cannot open input file");
+        assert(m_file->good() && "Invalid input file");
 
         parser<
             box::moov<parser<
@@ -51,7 +51,7 @@ namespace extractor
         > parser;
 
         auto root = std::make_shared<box::root>();
-        byte_stream bs(m_file);
+        byte_stream bs(*m_file);
 
         parser.read(root, bs);
 
@@ -103,7 +103,7 @@ namespace extractor
         assert(m_stts != nullptr);
 
         // Seek to the first chunk in the file
-        m_file.seekg(m_chunk_offsets[m_chunk_index]);
+        m_file->seekg(m_chunk_offsets[m_chunk_index]);
     }
 
     bool aac_extractor::advance_to_next_sample()
@@ -123,7 +123,7 @@ namespace extractor
         // Append the sample data to the header
         uint32_t header_size = m_sample_data.size();
         m_sample_data.resize(header_size + sample_size);
-        m_file.read((char*)&m_sample_data[header_size], sample_size);
+        m_file->read((char*)&m_sample_data[header_size], sample_size);
 
         uint64_t decoding_timestamp =
             decoding_time(m_stts, m_timescale, m_sample) +
@@ -145,7 +145,7 @@ namespace extractor
                     m_sample = 0;
                     m_chunk_index = 0;
                     m_loop_offset = m_decoding_timestamp;
-                    m_file.seekg(m_chunk_offsets[m_chunk_index]);
+                    m_file->seekg(m_chunk_offsets[m_chunk_index]);
                 }
                 else
                 {
@@ -154,7 +154,7 @@ namespace extractor
             }
             else
             {
-                m_file.seekg(m_chunk_offsets[m_chunk_index]);
+                m_file->seekg(m_chunk_offsets[m_chunk_index]);
             }
         }
 
