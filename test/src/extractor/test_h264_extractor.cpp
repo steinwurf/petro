@@ -33,8 +33,8 @@ TEST(test_h264_extractor, test_h264_file)
     EXPECT_EQ(correct_pps, extracted_pps);
 
     // Check the dimensions of the test video
-    EXPECT_EQ(560, extractor.video_width());
-    EXPECT_EQ(320, extractor.video_height());
+    EXPECT_EQ(560U, extractor.video_width());
+    EXPECT_EQ(320U, extractor.video_height());
 
     uint32_t sample_number = 0;
     uint64_t last_timestamp = 0;
