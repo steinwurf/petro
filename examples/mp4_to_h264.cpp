@@ -6,7 +6,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
 
 #include <petro/extractor/h264_extractor.hpp>
 
@@ -29,7 +28,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    auto extractor = petro::extractor::h264_extractor(filename);
+    petro::extractor::h264_extractor extractor(filename);
 
     // Create the h264 output file
     std::ofstream h264_file(argv[2], std::ios::binary);
