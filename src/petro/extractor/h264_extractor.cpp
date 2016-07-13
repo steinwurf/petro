@@ -11,6 +11,7 @@
 #include <fstream>
 
 #include "../parser.hpp"
+#include "../box/all.hpp"
 #include "../decoding_time.hpp"
 #include "../presentation_time.hpp"
 
@@ -104,7 +105,7 @@ namespace extractor
         m_file->seekg(m_chunk_offsets[m_chunk_index]);
     }
 
-    std::vector<uint8_t> h264_extractor::sps()
+    std::vector<uint8_t> h264_extractor::sps() const
     {
         // The sps buffer is returned with the start code
         std::vector<uint8_t> buffer = {0, 0, 0, 1};
@@ -114,7 +115,7 @@ namespace extractor
         return buffer;
     }
 
-    std::vector<uint8_t> h264_extractor::pps()
+    std::vector<uint8_t> h264_extractor::pps() const
     {
         // The pps buffer is returned with the start code
         std::vector<uint8_t> buffer = {0, 0, 0, 1};
@@ -124,13 +125,13 @@ namespace extractor
         return buffer;
     }
 
-    uint32_t h264_extractor::video_width()
+    uint32_t h264_extractor::video_width() const
     {
         auto sps = m_avcc->sequence_parameter_set(0);
         return sps->width();
     }
 
-    uint32_t h264_extractor::video_height()
+    uint32_t h264_extractor::video_height() const
     {
         auto sps = m_avcc->sequence_parameter_set(0);
         return sps->height();
@@ -198,22 +199,22 @@ namespace extractor
         return true;
     }
 
-    std::vector<uint8_t> h264_extractor::sample_data()
+    std::vector<uint8_t> h264_extractor::sample_data() const
     {
         return m_sample_data;
     }
 
-    uint64_t h264_extractor::decoding_timestamp()
+    uint64_t h264_extractor::decoding_timestamp() const
     {
         return m_decoding_timestamp;
     }
 
-    uint64_t h264_extractor::presentation_timestamp()
+    uint64_t h264_extractor::presentation_timestamp() const
     {
         return m_presentation_timestamp;
     }
 
-    uint64_t h264_extractor::sample_delta()
+    uint64_t h264_extractor::sample_delta() const
     {
         return m_sample_delta;
     }

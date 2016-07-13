@@ -10,7 +10,11 @@
 #include <memory>
 #include <vector>
 
-#include "../box/all.hpp"
+#include "../box/avcc.hpp"
+#include "../box/ctts.hpp"
+#include "../box/stsc.hpp"
+#include "../box/stsz.hpp"
+#include "../box/stts.hpp"
 
 namespace petro
 {
@@ -23,15 +27,15 @@ namespace extractor
         h264_extractor(const std::string& filename, bool loop = false);
 
         bool advance_to_next_sample();
-        std::vector<uint8_t> sample_data();
-        uint64_t decoding_timestamp();
-        uint64_t presentation_timestamp();
-        uint64_t sample_delta();
+        std::vector<uint8_t> sample_data() const;
+        uint64_t decoding_timestamp() const;
+        uint64_t presentation_timestamp() const;
+        uint64_t sample_delta() const;
 
-        std::vector<uint8_t> sps();
-        std::vector<uint8_t> pps();
-        uint32_t video_width();
-        uint32_t video_height();
+        std::vector<uint8_t> sps() const;
+        std::vector<uint8_t> pps() const;
+        uint32_t video_width() const;
+        uint32_t video_height() const;
 
     private:
 

@@ -9,7 +9,7 @@
 #include <istream>
 #include <memory>
 #include <iostream>
-#include "parser.hpp"
+
 #include "byte_stream.hpp"
 #include "box/unknown.hpp"
 #include "box/box.hpp"
@@ -62,8 +62,8 @@ namespace petro
                 byte_stream& bs,
                 std::weak_ptr<box::box> parent)
             {
-                // if the parser doesn't support the given type, a generic box type
-                // called "unknown" is used instead.
+                // if the parser doesn't support the given type, a generic box
+                // type called "unknown" is used instead.
                 auto box = std::make_shared<box::unknown>(type, parent);
                 box->read(size, bs);
                 return box;

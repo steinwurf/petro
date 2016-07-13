@@ -8,8 +8,9 @@
 #include <memory>
 #include <vector>
 
-#include "../parser.hpp"
-#include "../box/all.hpp"
+#include "../box/stsc.hpp"
+#include "../box/stsz.hpp"
+#include "../box/stts.hpp"
 #include "mpeg_versions.hpp"
 
 namespace petro
@@ -23,9 +24,9 @@ namespace extractor
         aac_extractor(const std::string& filename, bool loop = false);
 
         bool advance_to_next_sample();
-        std::vector<uint8_t> sample_data();
-        uint64_t decoding_timestamp();
-        uint64_t sample_delta();
+        std::vector<uint8_t> sample_data() const;
+        uint64_t decoding_timestamp() const;
+        uint64_t sample_delta() const;
 
     private:
 

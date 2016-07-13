@@ -9,6 +9,7 @@
 #include <fstream>
 
 #include "../parser.hpp"
+#include "../box/all.hpp"
 #include "../decoding_time.hpp"
 #include "../descriptor/decoder_config_descriptor.hpp"
 
@@ -161,17 +162,17 @@ namespace extractor
         return true;
     }
 
-    std::vector<uint8_t> aac_extractor::sample_data()
+    std::vector<uint8_t> aac_extractor::sample_data() const
     {
         return m_sample_data;
     }
 
-    uint64_t aac_extractor::decoding_timestamp()
+    uint64_t aac_extractor::decoding_timestamp() const
     {
         return m_decoding_timestamp;
     }
 
-    uint64_t aac_extractor::sample_delta()
+    uint64_t aac_extractor::sample_delta() const
     {
         return m_sample_delta;
     }
