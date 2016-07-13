@@ -6,7 +6,7 @@
 #pragma once
 
 #include <cstdint>
-#include <fstream>
+#include <string>
 #include <memory>
 #include <vector>
 
@@ -20,7 +20,7 @@ namespace extractor
     {
     public:
 
-        h264_extractor(std::ifstream& file, bool loop = false);
+        h264_extractor(const std::string& filename, bool loop = false);
 
         bool advance_to_next_sample();
         std::vector<uint8_t> sample_data();
@@ -39,7 +39,7 @@ namespace extractor
 
     private:
 
-        std::istream& m_file;
+        std::ifstream m_file;
         std::vector<uint8_t> m_sample_data;
 
         uint32_t m_chunk_index;
@@ -60,13 +60,6 @@ namespace extractor
         bool m_loop;
         // The loop offset stores the timestamp upon the completion of a loop
         uint32_t m_loop_offset;
-
-
-//         uint32_t m_found_samples = 0;
-//         uint32_t m_sample = 0;
-//         uint32_t m_sample_size;
-//         uint32_t m_chunk = 0;
-        uint32_t m_current_nalu_size = 0;
 
         std::vector<uint64_t> m_chunk_offsets;
         std::shared_ptr<const box::avcc> m_avcc;

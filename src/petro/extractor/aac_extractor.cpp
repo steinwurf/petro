@@ -6,6 +6,7 @@
 #include "aac_extractor.hpp"
 
 #include <cassert>
+#include <fstream>
 
 #include "../parser.hpp"
 #include "../decoding_time.hpp"
@@ -15,8 +16,8 @@ namespace petro
 {
 namespace extractor
 {
-    aac_extractor::aac_extractor(std::ifstream& file, bool loop) :
-        m_file(file),
+    aac_extractor::aac_extractor(const std::string& filename, bool loop) :
+        m_file(filename, std::ios::binary),
         m_chunk_index(0),
         m_chunk_sample(0),
         m_sample(0),
@@ -25,6 +26,7 @@ namespace extractor
         m_loop(loop),
         m_loop_offset(0)
     {
+        assert(m_file.is_open() && "Cannot open input file");
         assert(m_file.good() && "Invalid input file");
 
         parser<

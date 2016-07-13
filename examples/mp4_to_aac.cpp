@@ -28,8 +28,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    std::ifstream mp4_file(filename, std::ios::binary);
-    petro::extractor::aac_extractor extractor(mp4_file);
+    petro::extractor::aac_extractor extractor(filename);
 
     // Create the aac output file
     std::ofstream aac_file(argv[2], std::ios::binary);
@@ -41,7 +40,6 @@ int main(int argc, char* argv[])
         aac_file.write((char*)next_adts.data(), next_adts.size());
     }
 
-    mp4_file.close();
     aac_file.close();
 
     return 0;

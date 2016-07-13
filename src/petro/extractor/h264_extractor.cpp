@@ -8,6 +8,7 @@
 #include <cassert>
 #include <algorithm>
 #include <iterator>
+#include <fstream>
 
 #include "../parser.hpp"
 #include "../decoding_time.hpp"
@@ -17,8 +18,8 @@ namespace petro
 {
 namespace extractor
 {
-    h264_extractor::h264_extractor(std::ifstream& file, bool loop) :
-        m_file(file),
+    h264_extractor::h264_extractor(const std::string& filename, bool loop) :
+        m_file(filename, std::ios::binary),
         m_chunk_index(0),
         m_chunk_sample(0),
         m_sample(0),
@@ -28,6 +29,7 @@ namespace extractor
         m_loop(loop),
         m_loop_offset(0)
     {
+        assert(m_file.is_open() && "Cannot open input file");
         assert(m_file.good() && "Invalid input file");
 
         parser<
@@ -142,13 +144,15 @@ namespace extractor
         uint32_t sample_size = m_stsz->sample_size(m_sample);
         m_sample_data.resize(sample_size);
 
-        // Read multiple NALUs and replace the AVCC headers with the start code
+        // Read multiple NALUs and replace the AVCC headers with the start code,
+        // so each NALU will have the 4-byte start code: 00 00 00 01
         std::vector<uint8_t> start_code = {0, 0, 0, 1};
         uint32_t nalu_offset = 0;
         while (nalu_offset < sample_size)
         {
             uint32_t nalu_size = read_nalu_size();
-            std::copy_n(start_code.begin(), 4, &m_sample_data[nalu_offset]);
+            std::copy_n(start_code.begin(), start_code.size(),
+                        &m_sample_data[nalu_offset]);
             nalu_offset += sizeof(uint32_t);
             m_file.read((char*)&m_sample_data[nalu_offset], nalu_size);
             nalu_offset += nalu_size;

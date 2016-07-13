@@ -4,7 +4,7 @@
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
 #include <cstdint>
-#include <fstream>
+#include <string>
 #include <memory>
 #include <vector>
 
@@ -20,7 +20,7 @@ namespace extractor
     {
     public:
 
-        aac_extractor(std::ifstream& file, bool loop = false);
+        aac_extractor(const std::string& filename, bool loop = false);
 
         bool advance_to_next_sample();
         std::vector<uint8_t> sample_data();
@@ -39,7 +39,7 @@ namespace extractor
 
     private:
 
-        std::ifstream& m_file;
+        std::ifstream m_file;
         std::vector<uint8_t> m_sample_data;
 
         uint32_t m_chunk_index;

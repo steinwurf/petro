@@ -11,23 +11,18 @@
 #include <memory>
 #include <fstream>
 
-
 #include <gtest/gtest.h>
 
 TEST(test_aac_extractor, test_aac_file)
 {
     // Open file with sanitised test data
-    // File generate wit ffmpeg: ffmpeg -i test.mp4 -acodec copy test.aac
+    // File generate with ffmpeg: ffmpeg -i test.mp4 -acodec copy test.aac
     auto test_filename = "test.aac";
     std::ifstream test_aac(test_filename, std::ios::binary);
     EXPECT_TRUE(test_aac.is_open());
+    EXPECT_TRUE(test_aac.good());
 
-    // Open file with unsanitised test data
-    auto test_filename_2 = "test.mp4";
-    std::ifstream test_mp4(test_filename_2, std::ios::binary);
-    EXPECT_TRUE(test_mp4.is_open());
-
-    petro::extractor::aac_extractor aac_extractor(test_mp4);
+    petro::extractor::aac_extractor aac_extractor("test.mp4");
 
     // Check that each sample is correct
     while (aac_extractor.advance_to_next_sample())
@@ -39,5 +34,4 @@ TEST(test_aac_extractor, test_aac_file)
     }
 
     test_aac.close();
-    test_mp4.close();
 }

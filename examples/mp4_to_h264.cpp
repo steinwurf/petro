@@ -29,8 +29,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    std::ifstream mp4_file(filename, std::ios::binary);
-    auto extractor = petro::extractor::h264_extractor(mp4_file);
+    auto extractor = petro::extractor::h264_extractor(filename);
 
     // Create the h264 output file
     std::ofstream h264_file(argv[2], std::ios::binary);
@@ -39,14 +38,13 @@ int main(int argc, char* argv[])
     h264_file.write((char*)extractor.sps().data(), extractor.sps().size());
     h264_file.write((char*)extractor.pps().data(), extractor.pps().size());
 
-    // Write the video samples
+    // Write the h264 samples (a single sample might contain multiple NALUs)
     while (extractor.advance_to_next_sample())
     {
         auto sample = extractor.sample_data();
         h264_file.write((char*)sample.data(), sample.size());
     }
 
-    mp4_file.close();
     h264_file.close();
 
     return 0;
