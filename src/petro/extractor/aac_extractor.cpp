@@ -141,16 +141,13 @@ namespace extractor
             m_chunk_sample = 0;
             if (m_chunk_index >= m_chunk_offsets.size())
             {
+                // We processed the last chunk at this point
                 if (m_loop)
                 {
                     m_sample = 0;
                     m_chunk_index = 0;
                     m_loop_offset = m_decoding_timestamp;
                     m_file->seekg(m_chunk_offsets[m_chunk_index]);
-                }
-                else
-                {
-                    return false;
                 }
             }
             else
