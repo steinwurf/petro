@@ -29,7 +29,7 @@ TEST(test_byte_stream, create)
 
     // check contents
     uint64_t last_remaing_bytes = bs.remaining_bytes();
-    while(bs.remaining_bytes() != 0)
+    while (bs.remaining_bytes() != 0)
     {
         EXPECT_EQ(content, bs.read_uint8_t());
         EXPECT_NE(last_remaing_bytes, bs.remaining_bytes());
@@ -59,7 +59,7 @@ TEST(test_byte_stream, create_from_byte_stream)
 
     // check content of byte_stream 1 and 2
     uint64_t last_remaing_bytes1 = bs1.remaining_bytes();
-    while(bs1.remaining_bytes() != 0)
+    while (bs1.remaining_bytes() != 0)
     {
         EXPECT_EQ(content, bs1.read_uint8_t());
         EXPECT_NE(last_remaing_bytes1, bs1.remaining_bytes());
@@ -67,7 +67,7 @@ TEST(test_byte_stream, create_from_byte_stream)
     }
 
     uint64_t last_remaing_bytes2 = bs2.remaining_bytes();
-    while(bs2.remaining_bytes() != 0)
+    while (bs2.remaining_bytes() != 0)
     {
         EXPECT_EQ(content, bs2.read_uint8_t());
         EXPECT_NE(last_remaing_bytes2, bs2.remaining_bytes());
@@ -95,7 +95,8 @@ TEST(test_byte_stream, skip)
 
 TEST(test_byte_stream, read_uint8_t)
 {
-    std::vector<uint8_t> data = {
+    std::vector<uint8_t> data =
+    {
         0xFF,
         0x00,
         0x37,
@@ -120,14 +121,17 @@ TEST(test_byte_stream, read_uint8_t)
 
 TEST(test_byte_stream, read_int16_t)
 {
-    std::vector<uint8_t> data = {
+    std::vector<uint8_t> data =
+    {
         0xFF, 0x00,
         0x37, 0xAF,
         0xAF, 0x37,
         0x00, 0xC4,
         0xC4, 0xFF
     };
-    std::vector<int16_t> expected = {
+
+    std::vector<int16_t> expected =
+    {
         -256,   // hex = 0xFF00
         14255,  // hex = 0x37AF
         -20681, // hex = 0xAF37
@@ -151,14 +155,17 @@ TEST(test_byte_stream, read_int16_t)
 
 TEST(test_byte_stream, read_uint16_t)
 {
-    std::vector<uint8_t> data = {
+    std::vector<uint8_t> data =
+    {
         0xFF, 0x00,
         0x37, 0xAF,
         0xAF, 0x37,
         0x00, 0xC4,
         0xC4, 0xFF
     };
-    std::vector<uint16_t> expected = {
+
+    std::vector<uint16_t> expected =
+    {
         0xFF00,
         0x37AF,
         0xAF37,
@@ -182,7 +189,8 @@ TEST(test_byte_stream, read_uint16_t)
 
 TEST(test_byte_stream, read_int32_t)
 {
-    std::vector<uint8_t> data = {
+    std::vector<uint8_t> data =
+    {
         0xFF, 0x00, 0x37, 0xAF,
         0xFF, 0x00, 0xAF, 0x37,
         0x37, 0xAF, 0xC4, 0xFF,
@@ -192,7 +200,9 @@ TEST(test_byte_stream, read_int32_t)
         0xC4, 0xFF, 0xFF, 0xFF,
         0xFF, 0xFF, 0xFF, 0xC4
     };
-    std::vector<int32_t> expected = {
+
+    std::vector<int32_t> expected =
+    {
         -16762961,   // hex = 0xFF0037AF
         -16732361,   // hex = 0xFF00AF37
         934266111,   // hex = 0x37AFC4FF
@@ -220,7 +230,8 @@ TEST(test_byte_stream, read_int32_t)
 
 TEST(test_byte_stream, read_uint32_t)
 {
-    std::vector<uint8_t> data = {
+    std::vector<uint8_t> data =
+    {
         0xFF, 0x00, 0x37, 0xAF,
         0xFF, 0x00, 0xAF, 0x37,
         0x37, 0xAF, 0xC4, 0xFF,
@@ -229,7 +240,9 @@ TEST(test_byte_stream, read_uint32_t)
         0xC4, 0x00, 0xC4, 0x00,
         0xC4, 0xFF, 0xFF, 0xFF
     };
-    std::vector<uint32_t> expected = {
+
+    std::vector<uint32_t> expected =
+    {
         0xFF0037AF,
         0xFF00AF37,
         0x37AFC4FF,
@@ -255,7 +268,8 @@ TEST(test_byte_stream, read_uint32_t)
 
 TEST(test_byte_stream, read_int64_t)
 {
-    std::vector<uint8_t> data = {
+    std::vector<uint8_t> data =
+    {
         0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00,
         0xFF, 0x00, 0x37, 0xAF, 0x00, 0xC4, 0xF2, 0xC4,
         0xFF, 0xF5, 0xAF, 0x37, 0xC4, 0xFF, 0x33, 0xA8,
@@ -265,7 +279,9 @@ TEST(test_byte_stream, read_int64_t)
         0xC4, 0x00, 0xC4, 0xD3, 0x00, 0xC4, 0xC4, 0xC4,
         0xC4, 0xFF, 0xFF, 0xFF, 0x33, 0xA8, 0x00, 0x34
     };
-    std::vector<int64_t> expected = {
+
+    std::vector<int64_t> expected =
+    {
         -4294967296,          // hex = 0xFFFFFFFF00000000
         -71996369266216252,   // hex = 0xFF0037AF00C4F2C4
         -2903570680695896,    // hex = 0xFFF5AF37C4FF33A8
@@ -292,7 +308,8 @@ TEST(test_byte_stream, read_int64_t)
 
 TEST(test_byte_stream, read_uint64_t)
 {
-    std::vector<uint8_t> data = {
+    std::vector<uint8_t> data =
+    {
         0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00,
         0xFF, 0x00, 0x37, 0xAF, 0x00, 0xC4, 0xF2, 0xC4,
         0xFF, 0xF5, 0xAF, 0x37, 0xC4, 0xFF, 0x33, 0xA8,
@@ -302,7 +319,9 @@ TEST(test_byte_stream, read_uint64_t)
         0xC4, 0x00, 0xC4, 0xD3, 0x00, 0xC4, 0xC4, 0xC4,
         0xC4, 0xFF, 0xFF, 0xFF, 0x33, 0xA8, 0x00, 0x34
     };
-    std::vector<uint64_t> expected = {
+
+    std::vector<uint64_t> expected =
+    {
         0xFFFFFFFF00000000,
         0xFF0037AF00C4F2C4,
         0xFFF5AF37C4FF33A8,
@@ -329,7 +348,8 @@ TEST(test_byte_stream, read_uint64_t)
 
 TEST(test_byte_stream, read_type)
 {
-    std::vector<uint8_t> data = {
+    std::vector<char> data =
+    {
         't', 'e', 's', 't',
         's', 'h', 'o', ' ',
         'f', 'u', 'l', 'l',
@@ -337,7 +357,8 @@ TEST(test_byte_stream, read_type)
         'a', 'b', 'c', 'd',
     };
 
-    std::vector<std::string> expected = {
+    std::vector<std::string> expected =
+    {
         "test",
         "sho ",
         "full",
@@ -364,12 +385,14 @@ TEST(test_byte_stream, read_fixed_point_1616)
     // the test data for this test is created based on an implementation which
     // is thought to be correct.
     // The point of this test is to get notified if the result changes.
-    std::vector<uint8_t> data = {
+    std::vector<uint8_t> data =
+    {
         0x00, 0x00, 0x00, 0x00,
         0xFF, 0xFF, 0xFF, 0xFF
     };
 
-    std::vector<double> expected = {
+    std::vector<double> expected =
+    {
         0.0,
         1 << 16
     };
@@ -394,12 +417,14 @@ TEST(test_byte_stream, read_fixed_point_0230)
     // the test data for this test is created based on an implementation which
     // is thought to be correct.
     // The point of this test is to get notified if the result changes.
-    std::vector<uint8_t> data = {
+    std::vector<uint8_t> data =
+    {
         0x00, 0x00, 0x00, 0x00,
         0xFF, 0xFF, 0xFF, 0xFF
     };
 
-    std::vector<double> expected = {
+    std::vector<double> expected =
+    {
         0.0,
         4.0 // ?
     };
@@ -424,12 +449,14 @@ TEST(test_byte_stream, read_fixed_point_88)
     // the test data for this test is created based on an implementation which
     // is thought to be correct.
     // The point of this test is to get notified if the result changes.
-    std::vector<uint8_t> data = {
+    std::vector<uint8_t> data =
+    {
         0x00, 0x00,
         0xFF, 0xFF
     };
 
-    std::vector<float> expected = {
+    std::vector<float> expected =
+    {
         0.0f,
         255.99609f // ~(1 << 8)
     };
@@ -451,12 +478,14 @@ TEST(test_byte_stream, read_fixed_point_88)
 
 TEST(test_byte_stream, read_iso639)
 {
-    std::vector<uint8_t> data = {
+    std::vector<uint8_t> data =
+    {
         0x55, 0xC4,
         0x1C, 0xB2
     };
 
-    std::vector<std::string> expected = {
+    std::vector<std::string> expected =
+    {
         "und",
         "ger"
     };
@@ -486,13 +515,15 @@ TEST(test_byte_stream, read_time32)
     /// - raspbian7-cxx_raspberry_gxx49_arm
     /// - openwrt_mips_be_32-cxx_openwrt_gxx48_mips
     std::vector<uint8_t> data;
-    // std::vector<uint8_t> data = {
+    // std::vector<uint8_t> data =
+    // {
     //     0xCA, 0x8C, 0xBA, 0x6E,
     //     0xCA, 0x8C, 0xBA, 0x6F
     // };
 
     std::vector<std::string> expected;
-    // std::vector<std::string> expected = {
+    // std::vector<std::string> expected =
+    // {
     //     "2011-09-07 08:06:38",
     //     "2011-09-07 08:06:39"
     // };
@@ -522,13 +553,15 @@ TEST(test_byte_stream, read_time64)
     /// - raspbian7-cxx_raspberry_gxx49_arm
     /// - openwrt_mips_be_32-cxx_openwrt_gxx48_mips
     std::vector<uint8_t> data;
-    // std::vector<uint8_t> data = {
+    // std::vector<uint8_t> data =
+    // {
     //     0x00, 0x00, 0x00, 0x00, 0xCA, 0x8C, 0xBA, 0x6E,
     //     0x00, 0x00, 0x00, 0x00, 0xCA, 0x8C, 0xBA, 0x6F
     // };
 
     std::vector<std::string> expected;
-    // std::vector<std::string> expected = {
+    // std::vector<std::string> expected =
+    // {
     //     "2011-09-07 08:06:38",
     //     "2011-09-07 08:06:39"
     // };

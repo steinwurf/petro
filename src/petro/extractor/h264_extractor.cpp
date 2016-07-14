@@ -165,7 +165,7 @@ namespace extractor
         }
 
         m_presentation_timestamp =
-            petro::presentation_time(m_stts, m_ctts, m_timescale, m_sample) +
+            presentation_time(m_stts, m_ctts, m_timescale, m_sample) +
             m_loop_offset;
 
         uint64_t decoding_timestamp =

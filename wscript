@@ -38,6 +38,7 @@ def configure(conf):
 
 
 def build(bld):
+
     bld.load("wurf_common_tools")
 
     bld.env.append_unique(
