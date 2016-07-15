@@ -31,7 +31,7 @@ TEST(test_aac_extractor, test_aac_file)
 
     uint32_t sample_number = 0;
     uint64_t last_timestamp = 0;
-    while (extractor.advance_to_next_sample())
+    while (extractor.load_next_sample())
     {
         // Check that each sample is correct
         auto sample = extractor.sample_data();

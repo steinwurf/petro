@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
     h264_file.write((char*)extractor.pps().data(), extractor.pps().size());
 
     // Write the h264 samples (a single sample might contain multiple NALUs)
-    while (extractor.advance_to_next_sample())
+    while (extractor.load_next_sample())
     {
         auto sample = extractor.sample_data();
         h264_file.write((char*)sample.data(), sample.size());

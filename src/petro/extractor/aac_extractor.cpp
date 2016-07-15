@@ -118,7 +118,7 @@ namespace extractor
         return (m_sample >= m_stsz->sample_count());
     }
 
-    bool aac_extractor::advance_to_next_sample()
+    bool aac_extractor::load_next_sample()
     {
         if (at_end())
             return false;

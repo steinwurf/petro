@@ -30,9 +30,10 @@ namespace extractor
         /// @return true if there are no more samples
         bool at_end() const;
 
-        /// Go to the next sample
+        /// Loads the next sample from the file: the sample data and the
+        /// corresponding timestamp can be retrieved with the getter functions
         /// @return true if a new sample was successfully extracted
-        bool advance_to_next_sample();
+        bool load_next_sample();
 
         /// @return Sample data of the current sample
         std::vector<uint8_t> sample_data() const;

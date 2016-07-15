@@ -142,7 +142,7 @@ namespace extractor
         return (m_sample >= m_stsz->sample_count());
     }
 
-    bool h264_extractor::advance_to_next_sample()
+    bool h264_extractor::load_next_sample()
     {
         if (at_end())
             return false;
