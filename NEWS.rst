@@ -7,6 +7,9 @@ every change, see the Git log.
 Latest
 ------
 * tbd
+
+4.0.0
+-----
 * Minor: Added the ``decoding_time`` helper function.
 * Minor: Added the ``aac_extractor`` and ``h264_extractor`` classes to extract
   AAC and H.264 samples and the corresponding timestamps from mp4 files.
