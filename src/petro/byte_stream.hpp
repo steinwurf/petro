@@ -50,11 +50,12 @@ namespace petro
 
         struct file_byte_stream : i_byte_stream
         {
-            file_byte_stream(const std::string& filename):
-                m_data(filename, std::ios::binary)
+            file_byte_stream(std::istream& data):
+                m_data(data)
             {
                 // @todo probably should be handled differently.
                 assert(m_data.good());
+                assert(0 == m_data.tellg());
             }
 
             uint8_t read_byte()
@@ -69,14 +70,14 @@ namespace petro
             }
 
         private:
-            std::ifstream m_data;
+            std::istream& m_data;
         };
 
 
     public:
 
         byte_stream(const uint8_t* data, uint64_t size);
-        byte_stream(const std::string& filename);
+        byte_stream(std::istream& data);
         byte_stream(byte_stream& bs, uint64_t size);
 
         void skip(uint64_t bytes);

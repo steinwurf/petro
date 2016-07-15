@@ -1,8 +1,9 @@
+#! /usr/bin/env python
 # encoding: utf-8
 
 bld.program(
     features='cxx test',
     source=bld.path.ant_glob('**/*.cpp'),
     target='petro_tests',
-    test_files=['test.mp4'],
+    test_files=['test.mp4', 'test.aac', 'test.h264'],
     use=['petro', 'gtest'])

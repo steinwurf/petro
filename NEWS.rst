@@ -7,6 +7,12 @@ every change, see the Git log.
 Latest
 ------
 * tbd
+* Minor: Added the ``decoding_time`` helper function.
+* Minor: Added the ``aac_extractor`` and ``h264_extractor`` classes to extract
+  AAC and H.264 samples and the corresponding timestamps from mp4 files.
+  The extractors provide simple iteration over the available samples.
+* Major: The ``byte_stream`` constructor takes an istream reference instead
+  of the ``filename`` as a string.
 
 3.2.1
 ------

@@ -16,7 +16,7 @@ void print_box(std::shared_ptr<petro::box::box> b, uint32_t level = 0)
 {
     std::stringstream ss(b->describe());
     std::string line;
-    while(std::getline(ss, line))
+    while (std::getline(ss, line))
     {
         for (uint32_t i = 0; i < level; ++i)
         {
@@ -25,7 +25,7 @@ void print_box(std::shared_ptr<petro::box::box> b, uint32_t level = 0)
         std::cout << line << std::endl;
     }
 
-    for(auto child : b->children())
+    for (auto child : b->children())
     {
         print_box(child, level + 1);
     }
@@ -148,7 +148,8 @@ int main(int argc, char* argv[])
 
     auto root = std::make_shared<petro::box::root>();
 
-    petro::byte_stream bs(filename);
+    std::ifstream mp4_file(filename, std::ios::binary);
+    petro::byte_stream bs(mp4_file);
     parser.read(root, bs);
 
     for (auto box : root->children())
