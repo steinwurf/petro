@@ -30,6 +30,8 @@ namespace extractor
         m_loop(loop),
         m_loop_offset(0)
     {
+        assert(std::string("~").compare(filename.substr(0,1)) != 0
+              && "You must provide a full file path");
         assert(m_file->is_open() && "Cannot open input file");
         assert(m_file->good() && "Invalid input file");
 
