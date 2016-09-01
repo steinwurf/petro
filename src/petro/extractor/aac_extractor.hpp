@@ -8,6 +8,8 @@
 #include <memory>
 #include <vector>
 
+#include <boost/iostreams/device/mapped_file.hpp>
+
 #include "../box/stsc.hpp"
 #include "../box/stsz.hpp"
 #include "../box/stts.hpp"
@@ -53,6 +55,8 @@ namespace extractor
 
     private:
 
+        uint32_t chunk_offset() const;
+
         std::vector<uint8_t> create_adts(
             uint16_t aac_frame_length,
             uint8_t channel_configuration,
@@ -63,7 +67,7 @@ namespace extractor
 
     private:
 
-        std::shared_ptr<std::ifstream> m_file;
+        boost::iostreams::mapped_file_source m_file;
         std::vector<uint8_t> m_sample_data;
 
         uint32_t m_chunk_index;

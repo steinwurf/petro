@@ -10,6 +10,8 @@
 #include <memory>
 #include <vector>
 
+#include <boost/iostreams/device/mapped_file.hpp>
+
 #include "../box/avcc.hpp"
 #include "../box/ctts.hpp"
 #include "../box/stsc.hpp"
@@ -61,11 +63,13 @@ namespace extractor
 
     private:
 
-        uint32_t read_nalu_size();
+        uint32_t chunk_offset() const;
+
+        uint32_t read_nalu_size(const uint8_t* data) const;
 
     private:
 
-        std::shared_ptr<std::ifstream> m_file;
+        boost::iostreams::mapped_file_source m_file;
         std::vector<uint8_t> m_sample_data;
 
         uint32_t m_chunk_index;

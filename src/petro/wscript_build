@@ -4,6 +4,6 @@ bld.stlib(
     features='cxx',
     source=bld.path.ant_glob('**/*.cpp'),
     target='petro',
-    use=[],
+    use=['boost_includes', 'boost_iostreams'],
     export_includes=['..']
 )

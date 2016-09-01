@@ -20,7 +20,7 @@ namespace petro
 namespace extractor
 {
     h264_extractor::h264_extractor(const std::string& filename, bool loop) :
-        m_file(std::make_shared<std::ifstream>(filename, std::ios::binary)),
+        m_file(filename),
         m_chunk_index(0),
         m_chunk_sample(0),
         m_sample(0),
@@ -30,8 +30,7 @@ namespace extractor
         m_loop(loop),
         m_loop_offset(0)
     {
-        assert(m_file->is_open() && "Cannot open input file");
-        assert(m_file->good() && "Invalid input file");
+        assert(m_file.is_open() && "Cannot open input file");
 
         parser<
             box::moov<parser<
@@ -56,7 +55,7 @@ namespace extractor
         > parser;
 
         auto root = std::make_shared<box::root>();
-        byte_stream bs(*m_file);
+        byte_stream bs((uint8_t*)m_file.data(), m_file.size());
 
         parser.read(root, bs);
 
@@ -100,9 +99,6 @@ namespace extractor
         assert(m_stts != nullptr);
 
         m_ctts = trak->get_child<box::ctts>();
-
-        // Seek to the first chunk in the file
-        m_file->seekg(m_chunk_offsets[m_chunk_index]);
     }
 
     std::vector<uint8_t> h264_extractor::sps() const
@@ -148,20 +144,26 @@ namespace extractor
             return false;
 
         uint32_t sample_size = m_stsz->sample_size(m_sample);
-        m_sample_data.resize(sample_size);
+        m_sample_data.clear();
 
-        // Read multiple NALUs and replace the AVCC headers with the start code,
-        // so each NALU will have the 4-byte start code: 00 00 00 01
-        std::vector<uint8_t> start_code = {0, 0, 0, 1};
-        uint32_t nalu_offset = 0;
-        while (nalu_offset < sample_size)
+        // Read multiple NALUs
+        uint32_t offset = chunk_offset();
+        while ((offset - chunk_offset()) < sample_size)
         {
-            uint32_t nalu_size = read_nalu_size();
-            std::copy_n(start_code.begin(), start_code.size(),
-                        &m_sample_data[nalu_offset]);
-            nalu_offset += sizeof(uint32_t);
-            m_file->read((char*)&m_sample_data[nalu_offset], nalu_size);
-            nalu_offset += nalu_size;
+            uint32_t nalu_size = read_nalu_size((uint8_t*)m_file.data() + offset);
+            offset += m_avcc->length_size();
+
+            // Replace the AVCC headers with the start code,
+            // so each NALU will have the 4-byte start code: 00 00 00 01
+            m_sample_data.push_back(0);
+            m_sample_data.push_back(0);
+            m_sample_data.push_back(0);
+            m_sample_data.push_back(1);
+            m_sample_data.insert(
+                m_sample_data.end(),
+                m_file.data() + offset,
+                m_file.data() + offset + nalu_size);
+            offset += nalu_size;
         }
 
         m_presentation_timestamp =
@@ -189,12 +191,7 @@ namespace extractor
                     m_sample = 0;
                     m_chunk_index = 0;
                     m_loop_offset = m_decoding_timestamp;
-                    m_file->seekg(m_chunk_offsets[m_chunk_index]);
                 }
-            }
-            else
-            {
-                m_file->seekg(m_chunk_offsets[m_chunk_index]);
             }
         }
 
@@ -221,12 +218,13 @@ namespace extractor
         return m_sample_delta;
     }
 
-    uint32_t h264_extractor::read_nalu_size()
+    uint32_t h264_extractor::chunk_offset() const
     {
-        std::vector<uint8_t> data(m_avcc->length_size());
+        return m_chunk_offsets[m_chunk_index];
+    }
 
-        m_file->read((char*)data.data(), data.size());
-
+    uint32_t h264_extractor::read_nalu_size(const uint8_t* data) const
+    {
         uint32_t result = 0;
         for (uint8_t i = 0; i < m_avcc->length_size(); ++i)
         {

@@ -7,6 +7,7 @@
 
 #include <cassert>
 #include <fstream>
+#include <algorithm>
 
 #include "../parser.hpp"
 #include "../box/all.hpp"
@@ -18,7 +19,7 @@ namespace petro
 namespace extractor
 {
     aac_extractor::aac_extractor(const std::string& filename, bool loop) :
-        m_file(std::make_shared<std::ifstream>(filename, std::ios::binary)),
+        m_file(filename),
         m_chunk_index(0),
         m_chunk_sample(0),
         m_sample(0),
@@ -28,8 +29,7 @@ namespace extractor
         m_loop_offset(0),
         m_use_adts_header(true)
     {
-        assert(m_file->is_open() && "Cannot open input file");
-        assert(m_file->good() && "Invalid input file");
+        assert(m_file.is_open() && "Cannot open input file");
 
         parser<
             box::moov<parser<
@@ -53,8 +53,7 @@ namespace extractor
         > parser;
 
         auto root = std::make_shared<box::root>();
-        byte_stream bs(*m_file);
-
+        byte_stream bs((uint8_t*)m_file.data(), m_file.size());
         parser.read(root, bs);
 
         // get needed boxes
@@ -103,9 +102,6 @@ namespace extractor
 
         m_stts = trak->get_child<box::stts>();
         assert(m_stts != nullptr);
-
-        // Seek to the first chunk in the file
-        m_file->seekg(m_chunk_offsets[m_chunk_index]);
     }
 
     void aac_extractor::use_adts_header(bool enabled)
@@ -133,17 +129,16 @@ namespace extractor
                 m_channel_configuration,
                 m_frequency_index,
                 m_mpeg_audio_object_type);
-
-            // Append the sample data to the header
-            uint32_t header_size = m_sample_data.size();
-            m_sample_data.resize(header_size + sample_size);
-            m_file->read((char*)&m_sample_data[header_size], sample_size);
         }
         else
         {
-            m_sample_data.resize(sample_size);
-            m_file->read((char*)m_sample_data.data(), sample_size);
+            m_sample_data.clear();
         }
+
+        m_sample_data.insert(
+            m_sample_data.end(),
+            m_file.data() + chunk_offset(),
+            m_file.data() + chunk_offset() + sample_size);
 
         uint64_t decoding_timestamp =
             decoding_time(m_stts, m_timescale, m_sample) +
@@ -166,15 +161,9 @@ namespace extractor
                     m_sample = 0;
                     m_chunk_index = 0;
                     m_loop_offset = m_decoding_timestamp;
-                    m_file->seekg(m_chunk_offsets[m_chunk_index]);
                 }
             }
-            else
-            {
-                m_file->seekg(m_chunk_offsets[m_chunk_index]);
-            }
         }
-
         return true;
     }
 
@@ -206,6 +195,11 @@ namespace extractor
     uint8_t aac_extractor::mpeg_audio_object_type() const
     {
         return m_mpeg_audio_object_type;
+    }
+
+    uint32_t aac_extractor::chunk_offset() const
+    {
+        return m_chunk_offsets[m_chunk_index];
     }
 
     /// Creates an Audio Data Transport Stream (ADTS) header which is to be

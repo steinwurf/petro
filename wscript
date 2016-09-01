@@ -23,6 +23,11 @@ def resolve(ctx):
         git_repository='github.com/steinwurf/waf-tools.git',
         major=3))
 
+    ctx.add_dependency(resolve.ResolveVersion(
+        name='boost',
+        git_repository='github.com/steinwurf/boost.git',
+        major=2))
+
     # Internal dependencies
     if ctx.is_toplevel():
 

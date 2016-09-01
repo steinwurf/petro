@@ -17,37 +17,30 @@
 namespace petro
 {
     byte_stream::byte_stream(const uint8_t* data, uint64_t size):
-        m_data(std::make_shared<pointer_byte_stream>(data)),
+        m_data(data),
         m_remaining_bytes(size)
     { }
 
-    byte_stream::byte_stream(std::istream& data) :
-        m_data(std::make_shared<file_byte_stream>(data))
-    {
-        data.seekg(0, std::ios::end);
-        m_remaining_bytes = data.tellg();
-        data.seekg(0);
-
-    }
-
     byte_stream::byte_stream(byte_stream& bs, uint64_t size):
         m_data(bs.m_data),
-        m_remaining_bytes(size)
+        m_remaining_bytes(size),
+        m_offset(bs.m_offset)
     {
         bs.m_remaining_bytes -= size;
+        bs.m_offset += size;
     }
 
     void byte_stream::skip(uint64_t bytes)
     {
         assert(m_remaining_bytes >= bytes);
-        m_data->skip(bytes);
+        m_offset += bytes;
         m_remaining_bytes -= bytes;
     }
 
     uint8_t byte_stream::read_uint8_t()
     {
         assert(m_remaining_bytes >= 1);
-        uint8_t result = m_data->read_byte();
+        uint8_t result = m_data[m_offset++];
         m_remaining_bytes -= 1;
         return result;
     }

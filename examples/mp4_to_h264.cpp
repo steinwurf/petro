@@ -11,40 +11,40 @@
 
 int main(int argc, char* argv[])
 {
-    if (argc != 3 || std::string(argv[1]) == "--help")
-    {
-        auto usage = "./mp4_to_h264 MP4_INPUT H264_OUTPUT";
-        std::cout << usage << std::endl;
-        return 0;
-    }
+    // if (argc != 3 || std::string(argv[1]) == "--help")
+    // {
+    //     auto usage = "./mp4_to_h264 MP4_INPUT H264_OUTPUT";
+    //     std::cout << usage << std::endl;
+    //     return 0;
+    // }
 
-    auto filename = std::string(argv[1]);
+    // auto filename = std::string(argv[1]);
 
-    std::ifstream check(filename, std::ios::binary);
+    // std::ifstream check(filename, std::ios::binary);
 
-    if (!check.is_open() || !check.good())
-    {
-        std::cerr << "Error reading file: " << filename << std::endl;
-        return 1;
-    }
+    // if (!check.is_open() || !check.good())
+    // {
+    //     std::cerr << "Error reading file: " << filename << std::endl;
+    //     return 1;
+    // }
 
-    petro::extractor::h264_extractor extractor(filename);
+    // petro::extractor::h264_extractor extractor(filename);
 
-    // Create the h264 output file
-    std::ofstream h264_file(argv[2], std::ios::binary);
+    // // Create the h264 output file
+    // std::ofstream h264_file(argv[2], std::ios::binary);
 
-    // Write the sps and pps first
-    h264_file.write((char*)extractor.sps().data(), extractor.sps().size());
-    h264_file.write((char*)extractor.pps().data(), extractor.pps().size());
+    // // Write the sps and pps first
+    // h264_file.write((char*)extractor.sps().data(), extractor.sps().size());
+    // h264_file.write((char*)extractor.pps().data(), extractor.pps().size());
 
-    // Write the h264 samples (a single sample might contain multiple NALUs)
-    while (extractor.load_next_sample())
-    {
-        auto sample = extractor.sample_data();
-        h264_file.write((char*)sample.data(), sample.size());
-    }
+    // // Write the h264 samples (a single sample might contain multiple NALUs)
+    // while (extractor.load_next_sample())
+    // {
+    //     auto sample = extractor.sample_data();
+    //     h264_file.write((char*)sample.data(), sample.size());
+    // }
 
-    h264_file.close();
+    // h264_file.close();
 
     return 0;
 }
