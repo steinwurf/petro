@@ -59,7 +59,7 @@ namespace extractor
 
         parser.read(root, bs);
 
-        //get needed boxes
+        // Get the needed boxes
         auto avc1 = root->get_child("avc1");
         assert(avc1 != nullptr);
 
