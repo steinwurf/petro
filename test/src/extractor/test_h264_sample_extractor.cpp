@@ -21,10 +21,10 @@ void check_sample(std::ifstream& expected, const uint8_t* data, uint32_t size)
     // read data
     std::vector<uint8_t> expected_sample(size);
     expected.read((char*)expected_sample.data(), expected_sample.size());
-    for (uint32_t i = 0; i < size; ++i)
-    {
-        ASSERT_EQ(expected_sample[i], data[i]);
-    }
+
+    std::vector<uint8_t> actual_sample(data, data + size);
+
+    ASSERT_EQ(expected_sample, actual_sample);
 }
 
 uint32_t read_nalu_size(const uint8_t* data, uint8_t length_size)
@@ -50,8 +50,8 @@ TEST(test_h264_sample_extractor, test_h264_file)
     EXPECT_TRUE(extractor.open("test.mp4"));
     EXPECT_TRUE(extractor.is_open());
 
-    check_sample(test_h264, extractor.pps_data(0), extractor.pps_size(0));
     check_sample(test_h264, extractor.sps_data(0), extractor.sps_size(0));
+    check_sample(test_h264, extractor.pps_data(0), extractor.pps_size(0));
 
     auto nalu_length_size = extractor.nalu_length_size();
 
