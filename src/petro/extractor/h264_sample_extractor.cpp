@@ -5,6 +5,11 @@
 
 #include "h264_sample_extractor.hpp"
 
+#include <algorithm>
+#include <cassert>
+#include <cstdint>
+#include <string>
+
 #include "../parser.hpp"
 #include "../box/moov.hpp"
 #include "../box/trak.hpp"
@@ -26,12 +31,9 @@ namespace petro
 {
 namespace extractor
 {
-    h264_sample_extractor::h264_sample_extractor(bool loop) :
-        m_loop(loop)
-    { }
-
     bool h264_sample_extractor::open(const std::string& filename)
     {
+        assert(!m_file.is_open() && "Close the extractor before reopening.");
         m_file.open(filename);
         if (!m_file.is_open())
             return false;
@@ -109,11 +111,23 @@ namespace extractor
 
         m_ctts = trak->get_child<box::ctts>();
 
-        m_sample = 0;
-        m_chunk_index = 0;
-        m_chunk_sample = 0;
+        reset();
 
         return true;
+    }
+
+    void h264_sample_extractor::close()
+    {
+        assert(is_open());
+        m_file.close();
+        m_avcc.reset();
+        m_stsc.reset();
+        m_stsz.reset();
+        m_stts.reset();
+        m_ctts.reset();
+        m_chunk_offsets.clear();
+        m_timescale = 0;
+        reset();
     }
 
     void h264_sample_extractor::advance()
@@ -124,17 +138,12 @@ namespace extractor
         {
             m_chunk_index += 1;
             m_chunk_sample = 0;
-            if (m_chunk_index >= m_chunk_offsets.size())
-            {
-                // We processed the last chunk at this point
-                if (m_loop)
-                {
-                    m_loop_offset = decoding_timestamp();
-                    m_sample = 0;
-                    m_chunk_index = 0;
-                }
-            }
         }
+    }
+
+    bool h264_sample_extractor::is_open() const
+    {
+        return m_file.is_open();
     }
 
     bool h264_sample_extractor::at_end() const
@@ -143,52 +152,17 @@ namespace extractor
         return (m_sample >= m_stsz->sample_count());
     }
 
-    const uint8_t* h264_sample_extractor::pps_data(uint32_t index) const
+    void h264_sample_extractor::reset()
     {
-        assert(m_avcc != nullptr);
-        return m_avcc->sequence_parameter_set(index)->data();
-    }
-
-    uint32_t h264_sample_extractor::pps_size(uint32_t index) const
-    {
-        assert(m_avcc != nullptr);
-        return m_avcc->sequence_parameter_set(index)->size();
-    }
-
-    const uint8_t* h264_sample_extractor::sps_data(uint32_t index) const
-    {
-        assert(m_avcc != nullptr);
-        return m_avcc->picture_parameter_set(index)->data();
-    }
-
-    uint32_t h264_sample_extractor::sps_size(uint32_t index) const
-    {
-        assert(m_avcc != nullptr);
-        return m_avcc->picture_parameter_set(index)->size();
-    }
-
-    uint8_t h264_sample_extractor::nalu_length_size() const
-    {
-        assert(m_avcc != nullptr);
-        return m_avcc->length_size();
-    }
-
-    uint64_t h264_sample_extractor::decoding_timestamp() const
-    {
-        assert(m_stts != nullptr);
-        return decoding_time(m_stts, m_timescale, m_sample) + m_loop_offset;
-    }
-
-    uint64_t h264_sample_extractor::presentation_timestamp() const
-    {
-        assert(m_stts != nullptr);
-        return presentation_time(m_stts, m_ctts, m_timescale, m_sample) +
-            m_loop_offset;
+        m_sample = 0;
+        m_chunk_index = 0;
+        m_chunk_sample = 0;
     }
 
     const uint8_t* h264_sample_extractor::sample_data() const
     {
         assert(m_file.is_open());
+        assert(m_chunk_offsets.size() != 0);
         return ((uint8_t*)m_file.data()) +  m_chunk_offsets[m_chunk_index];
     }
 
@@ -196,6 +170,53 @@ namespace extractor
     {
         assert(m_stsz != nullptr);
         return m_stsz->sample_size(m_sample);
+    }
+
+    uint64_t h264_sample_extractor::timestamp() const
+    {
+        return presentation_timestamp();
+    }
+
+    const uint8_t* h264_sample_extractor::pps_data(uint32_t index) const
+    {
+        assert(m_avcc != nullptr);
+        return m_avcc->picture_parameter_set(index)->data();
+    }
+
+    uint32_t h264_sample_extractor::pps_size(uint32_t index) const
+    {
+        assert(m_avcc != nullptr);
+        return m_avcc->picture_parameter_set(index)->size();
+    }
+
+    const uint8_t* h264_sample_extractor::sps_data(uint32_t index) const
+    {
+        assert(m_avcc != nullptr);
+        return m_avcc->sequence_parameter_set(index)->data();
+    }
+
+    uint32_t h264_sample_extractor::sps_size(uint32_t index) const
+    {
+        assert(m_avcc != nullptr);
+        return m_avcc->sequence_parameter_set(index)->size();
+    }
+
+    uint64_t h264_sample_extractor::decoding_timestamp() const
+    {
+        assert(m_stts != nullptr);
+        return decoding_time(m_stts, m_timescale, m_sample);
+    }
+
+    uint64_t h264_sample_extractor::presentation_timestamp() const
+    {
+        assert(m_stts != nullptr);
+        return presentation_time(m_stts, m_ctts, m_timescale, m_sample);
+    }
+
+    uint8_t h264_sample_extractor::nalu_length_size() const
+    {
+        assert(m_avcc != nullptr);
+        return m_avcc->length_size();
     }
 }
 }

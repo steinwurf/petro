@@ -45,20 +45,23 @@ TEST(test_h264_sample_extractor, test_h264_file)
     EXPECT_TRUE(test_h264.is_open());
     EXPECT_TRUE(test_h264.good());
 
-    petro::extractor::h264_sample_extractor extractor(false);
+    petro::extractor::h264_sample_extractor extractor;
+    EXPECT_FALSE(extractor.is_open());
     EXPECT_TRUE(extractor.open("test.mp4"));
+    EXPECT_TRUE(extractor.is_open());
 
     check_sample(test_h264, extractor.pps_data(0), extractor.pps_size(0));
     check_sample(test_h264, extractor.sps_data(0), extractor.sps_size(0));
 
     auto nalu_length_size = extractor.nalu_length_size();
 
+    EXPECT_FALSE(extractor.at_end());
     while (!extractor.at_end())
     {
         auto sample_data = extractor.sample_data();
         auto sample_size = extractor.sample_size();
 
-        while ((sample_data - extractor.sample_data()) < sample_size)
+        while ((uint32_t)(sample_data - extractor.sample_data()) < sample_size)
         {
             uint32_t nalu_size = read_nalu_size(sample_data, nalu_length_size);
             sample_data += extractor.nalu_length_size();

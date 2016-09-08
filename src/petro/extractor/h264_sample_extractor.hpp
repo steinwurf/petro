@@ -26,16 +26,22 @@ namespace extractor
     {
     public:
 
-        h264_sample_extractor(bool loop);
-
         bool open(const std::string& filename);
 
-        bool at_end() const;
+        void close();
 
         void advance();
 
+        bool is_open() const;
+        bool at_end() const;
+
+        void reset();
+
         const uint8_t* sample_data() const;
+
         uint32_t sample_size() const;
+
+        uint64_t timestamp() const;
 
         const uint8_t* pps_data(uint32_t index) const;
         uint32_t pps_size(uint32_t index) const;
@@ -48,17 +54,14 @@ namespace extractor
         uint64_t presentation_timestamp() const;
 
         uint8_t nalu_length_size() const;
+
     private:
 
-
-        std::string m_filename;
-        bool m_loop;
         boost::iostreams::mapped_file_source m_file;
 
         uint32_t m_sample = 0;
         uint32_t m_chunk_index = 0;
         uint32_t m_chunk_sample = 0;
-        uint32_t m_loop_offset = 0;
         uint32_t m_timescale = 0;
 
         std::vector<uint64_t> m_chunk_offsets;
