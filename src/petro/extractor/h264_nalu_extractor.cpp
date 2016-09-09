@@ -9,15 +9,6 @@
 #include <cstdint>
 #include <string>
 
-
-
-
-#include <iostream>
-
-
-
-
-
 namespace petro
 {
 namespace extractor

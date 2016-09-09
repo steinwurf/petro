@@ -32,9 +32,7 @@ TEST(test_aac_sample_extractor, test_aac_file)
     EXPECT_TRUE(test_aac.good());
 
     petro::extractor::aac_sample_extractor extractor;
-    EXPECT_FALSE(extractor.is_open());
     EXPECT_TRUE(extractor.open("test.mp4"));
-    EXPECT_TRUE(extractor.is_open());
     EXPECT_EQ(7U, extractor.adts_header_size());
 
     std::vector<uint8_t> adts_header(extractor.adts_header_size());

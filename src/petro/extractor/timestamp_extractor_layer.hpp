@@ -32,7 +32,7 @@ namespace extractor
             }
             auto trak = Super::trak();
 
-            auto mdhd = trak->get_child<box::mdhd>();
+            auto mdhd = trak->template get_child<box::mdhd>();
             if (mdhd == nullptr)
             {
                 close();
@@ -40,7 +40,7 @@ namespace extractor
             }
             m_timescale = mdhd->timescale();
 
-            auto stts = trak->get_child<box::stts>();
+            auto stts = trak->template get_child<box::stts>();
             if (stts == nullptr)
             {
                 close();
@@ -48,7 +48,7 @@ namespace extractor
             }
 
             m_stts = stts;
-            m_ctts = trak->get_child<box::ctts>();
+            m_ctts = trak->template get_child<box::ctts>();
 
             return true;
         }

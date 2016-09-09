@@ -38,14 +38,14 @@ namespace extractor
                 return false;
             }
 
-            auto avcc = avc1->get_child<box::avcc>();
+            auto avcc = avc1->template get_child<box::avcc>();
             if (avcc == nullptr)
             {
                 Super::close();
                 return false;
             }
 
-            auto trak = avc1->get_parent("trak");
+            auto trak = avc1->template get_parent("trak");
             if (trak == nullptr)
             {
                 Super::close();
@@ -100,8 +100,8 @@ namespace extractor
 
     private:
 
-        std::shared_ptr<box::box> m_trak;
-        std::shared_ptr<box::avcc> m_avcc;
+        std::shared_ptr<const box::box> m_trak;
+        std::shared_ptr<const box::avcc> m_avcc;
     };
 }
 }

@@ -46,9 +46,7 @@ TEST(test_h264_sample_extractor, test_h264_file)
     EXPECT_TRUE(test_h264.good());
 
     petro::extractor::h264_sample_extractor extractor;
-    EXPECT_FALSE(extractor.is_open());
     EXPECT_TRUE(extractor.open("test.mp4"));
-    EXPECT_TRUE(extractor.is_open());
 
     check_sample(test_h264, extractor.sps_data(0), extractor.sps_size(0));
     check_sample(test_h264, extractor.pps_data(0), extractor.pps_size(0));

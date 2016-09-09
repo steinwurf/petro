@@ -12,6 +12,7 @@
 #include "../box/stco.hpp"
 #include "../box/stsc.hpp"
 #include "../box/stsz.hpp"
+#include "../box/co64.hpp"
 
 namespace petro
 {
@@ -31,9 +32,9 @@ namespace extractor
             }
             auto trak = Super::trak();
 
-            std::vector<uint32_t> chunk_offsets;
+            std::vector<uint64_t> chunk_offsets;
 
-            auto stco = trak->get_child<box::stco>();
+            auto stco = trak->template get_child<box::stco>();
             if (stco != nullptr)
             {
                 chunk_offsets.resize(stco->entry_count());
@@ -42,7 +43,7 @@ namespace extractor
             }
             else
             {
-                auto co64 = trak->get_child<box::co64>();
+                auto co64 = trak->template get_child<box::co64>();
                 if (co64 == nullptr)
                 {
                     close();
@@ -54,14 +55,14 @@ namespace extractor
                           chunk_offsets.begin());
             }
 
-            auto stsc = trak->get_child<box::stsc>();
+            auto stsc = trak->template get_child<box::stsc>();
             if (stsc == nullptr)
             {
                 close();
                 return false;
             }
 
-            auto stsz = trak->get_child<box::stsz>();
+            auto stsz = trak->template get_child<box::stsz>();
             if (stsz == nullptr)
             {
                 close();
@@ -69,6 +70,8 @@ namespace extractor
             }
 
             reset();
+
+            m_chunk_offsets = chunk_offsets;
 
             m_stsc = stsc;
             m_stsz = stsz;
@@ -87,9 +90,9 @@ namespace extractor
 
         void reset()
         {
-            uint32_t m_sample_index = 0;
-            uint32_t m_chunk_index = 0;
-            uint32_t m_chunk_sample = 0;
+            m_sample_index = 0;
+            m_chunk_index = 0;
+            m_chunk_sample = 0;
         }
 
         void advance()
