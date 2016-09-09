@@ -19,6 +19,7 @@ namespace extractor
     public:
 
         bool open(const std::string& filename);
+
         void close();
 
         void advance();

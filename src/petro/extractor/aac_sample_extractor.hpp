@@ -46,6 +46,8 @@ namespace extractor
 
         uint64_t decoding_timestamp() const;
 
+        uint64_t presentation_timestamp() const;
+
         /// Writes an Audio Data Transport Stream (ADTS) header which is to be
         /// placed before every AAC sample.
         /// Header consists of 7 bytes.

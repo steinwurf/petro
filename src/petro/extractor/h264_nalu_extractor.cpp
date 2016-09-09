@@ -24,7 +24,6 @@ namespace extractor
 {
     bool h264_nalu_extractor::open(const std::string& filename)
     {
-        assert(!m_sample_extractor.is_open());
         // Try to open sample_extractor
         auto success = m_sample_extractor.open(filename);
         if (!success)
@@ -35,13 +34,11 @@ namespace extractor
 
     void h264_nalu_extractor::close()
     {
-        assert(m_sample_extractor.is_open());
         m_sample_extractor.close();
     }
 
     void h264_nalu_extractor::advance()
     {
-        assert(m_sample_extractor.is_open());
         assert(!at_end());
 
         // increment the offset by the size of the previous nalu.
@@ -66,13 +63,11 @@ namespace extractor
 
     bool h264_nalu_extractor::at_end() const
     {
-        assert(m_sample_extractor.is_open());
         return m_sample_extractor.at_end() && m_sample_offset == 0;
     }
 
     void h264_nalu_extractor::reset()
     {
-        assert(m_sample_extractor.is_open());
         m_sample_extractor.reset();
         m_sample_offset = 0;
 
@@ -83,21 +78,18 @@ namespace extractor
 
     const uint8_t* h264_nalu_extractor::nalu_data() const
     {
-        assert(m_sample_extractor.is_open());
         assert(!at_end());
         return m_sample_offset + m_sample_extractor.sample_data();
     }
 
     uint32_t h264_nalu_extractor::nalu_size() const
     {
-        assert(m_sample_extractor.is_open());
         assert(!at_end());
         return m_nalu_size;
     }
 
     void h264_nalu_extractor::read_nalu_size()
     {
-        assert(m_sample_extractor.is_open());
         assert(!at_end());
         auto length_size = m_sample_extractor.nalu_length_size();
         auto data = m_sample_offset + m_sample_extractor.sample_data();
@@ -118,43 +110,36 @@ namespace extractor
 
     uint64_t h264_nalu_extractor::timestamp() const
     {
-        assert(m_sample_extractor.is_open());
         return m_sample_extractor.timestamp();
     }
 
     const uint8_t* h264_nalu_extractor::pps_data(uint32_t index) const
     {
-        assert(m_sample_extractor.is_open());
         return m_sample_extractor.pps_data(index);
     }
 
     uint32_t h264_nalu_extractor::pps_size(uint32_t index) const
     {
-        assert(m_sample_extractor.is_open());
         return m_sample_extractor.pps_size(index);
     }
 
     const uint8_t* h264_nalu_extractor::sps_data(uint32_t index) const
     {
-        assert(m_sample_extractor.is_open());
         return m_sample_extractor.sps_data(index);
     }
 
     uint32_t h264_nalu_extractor::sps_size(uint32_t index) const
     {
-        assert(m_sample_extractor.is_open());
         return m_sample_extractor.sps_size(index);
     }
 
     uint64_t h264_nalu_extractor::decoding_timestamp() const
     {
-        assert(m_sample_extractor.is_open());
         return m_sample_extractor.decoding_timestamp();
     }
 
     uint64_t h264_nalu_extractor::presentation_timestamp() const
     {
-        assert(m_sample_extractor.is_open());
         return m_sample_extractor.presentation_timestamp();
     }
 }

@@ -103,17 +103,33 @@ namespace extractor
         }
 
         m_stsc = trak->get_child<box::stsc>();
-        assert(m_stsc != nullptr);
+        if (m_stsc == nullptr)
+        {
+            close();
+            return false;
+        }
 
         m_stsz = trak->get_child<box::stsz>();
-        assert(m_stsz != nullptr);
+        if (m_stsz == nullptr)
+        {
+            close();
+            return false;
+        }
 
         auto mdhd = trak->get_child<box::mdhd>();
-        assert(mdhd != nullptr);
+        if (mdhd == nullptr)
+        {
+            close();
+            return false;
+        }
         m_timescale = mdhd->timescale();
 
         m_stts = trak->get_child<box::stts>();
-        assert(m_stts != nullptr);
+        if (m_stts == nullptr)
+        {
+            close();
+            return false;
+        }
 
         reset();
 
@@ -122,7 +138,6 @@ namespace extractor
 
     void aac_sample_extractor::close()
     {
-        assert(is_open());
         m_file.close();
         m_stsc.reset();
         m_stsz.reset();
