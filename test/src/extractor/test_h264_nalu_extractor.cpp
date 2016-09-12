@@ -16,9 +16,6 @@ namespace
 {
 void check_sample(std::ifstream& expected, const uint8_t* data, uint32_t size)
 {
-    // skip nalu start codes { 0, 0, 0, 1 }
-    expected.seekg(4, std::ios::cur);
-
     // read data
     std::vector<uint8_t> expected_sample(size);
     expected.read((char*)expected_sample.data(), expected_sample.size());
@@ -28,7 +25,7 @@ void check_sample(std::ifstream& expected, const uint8_t* data, uint32_t size)
 }
 }
 
-TEST(test_h264_nalu_extractor, test_h264_file)
+TEST(extractor_test_h264_nalu_extractor, test_h264_file)
 {
     auto test_filename = "test.h264";
     std::ifstream test_h264(test_filename, std::ios::binary);
@@ -36,10 +33,18 @@ TEST(test_h264_nalu_extractor, test_h264_file)
     EXPECT_TRUE(test_h264.good());
 
     petro::extractor::h264_nalu_extractor extractor;
-    EXPECT_TRUE(extractor.open("test.mp4"));
+    extractor.set_file_path("test.mp4");
+    EXPECT_EQ("test.mp4", extractor.file_path());
+    EXPECT_TRUE(extractor.open());
 
-    check_sample(test_h264, extractor.sps_data(0), extractor.sps_size(0));
-    check_sample(test_h264, extractor.pps_data(0), extractor.pps_size(0));
+    std::vector<uint8_t> nalu_header(extractor.nalu_header_size());
+    extractor.write_nalu_header(nalu_header.data());
+
+    check_sample(test_h264, nalu_header.data(), nalu_header.size());
+    check_sample(test_h264, extractor.sps_data(), extractor.sps_size());
+
+    check_sample(test_h264, nalu_header.data(), nalu_header.size());
+    check_sample(test_h264, extractor.pps_data(), extractor.pps_size());
 
     EXPECT_FALSE(extractor.at_end());
 
@@ -66,6 +71,9 @@ TEST(test_h264_nalu_extractor, test_h264_file)
     while (!extractor.at_end())
     {
         EXPECT_EQ(expected_new_sample[i], extractor.is_new_sample());
+
+        check_sample(test_h264, nalu_header.data(), nalu_header.size());
+
         auto nalu_data = extractor.nalu_data();
         auto nalu_size = extractor.nalu_size();
         check_sample(test_h264, nalu_data, nalu_size);

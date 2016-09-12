@@ -178,4 +178,19 @@ namespace petro
     {
         return m_remaining_bytes;
     }
+
+    const uint8_t* byte_stream::data() const
+    {
+        return m_data;
+    }
+
+    const uint8_t* byte_stream::data_offset() const
+    {
+        return m_data + m_offset;
+    }
+
+    uint64_t byte_stream::offset() const
+    {
+        return m_offset;
+    }
 }

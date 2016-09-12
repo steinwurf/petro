@@ -11,8 +11,8 @@ namespace petro
 {
 namespace extractor
 {
-    template<class Extractor>
-    class looper : public Extractor
+    template<class Super>
+    class looper : public Super
     {
     public:
 
@@ -28,22 +28,22 @@ namespace extractor
 
         uint64_t timestamp() const
         {
-            return m_loop_offset + Extractor::timestamp();
+            return m_loop_offset + Super::timestamp();
         }
 
         void advance()
         {
-            Extractor::advance();
-            if (m_loop && Extractor::at_end())
+            Super::advance();
+            if (m_loop && Super::at_end())
             {
                 m_loop_offset = timestamp();
-                Extractor::reset();
+                Super::reset();
             }
         }
 
         void reset()
         {
-            Extractor::reset();
+            Super::reset();
             m_loop_offset = 0;
         }
 

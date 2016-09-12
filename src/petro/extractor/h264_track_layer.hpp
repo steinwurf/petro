@@ -21,9 +21,9 @@ namespace extractor
     {
     public:
 
-        bool open(const std::string& filename)
+        bool open()
         {
-            if (!Super::open(filename))
+            if (!Super::open())
             {
                 Super::close();
                 return false;
@@ -51,7 +51,13 @@ namespace extractor
                 Super::close();
                 return false;
             }
-            m_avcc = avcc;
+
+            m_pps_data = avcc->picture_parameter_set(0)->data();
+            m_pps_size = avcc->picture_parameter_set(0)->size();
+            m_sps_data = avcc->sequence_parameter_set(0)->data();
+            m_sps_size = avcc->sequence_parameter_set(0)->size();
+            m_nalu_length_size = avcc->length_size();
+
             m_trak = trak;
             return true;
         }
@@ -62,46 +68,51 @@ namespace extractor
             return m_trak;
         }
 
-        const uint8_t* pps_data(uint32_t index) const
+        const uint8_t* pps_data() const
         {
-            assert(m_avcc != nullptr);
-            return m_avcc->picture_parameter_set(index)->data();
+            return m_pps_data;
         }
 
-        uint32_t pps_size(uint32_t index) const
+        uint32_t pps_size() const
         {
-            assert(m_avcc != nullptr);
-            return m_avcc->picture_parameter_set(index)->size();
+            return m_pps_size;
         }
 
-        const uint8_t* sps_data(uint32_t index) const
+        const uint8_t* sps_data() const
         {
-            assert(m_avcc != nullptr);
-            return m_avcc->sequence_parameter_set(index)->data();
+            return m_sps_data;
         }
 
-        uint32_t sps_size(uint32_t index) const
+        uint32_t sps_size() const
         {
-            assert(m_avcc != nullptr);
-            return m_avcc->sequence_parameter_set(index)->size();
+            return m_sps_size;
         }
 
         uint8_t nalu_length_size() const
         {
-            assert(m_avcc != nullptr);
-            return m_avcc->length_size();
+            return m_nalu_length_size;
         }
 
         void close()
         {
             m_trak.reset();
-            m_avcc.reset();
+            m_pps_data = nullptr;
+            m_pps_size = 0;
+            m_sps_data = nullptr;
+            m_sps_size = 0;
+            m_nalu_length_size = 0;
+            Super::close();
         }
 
     private:
 
         std::shared_ptr<const box::box> m_trak;
-        std::shared_ptr<const box::avcc> m_avcc;
+
+        const uint8_t* m_pps_data;
+        uint32_t m_pps_size;
+        const uint8_t* m_sps_data;
+        uint32_t m_sps_size;
+        uint8_t m_nalu_length_size;
     };
 }
 }

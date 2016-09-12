@@ -23,9 +23,9 @@ namespace extractor
     {
     public:
 
-        bool open(const std::string& filename)
+        bool open()
         {
-            if (!Super::open(filename))
+            if (!Super::open())
             {
                 Super::close();
                 return false;
@@ -37,9 +37,7 @@ namespace extractor
             auto stco = trak->template get_child<box::stco>();
             if (stco != nullptr)
             {
-                chunk_offsets.resize(stco->entry_count());
-                std::copy(stco->entries().begin(), stco->entries().end(),
-                          chunk_offsets.begin());
+                chunk_offsets = stco->entries();
             }
             else
             {
@@ -50,9 +48,7 @@ namespace extractor
                     return false;
                 }
 
-                chunk_offsets.resize(co64->entry_count());
-                std::copy(co64->entries().begin(), co64->entries().end(),
-                          chunk_offsets.begin());
+                chunk_offsets = co64->entries();
             }
 
             auto stsc = trak->template get_child<box::stsc>();

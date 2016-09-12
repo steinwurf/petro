@@ -21,7 +21,7 @@ namespace
     using extractor_stack = petro::extractor::looper<dummy_extractor>;
 }
 
-TEST(test_looper, not_looping)
+TEST(extractor_test_looper, not_looping)
 {
     extractor_stack extractor;
     dummy_extractor& layer = extractor;
@@ -36,7 +36,7 @@ TEST(test_looper, not_looping)
     EXPECT_EQ(3U, layer.advance.calls());
 }
 
-TEST(test_looper, looping)
+TEST(extractor_test_looper, looping)
 {
     extractor_stack extractor;
     dummy_extractor& layer = extractor;

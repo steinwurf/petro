@@ -23,9 +23,9 @@ namespace extractor
     {
     public:
 
-        bool open(const std::string& filename)
+        bool open()
         {
-            if (!Super::open(filename))
+            if (!Super::open())
             {
                 Super::close();
                 return false;

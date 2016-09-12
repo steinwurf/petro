@@ -18,11 +18,24 @@ namespace extractor
     {
     public:
 
-        bool open(const std::string& filename)
+        bool open()
+        {
+            assert(!m_file_path.empty());
+            assert(!m_file.is_open());
+            m_file.open(m_file_path);
+            return m_file.is_open();
+        }
+
+        void set_file_path(const std::string& file_path)
         {
             assert(!m_file.is_open());
-            m_file.open(filename);
-            return m_file.is_open();
+            m_file_path = file_path;
+        }
+
+        std::string file_path() const
+        {
+            assert(!m_file.is_open());
+            return m_file_path;
         }
 
         void close()
@@ -32,18 +45,20 @@ namespace extractor
 
         const uint8_t* data() const
         {
+            assert(m_file.is_open());
             return (uint8_t*)m_file.data();
         }
 
         uint32_t data_size() const
         {
+            assert(m_file.is_open());
             return m_file.size();
         }
 
     private:
 
         boost::iostreams::mapped_file_source m_file;
-
+        std::string m_file_path;
     };
 }
 }

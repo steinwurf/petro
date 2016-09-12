@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <cstdint>
 #include <cassert>
+#include <memory>
 
 #include "../parser.hpp"
 #include "../box/moov.hpp"
@@ -20,6 +20,11 @@
 #include "../box/stsd.hpp"
 #include "../box/co64.hpp"
 #include "../box/stsz.hpp"
+#include "../box/stsc.hpp"
+#include "../box/ctts.hpp"
+#include "../box/stts.hpp"
+#include "../box/stsz.hpp"
+#include "../box/stbl.hpp"
 #include "../box/root.hpp"
 
 namespace petro
@@ -31,9 +36,9 @@ namespace extractor
     {
     public:
 
-        bool open(const std::string& filename)
+        bool open()
         {
-            if (!Super::open(filename))
+            if (!Super::open())
             {
                 Super::close();
                 return false;

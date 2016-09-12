@@ -20,9 +20,9 @@ namespace extractor
     {
     public:
 
-        bool open(const std::string& filename)
+        bool open()
         {
-            if (!Super::open(filename))
+            if (!Super::open())
             {
                 Super::close();
                 return false;
@@ -67,6 +67,7 @@ namespace extractor
             m_mpeg_audio_object_type = 0;
             m_frequency_index = 0;
             m_channel_configuration = 0;
+            Super::close();
         }
 
         std::shared_ptr<const box::box> trak() const

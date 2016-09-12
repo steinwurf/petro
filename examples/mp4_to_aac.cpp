@@ -21,8 +21,9 @@ int main(int argc, char* argv[])
     auto filename = std::string(argv[1]);
 
     petro::extractor::aac_sample_extractor extractor;
+    extractor.set_file_path("test.mp4");
 
-    if (!extractor.open(filename))
+    if (!extractor.open())
     {
         std::cerr << "Error reading file: " << filename << std::endl;
         return 1;

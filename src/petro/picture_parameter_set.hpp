@@ -14,18 +14,19 @@ namespace petro
     class picture_parameter_set
     {
     public:
-        picture_parameter_set(std::vector<uint8_t> data):
-            m_data(data)
+        picture_parameter_set(const uint8_t* data, uint32_t size):
+            m_data(data),
+            m_size(size)
         { }
 
         const uint8_t* data() const
         {
-            return m_data.data();
+            return m_data;
         }
 
         uint32_t size() const
         {
-            return m_data.size();
+            return m_size;
         }
 
         std::string describe() const
@@ -39,6 +40,7 @@ namespace petro
 
     private:
 
-        std::vector<uint8_t> m_data;
+        const uint8_t* m_data;
+        uint32_t m_size;
     };
 }
