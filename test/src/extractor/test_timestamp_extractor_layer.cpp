@@ -56,6 +56,8 @@ TEST(extractor_test_timestamp_extractor_layer, api)
     // create stts //
     //-------------//
 
+    // This buffer is made up, to create a dummy stts box. please see
+    // stts.hpp for information related to this.
     std::vector<uint8_t> stts_buffer =
     {
         // These values have already been read by the parser:
@@ -81,6 +83,8 @@ TEST(extractor_test_timestamp_extractor_layer, api)
     // create mdhd //
     //-------------//
 
+    // This buffer is made up, to create a dummy mdhd box. please see
+    // mdhd.hpp for information related to this.
     std::vector<uint8_t> mdhd_buffer =
     {
         // These values have already been read by the parser:

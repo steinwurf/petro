@@ -48,6 +48,8 @@ TEST(extractor_test_h264_nalu_extractor, test_h264_file)
 
     EXPECT_FALSE(extractor.at_end());
 
+    // this data has been collected from the test.mp4 file. It isn't verified to
+    // be correct but it's used for testing consistency.
     std::vector<bool> expected_new_sample =
     {
         1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1,

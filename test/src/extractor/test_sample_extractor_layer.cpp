@@ -50,6 +50,8 @@ TEST(extractor_test_sample_extractor_layer, init)
     // create stsc //
     //-------------//
 
+    // This buffer is made up, to create a dummy stsc box. please see
+    // stsc.hpp for information related to this.
     std::vector<uint8_t> stsc_buffer =
     {
         // These values have already been read by the parser:
@@ -77,6 +79,8 @@ TEST(extractor_test_sample_extractor_layer, init)
     //-------------//
 
     uint8_t sample_size = 42;
+    // This buffer is made up, to create a dummy stsz box. please see
+    // stsz.hpp for information related to this.
     std::vector<uint8_t> stsz_buffer =
     {
         // These values have already been read by the parser:
@@ -101,6 +105,8 @@ TEST(extractor_test_sample_extractor_layer, init)
     // create co64 //
     //-------------//
 
+    // This buffer is made up, to create a dummy co64 box. please see
+    // co64.hpp for information related to this.
     uint8_t chunk_offset1 = 1U;
     uint8_t chunk_offset2 = 2U;
     std::vector<uint8_t> co64_buffer =
