@@ -40,7 +40,7 @@ namespace
         petro::extractor::timestamp_extractor_layer<dummy_layer>;
 }
 
-TEST(extractor_test_timestamp_extractor_layer, init)
+TEST(extractor_test_timestamp_extractor_layer, api)
 {
     dummy_stack stack;
     dummy_layer& layer = stack;
@@ -81,7 +81,6 @@ TEST(extractor_test_timestamp_extractor_layer, init)
     // create mdhd //
     //-------------//
 
-    uint8_t timescale = 42;
     std::vector<uint8_t> mdhd_buffer =
     {
         // These values have already been read by the parser:
@@ -91,7 +90,7 @@ TEST(extractor_test_timestamp_extractor_layer, init)
         0x00, 0x00, 0x00, // full_box flag
         0x00, 0x00, 0x00, 0x00, // mdhd m_creation_time
         0x00, 0x00, 0x00, 0x00, // mdhd m_modification_time
-        0x00, 0x00, 0x00, timescale, // mdhd m_timescale
+        0x00, 0x00, 0x00, 0x42, // mdhd m_timescale
         0x00, 0x00, 0x00, 0x00, // mdhd m_duration
         0x00, 0x00, // mdhd langauge code
         0x00, 0x00  // mdhd predefined
@@ -115,9 +114,9 @@ TEST(extractor_test_timestamp_extractor_layer, init)
 
     // The value is not verified. This is merly a test that checks for
     // consistency - not correctness.
-    EXPECT_EQ(142857U, stack.decoding_timestamp());
-    EXPECT_EQ(142857U, stack.presentation_timestamp());
-    EXPECT_EQ(142857U, stack.timestamp());
+    EXPECT_EQ(90909U, stack.decoding_timestamp());
+    EXPECT_EQ(90909U, stack.presentation_timestamp());
+    EXPECT_EQ(90909U, stack.timestamp());
 
     stack.close();
     EXPECT_EQ(2U, layer.close.calls());
