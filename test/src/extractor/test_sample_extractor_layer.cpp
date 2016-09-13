@@ -8,6 +8,7 @@
 #include <petro/box/stsc.hpp>
 #include <petro/box/stsz.hpp>
 #include <petro/box/co64.hpp>
+#include <petro/box/box.hpp>
 
 #include <stub/function.hpp>
 
@@ -15,29 +16,18 @@
 
 namespace
 {
-    struct dummy_trak
+    struct dummy_trak : public petro::box::box
     {
-        template<class Child>
-        std::shared_ptr<const Child> get_child() const
-        {
-            if (Child::TYPE == petro::box::stsc::TYPE)
-                return std::dynamic_pointer_cast<const Child>(m_stsc);
-            if (Child::TYPE == petro::box::stsz::TYPE)
-                return std::dynamic_pointer_cast<const Child>(m_stsz);
-            if (Child::TYPE == petro::box::co64::TYPE)
-                return std::dynamic_pointer_cast<const Child>(m_co64);
-            return nullptr;
-        }
-        std::shared_ptr<const petro::box::stsc> m_stsc;
-        std::shared_ptr<const petro::box::stsz> m_stsz;
-        std::shared_ptr<const petro::box::co64> m_co64;
+        dummy_trak() :
+           petro::box::box("dummy_trak", std::weak_ptr<box>())
+        { }
     };
 
     struct dummy_layer
     {
         stub::function<bool()> open;
         stub::function<void()> close;
-        stub::function<const dummy_trak*()> trak;
+        stub::function<std::shared_ptr<const petro::box::box>()> trak;
         stub::function<const uint8_t*()> data;
     };
 
@@ -54,16 +44,18 @@ TEST(extractor_test_sample_extractor_layer, init)
     EXPECT_FALSE(stack.open());
     EXPECT_EQ(1U, layer.close.calls());
 
-    dummy_trak trak;
+    auto trak = std::make_shared<dummy_trak>();
 
-    // stsc
+    //-------------//
+    // create stsc //
+    //-------------//
 
     std::vector<uint8_t> stsc_buffer =
     {
         // These values have already been read by the parser:
         // 0x00, 0x00, 0x00, 0xXX, // box size
         // 's', 't', 's', 'c', // box type
-        0x01, // full_box version
+        0x00, // full_box version
         0x00, 0x00, 0x00, // full_box flag
         0x00, 0x00, 0x00, 0x01, // stsc entry count 1
         0x00, 0x00, 0x00, 0x01, // stsc entry first_chunk
@@ -78,16 +70,19 @@ TEST(extractor_test_sample_extractor_layer, init)
         std::make_shared<petro::box::stsc>(std::weak_ptr<petro::box::box>());
     stsc->read(stsc_size, stsc_byte_stream);
 
-    trak.m_stsc = stsc;
+    trak->add_child(stsc);
 
-    // stsz
+    //-------------//
+    // create stsz //
+    //-------------//
+
     uint8_t sample_size = 42;
     std::vector<uint8_t> stsz_buffer =
     {
         // These values have already been read by the parser:
         // 0x00, 0x00, 0x00, 0xXX, // box size
         // 's', 't', 's', 'z', // box type
-        0x01, // full_box version
+        0x00, // full_box version
         0x00, 0x00, 0x00, // full_box flag
         0x00, 0x00, 0x00, sample_size, // stsz sample size
         0x00, 0x00, 0x00, 0x02, // stsz sample count
@@ -100,9 +95,12 @@ TEST(extractor_test_sample_extractor_layer, init)
         std::make_shared<petro::box::stsz>(std::weak_ptr<petro::box::box>());
     stsz->read(stsz_size, stsz_byte_stream);
 
-    trak.m_stsz = stsz;
+    trak->add_child(stsz);
 
-    // co64
+    //-------------//
+    // create co64 //
+    //-------------//
+
     uint8_t chunk_offset1 = 1U;
     uint8_t chunk_offset2 = 2U;
     std::vector<uint8_t> co64_buffer =
@@ -110,7 +108,7 @@ TEST(extractor_test_sample_extractor_layer, init)
         // These values have already been read by the parser:
         // 0x00, 0x00, 0x00, 0xXX, // box size
         // 'c', 'o', '6', '4', // box type
-        0x01, // full_box version
+        0x00, // full_box version
         0x00, 0x00, 0x00, // full_box flag
         0x00, 0x00, 0x00, 0x02, // co64 entry count
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, chunk_offset1, // entry 1
@@ -124,9 +122,11 @@ TEST(extractor_test_sample_extractor_layer, init)
         std::make_shared<petro::box::co64>(std::weak_ptr<petro::box::box>());
     co64->read(co64_size, co64_byte_stream);
 
-    trak.m_co64 = co64;
+    trak->add_child(co64);
 
-    layer.trak.set_return(&trak);
+    layer.trak.set_return(trak);
+
+    // Do the test
 
     EXPECT_TRUE(stack.open());
     EXPECT_FALSE(stack.at_end());

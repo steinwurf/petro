@@ -13,6 +13,7 @@
 #include "../box/stsc.hpp"
 #include "../box/stsz.hpp"
 #include "../box/co64.hpp"
+#include "../box/box.hpp"
 
 namespace petro
 {

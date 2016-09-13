@@ -15,88 +15,35 @@
 
 namespace
 {
-    struct dummy_decoder_config_descriptor
-    {
-        uint8_t mpeg_audio_object_type() const
-        {
-            return 11U;
-        }
-
-        uint32_t frequency_index() const
-        {
-            return 22U;
-        }
-
-        uint8_t channel_configuration() const
-        {
-            return 33U;
-        }
-    };
-
-    struct dummy_descriptor
-    {
-        dummy_decoder_config_descriptor* decoder_config_descriptor()
-        {
-            return &m_dummy_decoder_config_descriptor;
-        }
-
-        dummy_decoder_config_descriptor m_dummy_decoder_config_descriptor;
-    };
-
-    struct dummy_esds
-    {
-        dummy_descriptor* descriptor()
-        {
-            return &m_dummy_descriptor;
-        }
-
-        dummy_descriptor m_dummy_descriptor;
-    };
-
     struct dummy_trak : public petro::box::box
     {
         dummy_trak() :
-           petro::box::box("dummy_trak", std::weak_ptr<box>())
+           petro::box::box("trak", std::weak_ptr<box>())
         { }
     };
 
-    struct dummy_mp4a
+    struct dummy_mp4a : public petro::box::box
     {
-        dummy_mp4a() :
-            m_trak(std::make_shared<dummy_trak>()),
-            m_dummy_esds()
+        dummy_mp4a(std::shared_ptr<petro::box::box> parent) :
+           petro::box::box("mp4a", parent)
         { }
-
-        template<class Box>
-        dummy_esds* get_child()
-        {
-            return &m_dummy_esds;
-        }
-
-        std::shared_ptr<const petro::box::box> get_parent(
-            const std::string& type)
-        {
-            (void) type;
-            return m_trak;
-        }
-
-        std::shared_ptr<const dummy_trak> m_trak;
-        dummy_esds m_dummy_esds;
     };
 
     struct dummy_root
     {
-        dummy_root():
-            m_dummy_mp4a()
+        dummy_root(std::shared_ptr<dummy_mp4a> mp4a):
+            m_dummy_mp4a(mp4a)
         { }
 
-        dummy_mp4a* get_child(const std::string& type)
+        std::shared_ptr<const petro::box::box> get_child(
+            const std::string& type) const
         {
-            (void) type;
-            return &m_dummy_mp4a;
+            if (type == "mp4a")
+                return m_dummy_mp4a;
+            return nullptr;
         }
 
-        dummy_mp4a m_dummy_mp4a;
+        std::shared_ptr<const dummy_mp4a> m_dummy_mp4a;
     };
 
     struct dummy_layer
@@ -114,17 +61,38 @@ TEST(extractor_test_aac_track_layer, api)
     dummy_stack stack;
     dummy_layer& layer = stack;
     layer.open.set_return(false, true);
-    auto root = std::make_shared<dummy_root>();
+
+    auto trak = std::make_shared<dummy_trak>();
+    auto mp4a = std::make_shared<dummy_mp4a>(trak);
+
+    auto esds = std::make_shared<petro::box::esds>(trak);
+    std::vector<uint8_t> esds_data =
+    {
+        0x00, // full_box version
+        0x00, 0x00, 0x00, // full_box flag
+        0x03, // esds elemetary_stream_descriptor_tag
+        // elemetary_stream_descriptor (from test.mp4 file)
+        0x19, 0x00, 0x02, 0x00, 0x04, 0x11, 0x40, 0x15,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0xfd, 0x75, 0x05, 0x02, 0x11, 0x90, 0x06,
+        0x01, 0x02
+    };
+    auto bs = petro::byte_stream(esds_data.data(), esds_data.size());
+    esds->read(esds_data.size() + 8, bs);
+    mp4a->add_child(esds);
+
+    auto root = std::make_shared<dummy_root>(mp4a);
+
     layer.root.set_return(root);
 
     EXPECT_FALSE(stack.open());
     EXPECT_EQ(1U, layer.close.calls());
     EXPECT_TRUE(stack.open());
 
-    EXPECT_EQ(11U, stack.mpeg_audio_object_type());
-    EXPECT_EQ(22U, stack.frequency_index());
-    EXPECT_EQ(33U, stack.channel_configuration());
-    EXPECT_EQ("dummy_trak", stack.trak()->type());
+    EXPECT_EQ(2U, stack.mpeg_audio_object_type());
+    EXPECT_EQ(3U, stack.frequency_index());
+    EXPECT_EQ(2U, stack.channel_configuration());
+    EXPECT_EQ("trak", stack.trak()->type());
 
     stack.close();
     EXPECT_EQ(2U, layer.close.calls());
