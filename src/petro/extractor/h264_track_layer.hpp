@@ -45,7 +45,7 @@ namespace extractor
                 return false;
             }
 
-            auto trak = avc1->template get_parent("trak");
+            auto trak = avc1->get_parent("trak");
             if (trak == nullptr)
             {
                 Super::close();
