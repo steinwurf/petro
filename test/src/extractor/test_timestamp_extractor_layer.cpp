@@ -33,6 +33,7 @@ namespace
         stub::function<void()> close;
         stub::function<const dummy_trak*()> trak;
         stub::function<const uint8_t*()> data;
+        stub::function<uint32_t()> sample_index;
     };
 
     using dummy_stack =
@@ -49,54 +50,68 @@ TEST(extractor_test_timestamp_extractor_layer, init)
     EXPECT_FALSE(stack.open());
     EXPECT_EQ(1U, layer.close.calls());
 
-    // dummy_trak trak;
+    dummy_trak trak;
 
-    // // stts
+    // stts
 
-    // std::vector<uint8_t> stts_buffer =
-    // {
-    //     // These values have already been read by the parser:
-    //     // 0x00, 0x00, 0x00, 0xXX, // box size
-    //     // 's', 't', 's', 'c', // box type
-    //     0x01, // full_box version
-    //     0x00, 0x00, 0x00, // full_box flag
-    //     0x00, 0x00, 0x00, 0x01, // stts entry count 1
-    //     0x00, 0x00, 0x00, 0x01, // stts entry first_chunk
-    //     0x00, 0x00, 0x00, 0x01, // stts entry samples_per_chunk
-    //     0x00, 0x00, 0x00, 0x01, // stts entry sample_description_index
-    // };
-    // // size including attributes read by parser:
-    // auto stts_size = stts_buffer.size() + 8;
+    std::vector<uint8_t> stts_buffer =
+    {
+        // These values have already been read by the parser:
+        // 0x00, 0x00, 0x00, 0xXX, // box size
+        // 's', 't', 't', 's', // box type
+        0x00, // full_box version
+        0x00, 0x00, 0x00, // full_box flag
+        0x00, 0x00, 0x00, 0x01, // stts entry count 1
+        0x00, 0x00, 0x00, 0x03, // stts entry sample_count
+        0x00, 0x00, 0x00, 0x06, // stts entry sample_delta
+    };
+    // size including attributes read by parser:
+    auto stts_size = stts_buffer.size() + 8;
 
-    // petro::byte_stream stts_byte_stream(stts_buffer.data(), stts_buffer.size());
-    // auto stts =
-    //     std::make_shared<petro::box::stts>(std::weak_ptr<petro::box::box>());
-    // stts->read(stts_size, stts_byte_stream);
+    petro::byte_stream stts_byte_stream(stts_buffer.data(), stts_buffer.size());
+    auto stts =
+        std::make_shared<petro::box::stts>(std::weak_ptr<petro::box::box>());
+    stts->read(stts_size, stts_byte_stream);
 
-    // trak.m_stts = stts;
+    trak.m_stts = stts;
 
-    // // mdhd
-    // uint8_t sample_size = 42;
-    // std::vector<uint8_t> mdhd_buffer =
-    // {
-    //     // These values have already been read by the parser:
-    //     // 0x00, 0x00, 0x00, 0xXX, // box size
-    //     // 's', 't', 's', 'z', // box type
-    //     0x01, // full_box version
-    //     0x00, 0x00, 0x00, // full_box flag
-    //     0x00, 0x00, 0x00, sample_size, // mdhd sample size
-    //     0x00, 0x00, 0x00, 0x02, // mdhd sample count
-    // };
-    // // size including attributes read by parser:
-    // auto mdhd_size = mdhd_buffer.size() + 8;
+    // mdhd
+    uint8_t timescale = 42;
+    std::vector<uint8_t> mdhd_buffer =
+    {
+        // These values have already been read by the parser:
+        // 0x00, 0x00, 0x00, 0xXX, // box size
+        // 'm', 'd', 'h', 'd', // box type
+        0x00, // full_box version
+        0x00, 0x00, 0x00, // full_box flag
+        0x00, 0x00, 0x00, 0x00, // mdhd m_creation_time
+        0x00, 0x00, 0x00, 0x00, // mdhd m_modification_time
+        0x00, 0x00, 0x00, timescale, // mdhd m_timescale
+        0x00, 0x00, 0x00, 0x00, // mdhd m_duration
+        0x00, 0x00, // mdhd langauge code
+        0x00, 0x00  // mdhd predefined
+    };
+    // size including attributes read by parser:
+    auto mdhd_size = mdhd_buffer.size() + 8;
 
-    // petro::byte_stream mdhd_byte_stream(mdhd_buffer.data(), mdhd_buffer.size());
-    // auto mdhd =
-    //     std::make_shared<petro::box::mdhd>(std::weak_ptr<petro::box::box>());
-    // mdhd->read(mdhd_size, mdhd_byte_stream);
+    petro::byte_stream mdhd_byte_stream(mdhd_buffer.data(), mdhd_buffer.size());
+    auto mdhd =
+        std::make_shared<petro::box::mdhd>(std::weak_ptr<petro::box::box>());
+    mdhd->read(mdhd_size, mdhd_byte_stream);
 
-    // trak.m_mdhd = mdhd;
+    trak.m_mdhd = mdhd;
 
-    // layer.trak.set_return(&trak);
+    layer.trak.set_return(&trak);
+    layer.sample_index.set_return(0);
 
+    EXPECT_TRUE(stack.open());
+
+    // The value is not verified. This is merly a test that checks for
+    // consistency - not correctness.
+    EXPECT_EQ(142857U, stack.decoding_timestamp());
+    EXPECT_EQ(142857U, stack.presentation_timestamp());
+    EXPECT_EQ(142857U, stack.timestamp());
+
+    stack.close();
+    EXPECT_EQ(2U, layer.close.calls());
 }
