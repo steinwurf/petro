@@ -13,6 +13,8 @@ namespace petro
 {
 namespace extractor
 {
+    /// Stack extracting nalu samples useful for creating annex b formatted
+    /// sh264.
     using h264_nalu_extractor =
         nalu_header_writer_layer<
         h264_nalu_extractor_layer<

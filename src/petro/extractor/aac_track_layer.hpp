@@ -20,6 +20,7 @@ namespace extractor
     {
     public:
 
+        /// open this and the underlying layer, returns false upon failure.
         bool open()
         {
             if (!Super::open())
@@ -61,6 +62,7 @@ namespace extractor
             return true;
         }
 
+        /// close this and the underlying layer
         void close()
         {
             m_trak.reset();
@@ -70,22 +72,26 @@ namespace extractor
             Super::close();
         }
 
+        /// Returns a shared pointer to the AAC trak box.
         std::shared_ptr<const box::box> trak() const
         {
             assert(m_trak != nullptr);
             return m_trak;
         }
 
+        /// Returns the MPEG audio object type
         uint8_t mpeg_audio_object_type() const
         {
             return m_mpeg_audio_object_type;
         }
 
+        /// Returns the frequncy index
         uint32_t frequency_index() const
         {
             return m_frequency_index;
         }
 
+        /// Returns the channel configuration
         uint8_t channel_configuration() const
         {
             return m_channel_configuration;

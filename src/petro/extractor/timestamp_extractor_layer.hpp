@@ -23,6 +23,7 @@ namespace extractor
     {
     public:
 
+        /// Open this an the underlying layers
         bool open()
         {
             if (!Super::open())
@@ -53,6 +54,7 @@ namespace extractor
             return true;
         }
 
+        /// Close this an the underlying layers
         void close()
         {
             m_timescale = 0;
@@ -62,17 +64,20 @@ namespace extractor
             Super::close();
         }
 
+        /// Return the timestamp related to the current sample
         uint64_t timestamp() const
         {
             return presentation_timestamp();
         }
 
+        /// Return the decoding timestamp related to the current sample
         uint64_t decoding_timestamp() const
         {
             assert(m_stts != nullptr);
             return decoding_time(m_stts, m_timescale, Super::sample_index());
         }
 
+        /// Return the presentation timestamp related to the current sample
         uint64_t presentation_timestamp() const
         {
             assert(m_stts != nullptr);

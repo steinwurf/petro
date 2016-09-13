@@ -52,7 +52,9 @@ TEST(extractor_test_timestamp_extractor_layer, init)
 
     dummy_trak trak;
 
-    // stts
+    //-------------//
+    // create stts //
+    //-------------//
 
     std::vector<uint8_t> stts_buffer =
     {
@@ -75,7 +77,10 @@ TEST(extractor_test_timestamp_extractor_layer, init)
 
     trak.m_stts = stts;
 
-    // mdhd
+    //-------------//
+    // create mdhd //
+    //-------------//
+
     uint8_t timescale = 42;
     std::vector<uint8_t> mdhd_buffer =
     {
@@ -103,6 +108,8 @@ TEST(extractor_test_timestamp_extractor_layer, init)
 
     layer.trak.set_return(&trak);
     layer.sample_index.set_return(0);
+
+    // test stack
 
     EXPECT_TRUE(stack.open());
 

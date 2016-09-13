@@ -16,6 +16,7 @@ namespace petro
 {
 namespace extractor
 {
+    /// stack for extracting aac samples
     using aac_sample_extractor =
         timestamp_extractor_layer<
         adts_writer_layer<

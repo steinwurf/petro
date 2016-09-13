@@ -12,11 +12,22 @@ namespace petro
 {
 namespace extractor
 {
+    /// This layer is used for extracting the nalu sample segments from the h264
+    /// samples.
+    /// h264 samples consists of one or more nalu samples, each preceded by a
+    /// variable lengthed size:
+    /// 1-4 bytes  <- size
+    /// [size] bytes <- nalu data
+    /// ... zero or more times ....
+    /// Use the is_new_sample member function to determine which samples are
+    /// related to which timestamps (timestamps are associated with
+    /// h264 samples - not nalu samples).
     template<class Super>
     class h264_nalu_extractor_layer : public Super
     {
     public:
 
+        /// Open this and the underlying layer, returns false upon failure.
         bool open()
         {
             if (!Super::open())
@@ -28,6 +39,7 @@ namespace extractor
             return true;
         }
 
+        /// Advances the extractor to the next sample.
         void advance()
         {
             assert(!at_end());
@@ -52,11 +64,13 @@ namespace extractor
             read_nalu_size();
         }
 
+        /// Returns true if no more samples are available.
         bool at_end() const
         {
             return Super::at_end() && m_sample_offset == 0;
         }
 
+        /// Resets the extractor from the beginning.
         void reset()
         {
             Super::reset();
@@ -67,18 +81,21 @@ namespace extractor
                 read_nalu_size();
         }
 
+        /// Returns a pointer to the nalu data.
         const uint8_t* nalu_data() const
         {
             assert(!at_end());
             return m_sample_offset + Super::sample_data();
         }
 
+        /// Returns the size of the nalu data.
         uint32_t nalu_size() const
         {
             assert(!at_end());
             return m_nalu_size;
         }
 
+        /// Returns true if this is a new h264 sample.
         bool is_new_sample() const
         {
             return m_sample_offset == Super::nalu_length_size();
@@ -86,6 +103,7 @@ namespace extractor
 
     private:
 
+        /// Read the size of the nalu.
         void read_nalu_size()
         {
             assert(!at_end());

@@ -24,6 +24,7 @@ namespace extractor
     {
     public:
 
+        /// Open this and the underlying layer
         bool open()
         {
             if (!Super::open())
@@ -76,6 +77,7 @@ namespace extractor
             return true;
         }
 
+        /// Close this and the underlying layer
         void close()
         {
             m_chunk_offsets.clear();
@@ -85,6 +87,7 @@ namespace extractor
             Super::close();
         }
 
+        /// Reset this layer
         void reset()
         {
             m_sample_index = 0;
@@ -92,6 +95,7 @@ namespace extractor
             m_chunk_sample = 0;
         }
 
+        /// Advance to next sample
         void advance()
         {
             m_sample_index += 1;
@@ -103,24 +107,28 @@ namespace extractor
             }
         }
 
+        /// Return true if no more sample are available.
         bool at_end() const
         {
             assert(m_stsz != nullptr);
             return (m_sample_index >= m_stsz->sample_count());
         }
 
+        /// Return a pointer to the sample data
         const uint8_t* sample_data() const
         {
             assert(m_chunk_offsets.size() != 0);
             return Super::data() +  m_chunk_offsets[m_chunk_index];
         }
 
+        /// Return the size of the sample data
         uint32_t sample_size() const
         {
             assert(m_stsz != nullptr);
             return m_stsz->sample_size(m_sample_index);
         }
 
+        /// Return the current sample index
         uint32_t sample_index() const
         {
             return m_sample_index;

@@ -36,6 +36,7 @@ namespace extractor
     {
     public:
 
+        /// Open this and the underlying layer, returns false upon failure.
         bool open()
         {
             if (!Super::open())
@@ -73,12 +74,14 @@ namespace extractor
             return true;
         }
 
+        /// Close this and the underlying layer.
         void close()
         {
             Super::close();
             m_root.reset();
         }
 
+        /// Return a shared pointer to the root box
         std::shared_ptr<box::root> root() const
         {
             assert(m_root != nullptr);

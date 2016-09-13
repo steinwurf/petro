@@ -15,6 +15,7 @@ namespace petro
 {
 namespace extractor
 {
+    /// stack for extracting h264 samples
     using h264_sample_extractor =
         timestamp_extractor_layer<
         sample_extractor_layer<

@@ -17,6 +17,8 @@ namespace extractor
     {
     public:
 
+        /// Uses values from the underlying layers to construct and write an
+        /// adts header to the given pointer.
         void write_adts_header(uint8_t* data) const
         {
             // unchangeable
@@ -63,6 +65,7 @@ namespace extractor
             data[6] = byte7;
         }
 
+        /// returns the size of the header.
         uint32_t adts_header_size() const
         {
             return 7U;
