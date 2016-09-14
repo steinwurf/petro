@@ -13,6 +13,7 @@
 #include <iomanip>
 #include <ctime>
 #include <vector>
+#include <algorithm>
 
 namespace petro
 {
@@ -147,7 +148,7 @@ namespace petro
         uint16_t n = read_uint16_t();
         char c1 = 0x60 + ((n & 0x7C00) >> 10);  // Mask is 0111 1100 0000 0000
         char c2 = 0x60 + ((n & 0x03E0) >> 5);   // Mask is 0000 0011 1110 0000
-        char c3 = 0x60 + (n & 0x001F);          // Mask is 0000 0000 0001 1111
+        char c3 = 0x60 + ((n & 0x001F));        // Mask is 0000 0000 0001 1111
         return {c1, c2, c3};
     }
 
@@ -163,19 +164,42 @@ namespace petro
 
     std::string byte_stream::read_time(uint64_t total_time)
     {
-        // 2082844800 seconds between 01/01/1904 & 01/01/1970
-        // 2081376000 + 1468800 (66 years + 17 leap days)
-        std::time_t t = total_time - 2082844800;
+        // mp4 time  is the seconds since 00:00, Jan 1 1904 UTC
+        // time_t    is the seconds since 00:00, Jan 1 1970 UTC
+        // seconds between 01/01/1904 00:00:00 and 01/01/1970 00:00:00
+        uint64_t seconds_between_1904_and_1970 = 2082844800;
 
-        // // 2001-08-23 14:55:02
+        // handle the limited time representation of time_t.
+        if (total_time < seconds_between_1904_and_1970)
+        {
+            return "before 1970-01-01 00:00:00";
+        }
+
+        std::time_t t = total_time - seconds_between_1904_and_1970;
+        // Convert time_t to tm as UTC time
+        auto utc_time = std::gmtime(&t);
         char buffer[20];
-        std::strftime(buffer, 20, "%F %T", std::localtime(&t));
-
+        std::strftime(buffer, 20, "%F %T", utc_time);
         return std::string(buffer);
     }
 
     uint64_t byte_stream::remaining_bytes() const
     {
         return m_remaining_bytes;
+    }
+
+    const uint8_t* byte_stream::data() const
+    {
+        return m_data;
+    }
+
+    const uint8_t* byte_stream::data_offset() const
+    {
+        return m_data + m_offset;
+    }
+
+    uint64_t byte_stream::offset() const
+    {
+        return m_offset;
     }
 }

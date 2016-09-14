@@ -18,10 +18,11 @@ namespace petro
     {
 
     public:
-        sequence_parameter_set(std::vector<uint8_t> data):
-            m_data(data)
+        sequence_parameter_set(const uint8_t* data, uint32_t size):
+            m_data(data),
+            m_size(size)
         {
-            auto bits = bit_reader(m_data);
+            auto bits = bit_reader(m_data, m_size);
             uint8_t forbidden_zero_bit = bits.read_bit();
             assert(forbidden_zero_bit == 0);
             bits.skip(2); // nal_ref_idc
@@ -353,12 +354,12 @@ namespace petro
 
         const uint8_t* data() const
         {
-            return m_data.data();
+            return m_data;
         }
 
         uint32_t size() const
         {
-            return m_data.size();
+            return m_size;
         }
 
         std::string describe() const
@@ -372,7 +373,8 @@ namespace petro
 
     private:
 
-        std::vector<uint8_t> m_data;
+        const uint8_t* m_data;
+        uint32_t m_size;
 
         uint32_t m_height;
         uint32_t m_width;

@@ -36,26 +36,23 @@ uint32_t read_nalu_size(const uint8_t* data, uint8_t length_size)
     }
     return result;
 }
-}
 
-TEST(test_h264_sample_extractor, test_h264_file)
+void test_h264_file(const std::string& h264_file, const std::string& mp4_file)
 {
-    auto test_filename = "test.h264";
-    std::ifstream test_h264(test_filename, std::ios::binary);
+    std::ifstream test_h264(h264_file, std::ios::binary);
     EXPECT_TRUE(test_h264.is_open());
     EXPECT_TRUE(test_h264.good());
 
     petro::extractor::h264_sample_extractor extractor;
-    EXPECT_FALSE(extractor.is_open());
-    EXPECT_TRUE(extractor.open("test.mp4"));
-    EXPECT_TRUE(extractor.is_open());
+    extractor.set_file_path(mp4_file);
+    EXPECT_EQ(mp4_file, extractor.file_path());
+    EXPECT_TRUE(extractor.open());
 
-    check_sample(test_h264, extractor.sps_data(0), extractor.sps_size(0));
-    check_sample(test_h264, extractor.pps_data(0), extractor.pps_size(0));
+    check_sample(test_h264, extractor.sps_data(), extractor.sps_size());
+    check_sample(test_h264, extractor.pps_data(), extractor.pps_size());
 
     auto nalu_length_size = extractor.nalu_length_size();
 
-    EXPECT_FALSE(extractor.at_end());
     while (!extractor.at_end())
     {
         auto sample_data = extractor.sample_data();
@@ -73,4 +70,23 @@ TEST(test_h264_sample_extractor, test_h264_file)
         extractor.advance();
     }
     test_h264.close();
+}
+}
+
+TEST(extractor_test_h264_sample_extractor, test1_h264_file)
+{
+    // ~ One sample per chunk, multiple nalus per sample
+    test_h264_file("test1.h264", "test1.mp4");
+}
+
+TEST(extractor_test_h264_sample_extractor, test2_h264_file)
+{
+    // No samples
+    test_h264_file("test2.h264", "test2.mp4");
+}
+
+TEST(extractor_test_h264_sample_extractor, test3_h264_file)
+{
+    // ~ Multiple sample per chunk, single nalu per sample
+    test_h264_file("test3.h264", "test3.mp4");
 }

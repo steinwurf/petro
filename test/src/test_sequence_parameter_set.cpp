@@ -16,7 +16,7 @@ TEST(test_sequence_parameter_set, check_variables)
         0x67, 0x42, 0x00, 0x0A, 0xF8, 0x41, 0xA2
     };
 
-    petro::sequence_parameter_set sps(data);
+    petro::sequence_parameter_set sps(data.data(), data.size());
     EXPECT_EQ(66U, sps.profile_idc());
     EXPECT_EQ(0U, sps.constraint_set0_flag());
     EXPECT_EQ(0U, sps.constraint_set1_flag());
@@ -48,7 +48,7 @@ TEST(test_sequence_parameter_set, width512_height288)
         0x40, 0x00, 0x00, 0x07, 0xa3, 0xc5, 0x8b, 0x67,
         0x80
     };
-    petro::sequence_parameter_set sps(data);
+    petro::sequence_parameter_set sps(data.data(), data.size());
     EXPECT_EQ(100U, sps.profile_idc());
     EXPECT_EQ(0U, sps.constraint_set0_flag());
     EXPECT_EQ(0U, sps.constraint_set1_flag());
@@ -77,7 +77,7 @@ TEST(test_sequence_parameter_set, width1280_height800)
         0x89, 0x11, 0x50
     };
 
-    petro::sequence_parameter_set sps(data);
+    petro::sequence_parameter_set sps(data.data(), data.size());
     EXPECT_EQ(1280U, sps.width());
     EXPECT_EQ(800U, sps.height());
 
@@ -94,7 +94,7 @@ TEST(test_sequence_parameter_set, width1920_height1080)
         0x02, 0x00, 0x00, 0x03, 0x00, 0x79, 0x08
     };
 
-    petro::sequence_parameter_set sps(data);
+    petro::sequence_parameter_set sps(data.data(), data.size());
     EXPECT_EQ(1920U, sps.width());
     EXPECT_EQ(1080U, sps.height());
 }
@@ -111,7 +111,7 @@ TEST(test_sequence_parameter_set, width3840_height2160)
         0x31, 0x12
     };
 
-    petro::sequence_parameter_set sps(data);
+    petro::sequence_parameter_set sps(data.data(), data.size());
     EXPECT_EQ(3840U, sps.width());
     EXPECT_EQ(2160U, sps.height());
 }

@@ -3,7 +3,7 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/extractor/looper.hpp>
+#include <petro/extractor/looper_layer.hpp>
 
 #include <stub/function.hpp>
 #include <gtest/gtest.h>
@@ -18,10 +18,10 @@ namespace
         stub::function<bool()> at_end;
     };
 
-    using extractor_stack = petro::extractor::looper<dummy_extractor>;
+    using extractor_stack = petro::extractor::looper_layer<dummy_extractor>;
 }
 
-TEST(test_looper, not_looping)
+TEST(extractor_test_looper_layer, not_looping)
 {
     extractor_stack extractor;
     dummy_extractor& layer = extractor;
@@ -36,22 +36,25 @@ TEST(test_looper, not_looping)
     EXPECT_EQ(3U, layer.advance.calls());
 }
 
-TEST(test_looper, looping)
+TEST(extractor_test_looper_layer, looping)
 {
     extractor_stack extractor;
     dummy_extractor& layer = extractor;
     layer.timestamp.set_return(1);
     layer.at_end.set_return(false, false, true, false, false, true);
+    EXPECT_EQ(0U, extractor.loops());
     extractor.advance();
     extractor.advance();
     extractor.advance();
     EXPECT_EQ(1U, layer.reset.calls());
     EXPECT_EQ(2U, extractor.timestamp());
     EXPECT_EQ(3U, layer.advance.calls());
+    EXPECT_EQ(1U, extractor.loops());
     extractor.advance();
     extractor.advance();
     extractor.advance();
     EXPECT_EQ(2U, layer.reset.calls());
     EXPECT_EQ(3U, extractor.timestamp());
     EXPECT_EQ(6U, layer.advance.calls());
+    EXPECT_EQ(2U, extractor.loops());
 }

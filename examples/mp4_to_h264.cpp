@@ -21,8 +21,9 @@ int main(int argc, char* argv[])
     auto filename = std::string(argv[1]);
 
     petro::extractor::h264_nalu_extractor extractor;
+    extractor.set_file_path(filename);
 
-    if (!extractor.open(filename))
+    if (!extractor.open())
     {
         std::cerr << "Error reading file: " << filename << std::endl;
         return 1;
@@ -36,9 +37,9 @@ int main(int argc, char* argv[])
 
     // Write the sps and pps first
     h264_file.write(start_code.data(), start_code.size());
-    h264_file.write((char*)extractor.sps_data(0), extractor.sps_size(0));
+    h264_file.write((char*)extractor.sps_data(), extractor.sps_size());
     h264_file.write(start_code.data(), start_code.size());
-    h264_file.write((char*)extractor.pps_data(0), extractor.pps_size(0));
+    h264_file.write((char*)extractor.pps_data(), extractor.pps_size());
 
     // Write the h264 samples (a single sample might contain multiple NALUs)
     while (!extractor.at_end())

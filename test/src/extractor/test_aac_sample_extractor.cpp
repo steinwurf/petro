@@ -24,17 +24,17 @@ void check_sample(std::ifstream& expected, const uint8_t* data, uint32_t size)
 }
 }
 
-TEST(test_aac_sample_extractor, test_aac_file)
+TEST(extractor_test_aac_sample_extractor, test_aac_file)
 {
-    auto test_filename = "test.aac";
+    auto test_filename = "test1.aac";
     std::ifstream test_aac(test_filename, std::ios::binary);
     EXPECT_TRUE(test_aac.is_open());
     EXPECT_TRUE(test_aac.good());
 
     petro::extractor::aac_sample_extractor extractor;
-    EXPECT_FALSE(extractor.is_open());
-    EXPECT_TRUE(extractor.open("test.mp4"));
-    EXPECT_TRUE(extractor.is_open());
+    extractor.set_file_path("test1.mp4");
+    EXPECT_EQ("test1.mp4", extractor.file_path());
+    EXPECT_TRUE(extractor.open());
     EXPECT_EQ(7U, extractor.adts_header_size());
 
     std::vector<uint8_t> adts_header(extractor.adts_header_size());

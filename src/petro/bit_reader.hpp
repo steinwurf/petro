@@ -31,9 +31,9 @@ namespace petro
 
     public:
 
-        bit_reader(uint8_t* data, uint64_t bits):
+        bit_reader(const uint8_t* data, uint32_t size):
             m_data(data),
-            m_bits(bits),
+            m_bits(size * 8),
             m_bit_offset(0)
         { }
 
@@ -112,7 +112,7 @@ namespace petro
 
     private:
 
-        uint8_t* m_data;
+        const uint8_t* m_data;
         uint64_t m_bits;
         uint64_t m_bit_offset;
     };

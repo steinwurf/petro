@@ -47,6 +47,9 @@ namespace petro
         std::string read_time64();
 
         uint64_t remaining_bytes() const;
+        const uint8_t* data() const;
+        const uint8_t* data_offset() const;
+        uint64_t offset() const;
 
     private:
 
