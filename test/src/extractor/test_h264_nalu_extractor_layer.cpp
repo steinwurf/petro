@@ -57,6 +57,5 @@ TEST(extractor_test_h264_nalu_extractor_layer, api)
     EXPECT_EQ(0xBA, stack.nalu_data()[0]);
     EXPECT_EQ(0xB0, stack.nalu_data()[1]);
     layer.at_end.set_return(true);
-    stack.advance();
     EXPECT_TRUE(stack.at_end());
 }

@@ -93,17 +93,21 @@ namespace extractor
             m_sample_index = 0;
             m_chunk_index = 0;
             m_chunk_sample = 0;
+            m_offset = 0;
         }
 
         /// Advance to next sample
         void advance()
         {
+            assert(!at_end());
+            m_offset += sample_size();
             m_sample_index += 1;
             m_chunk_sample += 1;
             if (m_chunk_sample >= m_stsc->samples_for_chunk(m_chunk_index))
             {
                 m_chunk_index += 1;
                 m_chunk_sample = 0;
+                m_offset = 0;
             }
         }
 
@@ -117,13 +121,14 @@ namespace extractor
         /// Return a pointer to the sample data
         const uint8_t* sample_data() const
         {
-            assert(m_chunk_offsets.size() > m_chunk_index);
-            return Super::data() +  m_chunk_offsets[m_chunk_index];
+            assert(!at_end());
+            return Super::data() + m_chunk_offsets[m_chunk_index] + m_offset;
         }
 
         /// Return the size of the sample data
         uint32_t sample_size() const
         {
+            assert(!at_end());
             assert(m_stsz != nullptr);
             return m_stsz->sample_size(m_sample_index);
         }
@@ -131,11 +136,13 @@ namespace extractor
         /// Return the current sample index
         uint32_t sample_index() const
         {
+            assert(!at_end());
             return m_sample_index;
         }
 
     private:
 
+        uint32_t m_offset = 0;
         uint32_t m_sample_index = 0;
         uint32_t m_chunk_index = 0;
         uint32_t m_chunk_sample = 0;

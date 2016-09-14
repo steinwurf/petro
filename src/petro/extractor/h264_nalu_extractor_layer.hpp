@@ -8,8 +8,6 @@
 #include <cstdint>
 #include <cassert>
 
-#include <iostream>
-
 namespace petro
 {
 namespace extractor
@@ -44,13 +42,9 @@ namespace extractor
         /// Advances the extractor to the next sample.
         void advance()
         {
-            assert(!at_end());
-
+            assert(!Super::at_end());
             // increment the offset by the size of the previous nalu.
-            std::cout << (uint64_t)nalu_data() << " ";
-            std::cout << m_nalu_size << " ";
             m_sample_offset += m_nalu_size;
-            std::cout << m_sample_offset << " " << Super::sample_size() << std::endl;
 
             assert(m_sample_offset <= Super::sample_size());
             // If we are at the end of this sample ...
@@ -67,15 +61,7 @@ namespace extractor
                 if (Super::at_end())
                     return;
             }
-
-            std::cout << " nalu" << std::endl;
             read_nalu_size();
-        }
-
-        /// Returns true if no more samples are available.
-        bool at_end() const
-        {
-            return Super::at_end() && m_sample_offset == 0;
         }
 
         /// Resets the extractor from the beginning.
@@ -92,14 +78,14 @@ namespace extractor
         /// Returns a pointer to the nalu data.
         const uint8_t* nalu_data() const
         {
-            assert(!at_end());
+            assert(!Super::at_end());
             return m_sample_offset + Super::sample_data();
         }
 
         /// Returns the size of the nalu data.
         uint32_t nalu_size() const
         {
-            assert(!at_end());
+            assert(!Super::at_end());
             return m_nalu_size;
         }
 
@@ -114,7 +100,7 @@ namespace extractor
         /// Read the size of the nalu.
         void read_nalu_size()
         {
-            assert(!at_end());
+            assert(!Super::at_end());
             auto length_size = Super::nalu_length_size();
             auto data = m_sample_offset + Super::sample_data();
             m_sample_offset += length_size;
