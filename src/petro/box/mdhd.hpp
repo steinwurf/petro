@@ -31,6 +31,8 @@ namespace box
         void read(uint64_t size, byte_stream& bs)
         {
             full_box::read(size, bs);
+
+            std::cout << m_remaining_bytes << std::endl;
             if (m_version == 1)
             {
                 m_creation_time = bs.read_time64();
@@ -45,17 +47,19 @@ namespace box
                 m_modification_time = bs.read_time32();
                 m_timescale = bs.read_uint32_t();
                 m_duration = bs.read_uint32_t();
+                std::cout << m_remaining_bytes << std::endl;
                 m_remaining_bytes -= 16;
             }
 
             // ISO-639-2/T language code
             m_language = bs.read_iso639();
+            std::cout << m_remaining_bytes << std::endl;
             m_remaining_bytes -= 2;
 
             // pre_defined
             bs.skip(2);
             m_remaining_bytes -= 2;
-
+            std::cout << m_remaining_bytes << std::endl;
             bs.skip(m_remaining_bytes);
         }
 
