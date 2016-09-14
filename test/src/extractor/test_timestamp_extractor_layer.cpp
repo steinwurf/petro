@@ -92,8 +92,8 @@ TEST(extractor_test_timestamp_extractor_layer, api)
         // 'm', 'd', 'h', 'd', // box type
         0x00, // full_box version
         0x00, 0x00, 0x00, // full_box flag
-        0x00, 0x00, 0x00, 0x00, // mdhd m_creation_time
-        0x00, 0x00, 0x00, 0x00, // mdhd m_modification_time
+        0x7C, 0x25, 0xB0, 0x80, // mdhd m_creation_time
+        0x7C, 0x25, 0xB0, 0x80, // mdhd m_modification_time
         0x00, 0x00, 0x00, 0x42, // mdhd m_timescale
         0x00, 0x00, 0x00, 0x00, // mdhd m_duration
         0x00, 0x00, // mdhd langauge code
@@ -107,21 +107,21 @@ TEST(extractor_test_timestamp_extractor_layer, api)
         std::make_shared<petro::box::mdhd>(std::weak_ptr<petro::box::box>());
     mdhd->read(mdhd_size, mdhd_byte_stream);
 
-    // trak.m_mdhd = mdhd;
+    trak.m_mdhd = mdhd;
 
-    // layer.trak.set_return(&trak);
-    // layer.sample_index.set_return(0);
+    layer.trak.set_return(&trak);
+    layer.sample_index.set_return(0);
 
     // test stack
 
-    // EXPECT_TRUE(stack.open());
+    EXPECT_TRUE(stack.open());
 
-    // // The value is not verified. This is merly a test that checks for
-    // // consistency - not correctness.
-    // EXPECT_EQ(90909U, stack.decoding_timestamp());
-    // EXPECT_EQ(90909U, stack.presentation_timestamp());
-    // EXPECT_EQ(90909U, stack.timestamp());
+    // The value is not verified. This is merly a test that checks for
+    // consistency - not correctness.
+    EXPECT_EQ(90909U, stack.decoding_timestamp());
+    EXPECT_EQ(90909U, stack.presentation_timestamp());
+    EXPECT_EQ(90909U, stack.timestamp());
 
-    // stack.close();
-    // EXPECT_EQ(2U, layer.close.calls());
+    stack.close();
+    EXPECT_EQ(2U, layer.close.calls());
 }

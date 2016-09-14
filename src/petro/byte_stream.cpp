@@ -13,13 +13,7 @@
 #include <iomanip>
 #include <ctime>
 #include <vector>
-
-
 #include <algorithm>
-
-
-#include <iostream>
-
 
 namespace petro
 {
@@ -170,18 +164,18 @@ namespace petro
 
     std::string byte_stream::read_time(uint64_t total_time)
     {
-        std::cout << "total_time: " << total_time << std::endl;
-        // 2082844800 seconds between 01/01/1904 & 01/01/1970
-        // 2081376000 + 1468800 (66 years + 17 leap days)
-        total_time = std::max(total_time, (uint64_t)2082844800UL);
-        std::time_t t = total_time - 2082844800;
-        std::cout << "t: " << t << std::endl;
+        // mp4 time  is the seconds since 00:00, Jan 1 1904 UTC
+        // time_t    is the seconds since 00:00, Jan 1 1970 UTC
+        // seconds between 01/01/1904 00:00:00 and 01/01/1970 00:00:00
+        uint64_t seconds_between_1904_and_1970 = 2082844800;
+        if (total_time < seconds_between_1904_and_1970)
+        {
+            return "before 1970-01-01 00:00:00";
+        }
 
-        // // 2001-08-23 14:55:02
+        std::time_t t = total_time - seconds_between_1904_and_1970;
         char buffer[20];
-        std::strftime(buffer, 20, "%F %T", std::localtime(&t));
-        std::cout << "time: " << std::string(buffer) << std::endl;
-
+        std::strftime(buffer, 20, "%F %T", std::gmtime(&t));
         return std::string(buffer);
     }
 
