@@ -35,6 +35,7 @@ namespace box
             std::cout << m_remaining_bytes << std::endl;
             if (m_version == 1)
             {
+                std::cout << "version 1 ???" << std::endl;
                 m_creation_time = bs.read_time64();
                 m_modification_time = bs.read_time64();
                 m_timescale = bs.read_uint32_t();
@@ -43,9 +44,15 @@ namespace box
             }
             else // m_version == 0
             {
+                std::cout << "version 0" << std::endl;
                 m_creation_time = bs.read_time32();
+                std::cout << "1" << std::endl;
                 m_modification_time = bs.read_time32();
+
+                std::cout << "2" << std::endl;
                 m_timescale = bs.read_uint32_t();
+
+                std::cout << "3" << std::endl;
                 m_duration = bs.read_uint32_t();
                 std::cout << m_remaining_bytes << std::endl;
                 m_remaining_bytes -= 16;
