@@ -78,8 +78,3 @@ TEST(extractor_test_h264_sample_extractor, test1_h264_file)
 {
     test_h264_file("test1.h264", "test1.mp4");
 }
-
-TEST(extractor_test_h264_sample_extractor, test1_h264_file)
-{
-    test_h264_file("test1.h264", "test1.mp4");
-}
