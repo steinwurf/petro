@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <cassert>
 
+#include <iostream>
+
 namespace petro
 {
 namespace extractor
@@ -45,8 +47,10 @@ namespace extractor
             assert(!at_end());
 
             // increment the offset by the size of the previous nalu.
+            std::cout << (uint64_t)nalu_data() << " ";
+            std::cout << m_nalu_size << " ";
             m_sample_offset += m_nalu_size;
-
+            std::cout << m_sample_offset << " " << Super::sample_size() << std::endl;
             // If we are at the end of this sample ...
             if (m_sample_offset == Super::sample_size())
             {
@@ -61,6 +65,8 @@ namespace extractor
                 if (at_end())
                     return;
             }
+
+            std::cout << " nalu" << std::endl;
             read_nalu_size();
         }
 
@@ -110,7 +116,6 @@ namespace extractor
             auto length_size = Super::nalu_length_size();
             auto data = m_sample_offset + Super::sample_data();
             m_sample_offset += length_size;
-
 
             m_nalu_size = 0;
             for (uint8_t i = 0; i < length_size; ++i)

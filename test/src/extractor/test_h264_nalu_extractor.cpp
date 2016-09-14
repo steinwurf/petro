@@ -33,8 +33,8 @@ TEST(extractor_test_h264_nalu_extractor, test_h264_file)
     EXPECT_TRUE(test_h264.good());
 
     petro::extractor::h264_nalu_extractor extractor;
-    extractor.set_file_path("test.mp4");
-    EXPECT_EQ("test.mp4", extractor.file_path());
+    extractor.set_file_path("test1.mp4");
+    EXPECT_EQ("test1.mp4", extractor.file_path());
     EXPECT_TRUE(extractor.open());
 
     std::vector<uint8_t> nalu_header(extractor.nalu_header_size());
@@ -48,7 +48,7 @@ TEST(extractor_test_h264_nalu_extractor, test_h264_file)
 
     EXPECT_FALSE(extractor.at_end());
 
-    // this data has been collected from the test.mp4 file. It isn't verified to
+    // this data has been collected from the test1.mp4 file. It isn't verified to
     // be correct but it's used for testing consistency.
     std::vector<bool> expected_new_sample =
     {

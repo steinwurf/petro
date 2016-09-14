@@ -26,7 +26,7 @@
 
 TEST(test_parser, read_data)
 {
-    auto test_filename = "test.mp4";
+    auto test_filename = "test1.mp4";
     boost::iostreams::mapped_file_source test_mp4(test_filename);
 
     EXPECT_TRUE(test_mp4.is_open());
@@ -84,7 +84,7 @@ TEST(test_parser, read_data)
 
 TEST(test_parser, no_boxes)
 {
-    auto test_filename = "test.mp4";
+    auto test_filename = "test1.mp4";
     boost::iostreams::mapped_file_source test_mp4(test_filename);
     EXPECT_TRUE(test_mp4.is_open());
 
