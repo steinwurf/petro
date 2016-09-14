@@ -67,10 +67,9 @@ namespace extractor
                 >>
             > parser;
 
-            m_root = std::make_shared<box::root>();
             byte_stream bs(Super::data(), Super::data_size());
 
-            parser.read(m_root, bs);
+            m_root = parser.read(bs);
             return true;
         }
 
@@ -82,7 +81,7 @@ namespace extractor
         }
 
         /// Return a shared pointer to the root box
-        std::shared_ptr<box::root> root() const
+        std::shared_ptr<box::box> root() const
         {
             assert(m_root != nullptr);
             return m_root;
@@ -90,7 +89,7 @@ namespace extractor
 
     private:
 
-        std::shared_ptr<box::root> m_root;
+        std::shared_ptr<box::box> m_root;
 
     };
 }

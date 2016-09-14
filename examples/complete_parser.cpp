@@ -148,10 +148,8 @@ int main(int argc, char* argv[])
         >>
     > parser;
 
-    auto root = std::make_shared<petro::box::root>();
-
     petro::byte_stream bs((uint8_t*)mp4_file.data(), mp4_file.size());
-    parser.read(root, bs);
+    auto root = parser.read(bs);
 
     for (auto box : root->children())
     {

@@ -38,7 +38,7 @@ namespace box
             Parser p;
             for (uint32_t i = 0; i < m_entry_count; ++i)
             {
-                p.parse(shared_from_this(), bs);
+                p.parse(bs, shared_from_this());
             }
         }
 

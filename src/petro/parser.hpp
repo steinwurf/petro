@@ -13,6 +13,7 @@
 #include "byte_stream.hpp"
 #include "box/unknown.hpp"
 #include "box/box.hpp"
+#include "box/root.hpp"
 
 namespace petro
 {
@@ -21,15 +22,18 @@ namespace petro
     {
     public:
 
-        void read(std::weak_ptr<box::box> parent, byte_stream& bs)
+        std::shared_ptr<box::box> read(
+            byte_stream& bs,
+            std::weak_ptr<box::box> parent = std::make_shared<box::root>())
         {
             while(bs.remaining_bytes() != 0)
             {
-                parse(parent, bs);
+                parse(bs, parent);
             }
+            return parent.lock();
         }
 
-        void parse(std::weak_ptr<box::box> parent, byte_stream& bs)
+        void parse(byte_stream& bs, std::weak_ptr<box::box> parent)
         {
             // size is an integer that specifies the number of bytes in this
             // box, including all its fields and contained boxes.

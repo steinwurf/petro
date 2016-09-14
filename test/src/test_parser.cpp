@@ -47,7 +47,7 @@ TEST(test_parser, read_data)
     auto root = std::make_shared<petro::box::root>();
     petro::byte_stream bs((uint8_t*)test_mp4.data(), test_mp4.size());
 
-    p.read(root, bs);
+    p.read(bs, root);
 
     // check that we can get the children and cast them to their appropiate
     // type.
@@ -92,7 +92,7 @@ TEST(test_parser, no_boxes)
 
     auto root = std::make_shared<petro::box::root>();
     petro::byte_stream bs((uint8_t*)test_mp4.data(), test_mp4.size());
-    p.read(root, bs);
+    p.read(bs, root);
 
     // check that the children can be found, but only as basic boxes.
 
