@@ -117,7 +117,7 @@ namespace extractor
         /// Return a pointer to the sample data
         const uint8_t* sample_data() const
         {
-            assert(m_chunk_offsets.size() != 0);
+            assert(m_chunk_offsets.size() > m_chunk_index);
             return Super::data() +  m_chunk_offsets[m_chunk_index];
         }
 

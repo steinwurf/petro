@@ -26,7 +26,7 @@ void check_sample(std::ifstream& expected, const uint8_t* data, uint32_t size)
 
 TEST(extractor_test_aac_sample_extractor, test_aac_file)
 {
-    auto test_filename = "test.aac";
+    auto test_filename = "test1.aac";
     std::ifstream test_aac(test_filename, std::ios::binary);
     EXPECT_TRUE(test_aac.is_open());
     EXPECT_TRUE(test_aac.good());

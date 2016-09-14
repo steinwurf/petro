@@ -5,5 +5,6 @@ bld.program(
     features='cxx test',
     source=bld.path.ant_glob('**/*.cpp'),
     target='petro_tests',
-    test_files=['test1.mp4', 'test1.aac', 'test1.h264'],
+    test_files=['test1.mp4', 'test1.aac', 'test1.h264',
+                'test3.mp4', 'test3.h264'],
     use=['petro', 'gtest', 'stub_includes'])

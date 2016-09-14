@@ -51,6 +51,8 @@ namespace extractor
             std::cout << m_nalu_size << " ";
             m_sample_offset += m_nalu_size;
             std::cout << m_sample_offset << " " << Super::sample_size() << std::endl;
+
+            assert(m_sample_offset <= Super::sample_size());
             // If we are at the end of this sample ...
             if (m_sample_offset == Super::sample_size())
             {
@@ -62,7 +64,7 @@ namespace extractor
                 Super::advance();
 
                 // only read the nalu size of we are not at the end.
-                if (at_end())
+                if (Super::at_end())
                     return;
             }
 
