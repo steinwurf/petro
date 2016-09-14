@@ -53,7 +53,6 @@ void test_h264_file(const std::string& h264_file, const std::string& mp4_file)
 
     auto nalu_length_size = extractor.nalu_length_size();
 
-    EXPECT_FALSE(extractor.at_end());
     while (!extractor.at_end())
     {
         auto sample_data = extractor.sample_data();
@@ -76,10 +75,18 @@ void test_h264_file(const std::string& h264_file, const std::string& mp4_file)
 
 TEST(extractor_test_h264_sample_extractor, test1_h264_file)
 {
+    // ~ One sample per chunk, multiple nalus per sample
     test_h264_file("test1.h264", "test1.mp4");
 }
 
-// TEST(extractor_test_h264_sample_extractor, test3_h264_file)
-// {
-//     test_h264_file("test3.h264", "test3.mp4");
-// }
+TEST(extractor_test_h264_sample_extractor, test2_h264_file)
+{
+    // No samples
+    test_h264_file("test2.h264", "test2.mp4");
+}
+
+TEST(extractor_test_h264_sample_extractor, test3_h264_file)
+{
+    // ~ Multiple sample per chunk, single nalu per sample
+    test_h264_file("test3.h264", "test3.mp4");
+}
