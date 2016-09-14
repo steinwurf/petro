@@ -14,6 +14,10 @@
 #include <ctime>
 #include <vector>
 
+
+#include <iostream>
+
+
 namespace petro
 {
     byte_stream::byte_stream(const uint8_t* data, uint64_t size):
@@ -163,9 +167,11 @@ namespace petro
 
     std::string byte_stream::read_time(uint64_t total_time)
     {
+        std::cout << "total_time: " << total_time << std::endl;
         // 2082844800 seconds between 01/01/1904 & 01/01/1970
         // 2081376000 + 1468800 (66 years + 17 leap days)
         std::time_t t = total_time - 2082844800;
+        std::cout << "t: " << t << std::endl;
 
         // // 2001-08-23 14:55:02
         char buffer[20];
