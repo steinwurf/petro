@@ -168,14 +168,18 @@ namespace petro
         // time_t    is the seconds since 00:00, Jan 1 1970 UTC
         // seconds between 01/01/1904 00:00:00 and 01/01/1970 00:00:00
         uint64_t seconds_between_1904_and_1970 = 2082844800;
+
+        // handle the limited time representation of time_t.
         if (total_time < seconds_between_1904_and_1970)
         {
             return "before 1970-01-01 00:00:00";
         }
 
         std::time_t t = total_time - seconds_between_1904_and_1970;
+        // Convert time_t to tm as UTC time
+        auto utc_time = std::gmtime(&t);
         char buffer[20];
-        std::strftime(buffer, 20, "%F %T", std::gmtime(&t));
+        std::strftime(buffer, 20, "%F %T", utc_time);
         return std::string(buffer);
     }
 

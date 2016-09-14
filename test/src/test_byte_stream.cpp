@@ -514,19 +514,17 @@ TEST(test_byte_stream, read_time32)
     /// - openwrt_arm_32_vm-cxx_openwrt_gxx48_arm
     /// - raspbian7-cxx_raspberry_gxx49_arm
     /// - openwrt_mips_be_32-cxx_openwrt_gxx48_mips
-    std::vector<uint8_t> data;
-    // std::vector<uint8_t> data =
-    // {
-    //     0xCA, 0x8C, 0xBA, 0x6E,
-    //     0xCA, 0x8C, 0xBA, 0x6F
-    // };
+    std::vector<uint8_t> data =
+    {
+        0xCA, 0x8C, 0xBA, 0x6E,
+        0xCA, 0x8C, 0xBA, 0x6F
+    };
 
-    std::vector<std::string> expected;
-    // std::vector<std::string> expected =
-    // {
-    //     "2011-09-07 08:06:38",
-    //     "2011-09-07 08:06:39"
-    // };
+    std::vector<std::string> expected =
+    {
+        "2011-09-07 06:06:38",
+        "2011-09-07 06:06:39"
+    };
 
     // create byte_stream
     auto bs = petro::byte_stream(data.data(), data.size());
@@ -552,19 +550,17 @@ TEST(test_byte_stream, read_time64)
     /// - openwrt_arm_32_vm-cxx_openwrt_gxx48_arm
     /// - raspbian7-cxx_raspberry_gxx49_arm
     /// - openwrt_mips_be_32-cxx_openwrt_gxx48_mips
-    std::vector<uint8_t> data;
-    // std::vector<uint8_t> data =
-    // {
-    //     0x00, 0x00, 0x00, 0x00, 0xCA, 0x8C, 0xBA, 0x6E,
-    //     0x00, 0x00, 0x00, 0x00, 0xCA, 0x8C, 0xBA, 0x6F
-    // };
+    std::vector<uint8_t> data =
+    {
+        0x00, 0x00, 0x00, 0x00, 0xCA, 0x8C, 0xBA, 0x6E,
+        0x00, 0x00, 0x00, 0x00, 0xCA, 0x8C, 0xBA, 0x6F
+    };
 
-    std::vector<std::string> expected;
-    // std::vector<std::string> expected =
-    // {
-    //     "2011-09-07 08:06:38",
-    //     "2011-09-07 08:06:39"
-    // };
+    std::vector<std::string> expected =
+    {
+        "2011-09-07 06:06:38",
+        "2011-09-07 06:06:39"
+    };
 
     // create byte_stream
     auto bs = petro::byte_stream(data.data(), data.size());
