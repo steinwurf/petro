@@ -173,7 +173,7 @@ namespace petro
         std::cout << "total_time: " << total_time << std::endl;
         // 2082844800 seconds between 01/01/1904 & 01/01/1970
         // 2081376000 + 1468800 (66 years + 17 leap days)
-        total_time = std::max(total_time, 2082844800UL);
+        total_time = std::max(total_time, (uint64_t)2082844800UL);
         std::time_t t = total_time - 2082844800;
         std::cout << "t: " << t << std::endl;
 
