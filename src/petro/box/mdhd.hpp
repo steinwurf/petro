@@ -31,7 +31,6 @@ namespace box
         void read(uint64_t size, byte_stream& bs)
         {
             full_box::read(size, bs);
-
             if (m_version == 1)
             {
                 m_creation_time = bs.read_time64();
@@ -44,9 +43,7 @@ namespace box
             {
                 m_creation_time = bs.read_time32();
                 m_modification_time = bs.read_time32();
-
                 m_timescale = bs.read_uint32_t();
-
                 m_duration = bs.read_uint32_t();
                 m_remaining_bytes -= 16;
             }

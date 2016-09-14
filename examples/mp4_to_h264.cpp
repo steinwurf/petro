@@ -33,7 +33,8 @@ int main(int argc, char* argv[])
     std::ofstream h264_file(argv[2], std::ios::binary);
 
     // Create start code buffer
-    std::vector<char> start_code = { 0, 0, 0, 1 };
+    std::vector<char> start_code(extractor.nalu_header_size());
+    extractor.write_nalu_header((uint8_t*)start_code.data());
 
     // Write the sps and pps first
     h264_file.write(start_code.data(), start_code.size());

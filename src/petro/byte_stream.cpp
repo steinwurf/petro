@@ -13,7 +13,6 @@
 #include <iomanip>
 #include <ctime>
 #include <vector>
-#include <algorithm>
 
 namespace petro
 {

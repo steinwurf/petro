@@ -6,7 +6,27 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Major: Changed from using `std::ifstream` to using
+  `boost::iostreams::mapped_file_source` for reading files.
+* Major: Changed the order of the parameters given to `petro::parser::read` now
+  the parent paramter is the last one.
+* Major: Changed `petro::parser::read` to return a reference to the parent,
+  and have a default value for the root paramter.
+* Major: The extractors now have an open function which are allowed to fail,
+  instead of doing stuff that can fail in the constructor.
+* Major: Extractors are now split into seperate layers making it easier to test
+  and reuse.
+* Major: `bit_reader` now takes size in bytes instead of bits.
+* Minor: Added `data_offset` function to byte_reader. Allowing a pointer to the
+  current position of the byte_reader to be returned.
+* Major: `picture_parameter_set` and `sequence_parameter_set` now uses shallow
+  storage.
+* Major: the `read_time32` and `read_time64` now returns a UTC time.
+* Patch: the `read_time32` and `read_time64` now handles timestamps before
+  1970-01-01 00:00:00.
+* Major: Renamed `aac_extractor` -> `aac_sample_extractor`.
+* Major: Renamed `h264_extractor` -> `h264_sample_extractor`.
+* Major: Added external dependency on boost.
 
 4.0.0
 -----
