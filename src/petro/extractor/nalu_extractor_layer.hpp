@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <cassert>
 
+#include "read_bytes.hpp"
+
 namespace petro
 {
 namespace extractor
@@ -103,13 +105,8 @@ namespace extractor
             assert(!Super::at_end());
             auto length_size = Super::nalu_length_size();
             auto data = m_sample_offset + Super::sample_data();
+            m_nalu_size = detail::read_bytes(length_size, data);
             m_sample_offset += length_size;
-
-            m_nalu_size = 0;
-            for (uint8_t i = 0; i < length_size; ++i)
-            {
-                m_nalu_size |= ((uint32_t)data[i]) << ((length_size - 1) - i) * 8;
-            }
         }
 
     private:
