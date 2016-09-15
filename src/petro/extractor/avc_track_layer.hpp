@@ -17,7 +17,7 @@ namespace petro
 namespace extractor
 {
     template<class Super>
-    class h264_track_layer : public Super
+    class avc_track_layer : public Super
     {
     public:
 

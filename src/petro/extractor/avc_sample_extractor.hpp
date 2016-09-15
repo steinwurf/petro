@@ -7,7 +7,7 @@
 
 #include "timestamp_extractor_layer.hpp"
 #include "sample_extractor_layer.hpp"
-#include "h264_track_layer.hpp"
+#include "avc_track_layer.hpp"
 #include "parser_layer.hpp"
 #include "memory_mapped_file_layer.hpp"
 
@@ -15,11 +15,11 @@ namespace petro
 {
 namespace extractor
 {
-    /// stack for extracting h264 samples
-    using h264_sample_extractor =
+    /// stack for extracting avc samples
+    using avc_sample_extractor =
         timestamp_extractor_layer<
         sample_extractor_layer<
-        h264_track_layer<
+        avc_track_layer<
         parser_layer<
         memory_mapped_file_layer>>>>;
 }

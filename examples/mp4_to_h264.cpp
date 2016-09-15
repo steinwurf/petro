@@ -7,7 +7,7 @@
 #include <fstream>
 #include <string>
 
-#include <petro/extractor/h264_nalu_extractor.hpp>
+#include <petro/extractor/nalu_extractor.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
 
     auto filename = std::string(argv[1]);
 
-    petro::extractor::h264_nalu_extractor extractor;
+    petro::extractor::nalu_extractor extractor;
     extractor.set_file_path(filename);
 
     if (!extractor.open())

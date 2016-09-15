@@ -23,7 +23,7 @@ namespace extractor
     /// related to which timestamps (timestamps are associated with
     /// h264 samples - not nalu samples).
     template<class Super>
-    class h264_nalu_extractor_layer : public Super
+    class nalu_extractor_layer : public Super
     {
     public:
 
@@ -89,8 +89,8 @@ namespace extractor
             return m_nalu_size;
         }
 
-        /// Returns true if this is a new h264 sample.
-        bool is_new_sample() const
+        /// Returns true if this is the beginning of a avc sample.
+        bool is_beginning_of_avc_sample() const
         {
             return m_sample_offset == Super::nalu_length_size();
         }

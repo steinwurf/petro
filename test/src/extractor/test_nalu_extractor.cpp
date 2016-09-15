@@ -3,7 +3,7 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/extractor/h264_nalu_extractor.hpp>
+#include <petro/extractor/nalu_extractor.hpp>
 
 #include <cstdint>
 #include <vector>
@@ -26,14 +26,14 @@ void check_sample(std::ifstream& expected, const uint8_t* data, uint32_t size)
 
 void test_h264_file(
     const std::string& h264_file,
-    const std::vector<bool>& expected_new_sample,
+    const std::vector<bool>& expected_beginning_of_avc_samples,
     const std::string& mp4_file)
 {
     std::ifstream test_h264(h264_file, std::ios::binary);
     EXPECT_TRUE(test_h264.is_open());
     EXPECT_TRUE(test_h264.good());
 
-    petro::extractor::h264_nalu_extractor extractor;
+    petro::extractor::nalu_extractor extractor;
     extractor.set_file_path(mp4_file);
     EXPECT_EQ(mp4_file, extractor.file_path());
     EXPECT_TRUE(extractor.open());
@@ -50,7 +50,9 @@ void test_h264_file(
     uint32_t i = 0;
     while (!extractor.at_end())
     {
-        EXPECT_EQ(expected_new_sample[i], extractor.is_new_sample());
+        EXPECT_EQ(
+            expected_beginning_of_avc_samples[i],
+            extractor.is_beginning_of_avc_sample());
 
         check_sample(test_h264, nalu_header.data(), nalu_header.size());
 
@@ -68,11 +70,11 @@ void test_h264_file(
 }
 }
 
-TEST(extractor_test_h264_nalu_extractor, test1_h264_file)
+TEST(extractor_test_nalu_extractor, test1_h264_file)
 {
     // this data has been collected from the test1.mp4 file. It isn't verified to
     // be correct but it's used for testing consistency.
-    std::vector<bool> expected_new_sample =
+    std::vector<bool> expected_beginning_of_avc_samples =
     {
         1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
         0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
@@ -91,21 +93,21 @@ TEST(extractor_test_h264_nalu_extractor, test1_h264_file)
         0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0
     };
 
-    test_h264_file("test1.h264", expected_new_sample, "test1.mp4");
+    test_h264_file("test1.h264", expected_beginning_of_avc_samples, "test1.mp4");
 }
 
-TEST(extractor_test_h264_nalu_extractor, test2_h264_file)
+TEST(extractor_test_nalu_extractor, test2_h264_file)
 {
-    std::vector<bool> expected_new_sample;
+    std::vector<bool> expected_beginning_of_avc_samples;
 
-    test_h264_file("test2.h264", expected_new_sample, "test2.mp4");
+    test_h264_file("test2.h264", expected_beginning_of_avc_samples, "test2.mp4");
 }
 
-TEST(extractor_test_h264_nalu_extractor, test3_h264_file)
+TEST(extractor_test_nalu_extractor, test3_h264_file)
 {
     // this data has been collected from the test1.mp4 file. It isn't verified to
     // be correct but it's used for testing consistency.
-    std::vector<bool> expected_new_sample =
+    std::vector<bool> expected_beginning_of_avc_samples =
     {
         1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -116,5 +118,5 @@ TEST(extractor_test_h264_nalu_extractor, test3_h264_file)
         1, 1, 1, 1, 1
     };
 
-    test_h264_file("test3.h264", expected_new_sample, "test3.mp4");
+    test_h264_file("test3.h264", expected_beginning_of_avc_samples, "test3.mp4");
 }

@@ -3,7 +3,7 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/extractor/h264_nalu_extractor_layer.hpp>
+#include <petro/extractor/nalu_extractor_layer.hpp>
 
 #include <stub/function.hpp>
 
@@ -23,10 +23,10 @@ namespace
         stub::function<uint32_t()> nalu_length_size;
     };
 
-    using dummy_stack = petro::extractor::h264_nalu_extractor_layer<dummy_layer>;
+    using dummy_stack = petro::extractor::nalu_extractor_layer<dummy_layer>;
 }
 
-TEST(extractor_test_h264_nalu_extractor_layer, api)
+TEST(extractor_test_nalu_extractor_layer, api)
 {
     dummy_stack stack;
     dummy_layer& layer = stack;
@@ -47,12 +47,12 @@ TEST(extractor_test_h264_nalu_extractor_layer, api)
     layer.sample_size.set_return(sample1.size());
 
     EXPECT_TRUE(stack.open());
-    EXPECT_TRUE(stack.is_new_sample());
+    EXPECT_TRUE(stack.is_beginning_of_avc_sample());
     EXPECT_EQ(1U, stack.nalu_size());
     EXPECT_EQ(0xFF, stack.nalu_data()[0]);
     stack.advance();
     EXPECT_FALSE(stack.at_end());
-    EXPECT_FALSE(stack.is_new_sample());
+    EXPECT_FALSE(stack.is_beginning_of_avc_sample());
     EXPECT_EQ(2U, stack.nalu_size());
     EXPECT_EQ(0xBA, stack.nalu_data()[0]);
     EXPECT_EQ(0xB0, stack.nalu_data()[1]);

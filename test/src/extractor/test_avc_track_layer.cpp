@@ -3,7 +3,7 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/extractor/h264_track_layer.hpp>
+#include <petro/extractor/avc_track_layer.hpp>
 
 #include <petro/box/box.hpp>
 
@@ -111,10 +111,10 @@ namespace
         stub::function<std::shared_ptr<dummy_root>()> root;
     };
 
-    using dummy_stack = petro::extractor::h264_track_layer<dummy_layer>;
+    using dummy_stack = petro::extractor::avc_track_layer<dummy_layer>;
 }
 
-TEST(extractor_test_h264_track_layer, api)
+TEST(extractor_test_avc_track_layer, api)
 {
     dummy_stack stack;
     dummy_layer& layer = stack;

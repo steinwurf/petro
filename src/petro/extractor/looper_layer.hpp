@@ -41,10 +41,11 @@ namespace extractor
         /// Advances to the next sample
         void advance()
         {
+            auto timestamp = Super::timestamp();
             Super::advance();
             if (m_loop && Super::at_end())
             {
-                m_loop_offset = timestamp();
+                m_loop_offset += timestamp;
                 m_loops++;
                 Super::reset();
             }
