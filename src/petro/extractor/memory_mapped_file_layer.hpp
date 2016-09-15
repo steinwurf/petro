@@ -65,7 +65,7 @@ namespace extractor
         }
 
         /// Returns the size of the file
-        uint32_t data_size() const
+        uint64_t data_size() const
         {
             assert(m_file.is_open());
             return m_file.size();
