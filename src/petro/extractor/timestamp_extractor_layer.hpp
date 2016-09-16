@@ -18,6 +18,7 @@ namespace petro
 {
 namespace extractor
 {
+    /// Uses the aac and avc track layers to extract sample timestamps.
     template<class Super>
     class timestamp_extractor_layer : public Super
     {
