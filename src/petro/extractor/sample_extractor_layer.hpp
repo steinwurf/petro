@@ -19,6 +19,7 @@ namespace petro
 {
 namespace extractor
 {
+    /// Uses the aac and avc track layers to extract samples.
     template<class Super>
     class sample_extractor_layer : public Super
     {

@@ -31,6 +31,8 @@ namespace petro
 {
 namespace extractor
 {
+    /// This layer exposes the "root" of the tree constructed using the mp4 box
+    /// parser.
     template<class Super>
     class parser_layer : public Super
     {
