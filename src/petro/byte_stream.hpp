@@ -20,64 +20,7 @@ namespace petro
     {
     public:
 
-        struct i_byte_stream
-        {
-            virtual uint8_t read_byte() = 0;
-            virtual void skip(uint64_t bytes) = 0;
-        };
-
-        struct pointer_byte_stream : i_byte_stream
-        {
-            pointer_byte_stream(const uint8_t* data):
-                m_data(data)
-            { }
-
-            uint8_t read_byte()
-            {
-                uint8_t result = m_data[0];
-                m_data += 1;
-                return result;
-            }
-
-            void skip(uint64_t bytes)
-            {
-                m_data += bytes;
-            }
-
-        private:
-            const uint8_t* m_data;
-        };
-
-        struct file_byte_stream : i_byte_stream
-        {
-            file_byte_stream(std::istream& data):
-                m_data(data)
-            {
-                // @todo probably should be handled differently.
-                assert(m_data.good());
-                assert(0 == m_data.tellg());
-            }
-
-            uint8_t read_byte()
-            {
-                char result;
-                m_data.read(&result, 1);
-                return result;
-            }
-            void skip(uint64_t bytes)
-            {
-                m_data.seekg(bytes, std::ios::cur);
-            }
-
-        private:
-            std::istream& m_data;
-        };
-
-
-    public:
-
         byte_stream(const uint8_t* data, uint64_t size);
-        byte_stream(std::istream& data);
         byte_stream(byte_stream& bs, uint64_t size);
 
         void skip(uint64_t bytes);
@@ -104,6 +47,9 @@ namespace petro
         std::string read_time64();
 
         uint64_t remaining_bytes() const;
+        const uint8_t* data() const;
+        const uint8_t* data_offset() const;
+        uint64_t offset() const;
 
     private:
 
@@ -111,7 +57,8 @@ namespace petro
 
     private:
 
-        std::shared_ptr<i_byte_stream> m_data;
+        const uint8_t* m_data;
         uint64_t m_remaining_bytes;
+        uint64_t m_offset = 0;
     };
 }

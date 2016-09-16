@@ -65,7 +65,7 @@ namespace box
             return ss.str();
         }
 
-        const std::vector<uint32_t>& entries() const
+        const std::vector<uint64_t>& entries() const
         {
             return m_entries;
         }
@@ -76,7 +76,7 @@ namespace box
         }
 
 
-        uint32_t chunk_offset(uint32_t chunk_index) const
+        uint64_t chunk_offset(uint32_t chunk_index) const
         {
             assert(chunk_index < m_entry_count);
             return m_entries[chunk_index];
@@ -91,7 +91,7 @@ namespace box
         /// a vector containing each entry's chunk_offset.
         /// the chunk_offset is a 32 bit integer that gives the offset of the
         /// start of a chunk into its containing media file.
-        std::vector<uint32_t> m_entries;
+        std::vector<uint64_t> m_entries;
 
     };
 }

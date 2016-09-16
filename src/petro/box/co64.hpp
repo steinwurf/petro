@@ -68,7 +68,7 @@ namespace box
             return m_entries;
         }
 
-        uint64_t entry_count() const
+        uint32_t entry_count() const
         {
             return m_entry_count;
         }

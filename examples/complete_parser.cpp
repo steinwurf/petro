@@ -3,14 +3,16 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
+#include <iostream>
+#include <memory>
+#include <sstream>
+#include <string>
+
 #include <petro/parser.hpp>
 #include <petro/box/all.hpp>
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <memory>
-#include <string>
+#include <boost/iostreams/device/mapped_file.hpp>
+
 
 void print_box(std::shared_ptr<petro::box::box> b, uint32_t level = 0)
 {
@@ -40,11 +42,11 @@ int main(int argc, char* argv[])
         return 0;
     }
     auto filename = std::string(argv[1]);
-    std::ifstream check(filename, std::ios::binary);
+    boost::iostreams::mapped_file_source mp4_file(filename);
 
-    if (!check.is_open() || !check.good())
+    if (!mp4_file.is_open())
     {
-        std::cerr << "Error reading file: " << filename << std::endl;
+        std::cerr << "Unable to open file: " << filename << std::endl;
         return 1;
     }
 
@@ -146,11 +148,8 @@ int main(int argc, char* argv[])
         >>
     > parser;
 
-    auto root = std::make_shared<petro::box::root>();
-
-    std::ifstream mp4_file(filename, std::ios::binary);
-    petro::byte_stream bs(mp4_file);
-    parser.read(root, bs);
+    petro::byte_stream bs((uint8_t*)mp4_file.data(), mp4_file.size());
+    auto root = parser.read(bs);
 
     for (auto box : root->children())
     {

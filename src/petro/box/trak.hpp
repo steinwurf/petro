@@ -34,7 +34,7 @@ namespace box
             box::read(size, bs);
             Parser p;
             auto branched_bs = byte_stream(bs, m_remaining_bytes);
-            p.read(shared_from_this(), branched_bs);
+            p.read(branched_bs, shared_from_this());
         }
     };
 

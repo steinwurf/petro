@@ -21,7 +21,7 @@ TEST(test_bit_reader, read_bit)
         0xA5, //1010 0101
     };
 
-    petro::bit_reader bits(data.data(), data.size() * 8);
+    petro::bit_reader bits(data.data(), data.size());
 
     {
         SCOPED_TRACE("nibble 1");
@@ -106,7 +106,7 @@ TEST(test_bit_reader, read_bits_2)
         0x36  //0011 0110
     };
 
-    petro::bit_reader bits(data.data(), data.size() * 8);
+    petro::bit_reader bits(data.data(), data.size());
 
     {
         SCOPED_TRACE("nibble 1");
@@ -171,7 +171,7 @@ TEST(test_bit_reader, read_bits_3)
         0x36  //0011 0110
     };
 
-    petro::bit_reader bits(data.data(), data.size() * 8);
+    petro::bit_reader bits(data.data(), data.size());
 
     {
         SCOPED_TRACE("nibble 1");
@@ -237,7 +237,7 @@ TEST(test_bit_reader, read_bits_4)
         0xAA  //1010 1010
     };
 
-    petro::bit_reader bits(data.data(), data.size() * 8);
+    petro::bit_reader bits(data.data(), data.size());
 
     {
         SCOPED_TRACE("nibble 1");
@@ -298,7 +298,7 @@ TEST(test_bit_reader, read_bits_5)
         0x36  //0011 0110
     };
 
-    petro::bit_reader bits(data.data(), data.size() * 8);
+    petro::bit_reader bits(data.data(), data.size());
 
     EXPECT_EQ(0U, bits.read_bits(5));  // 0000 0
     EXPECT_EQ(3U, bits.read_bits(5));  // 000 11
@@ -322,7 +322,7 @@ TEST(test_bit_reader, read_bits_6)
         0x30  //0011 0000
     };
 
-    petro::bit_reader bits(data.data(), data.size() * 8);
+    petro::bit_reader bits(data.data(), data.size());
 
     EXPECT_EQ(0U, bits.read_bits(6));  // 0000 00
     EXPECT_EQ(15U, bits.read_bits(6)); // 00 1111
@@ -347,7 +347,7 @@ TEST(test_bit_reader, read_bits_7)
         0xDA  //1101 1010
     };
 
-    petro::bit_reader bits(data.data(), data.size() * 8);
+    petro::bit_reader bits(data.data(), data.size());
 
     EXPECT_EQ(0U, bits.read_bits(7));   //  0000 000
     EXPECT_EQ(63U, bits.read_bits(7));  // 0 1111 11
@@ -372,7 +372,7 @@ TEST(test_bit_reader, read_bits_8)
         0xDA  //1101 1010
     };
 
-    petro::bit_reader bits(data.data(), data.size() * 8);
+    petro::bit_reader bits(data.data(), data.size());
 
     EXPECT_EQ(0U, bits.read_bit());    // 0
     EXPECT_EQ(1U, bits.read_bits(8));   // 000 0000 1

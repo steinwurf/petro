@@ -13,6 +13,6 @@ TEST(test_picture_parameter_set, init)
 {
     std::vector<uint8_t> data = {0x68, 0xce, 0x38, 0x80};
 
-    petro::picture_parameter_set pps(data);
+    petro::picture_parameter_set pps(data.data(), data.size());
     EXPECT_EQ(data.size(), pps.size());
 }

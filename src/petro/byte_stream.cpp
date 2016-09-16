@@ -17,37 +17,30 @@
 namespace petro
 {
     byte_stream::byte_stream(const uint8_t* data, uint64_t size):
-        m_data(std::make_shared<pointer_byte_stream>(data)),
+        m_data(data),
         m_remaining_bytes(size)
     { }
 
-    byte_stream::byte_stream(std::istream& data) :
-        m_data(std::make_shared<file_byte_stream>(data))
-    {
-        data.seekg(0, std::ios::end);
-        m_remaining_bytes = data.tellg();
-        data.seekg(0);
-
-    }
-
     byte_stream::byte_stream(byte_stream& bs, uint64_t size):
         m_data(bs.m_data),
-        m_remaining_bytes(size)
+        m_remaining_bytes(size),
+        m_offset(bs.m_offset)
     {
         bs.m_remaining_bytes -= size;
+        bs.m_offset += size;
     }
 
     void byte_stream::skip(uint64_t bytes)
     {
         assert(m_remaining_bytes >= bytes);
-        m_data->skip(bytes);
+        m_offset += bytes;
         m_remaining_bytes -= bytes;
     }
 
     uint8_t byte_stream::read_uint8_t()
     {
         assert(m_remaining_bytes >= 1);
-        uint8_t result = m_data->read_byte();
+        uint8_t result = m_data[m_offset++];
         m_remaining_bytes -= 1;
         return result;
     }
@@ -154,7 +147,7 @@ namespace petro
         uint16_t n = read_uint16_t();
         char c1 = 0x60 + ((n & 0x7C00) >> 10);  // Mask is 0111 1100 0000 0000
         char c2 = 0x60 + ((n & 0x03E0) >> 5);   // Mask is 0000 0011 1110 0000
-        char c3 = 0x60 + (n & 0x001F);          // Mask is 0000 0000 0001 1111
+        char c3 = 0x60 + ((n & 0x001F));        // Mask is 0000 0000 0001 1111
         return {c1, c2, c3};
     }
 
@@ -170,19 +163,42 @@ namespace petro
 
     std::string byte_stream::read_time(uint64_t total_time)
     {
-        // 2082844800 seconds between 01/01/1904 & 01/01/1970
-        // 2081376000 + 1468800 (66 years + 17 leap days)
-        std::time_t t = total_time - 2082844800;
+        // mp4 time  is the seconds since 00:00, Jan 1 1904 UTC
+        // time_t    is the seconds since 00:00, Jan 1 1970 UTC
+        // seconds between 01/01/1904 00:00:00 and 01/01/1970 00:00:00
+        uint64_t seconds_between_1904_and_1970 = 2082844800;
 
-        // // 2001-08-23 14:55:02
+        // handle the limited time representation of time_t.
+        if (total_time < seconds_between_1904_and_1970)
+        {
+            return "before 1970-01-01 00:00:00";
+        }
+
+        std::time_t t = total_time - seconds_between_1904_and_1970;
+        // Convert time_t to tm as UTC time
+        auto utc_time = std::gmtime(&t);
         char buffer[20];
-        std::strftime(buffer, 20, "%F %T", std::localtime(&t));
-
+        std::strftime(buffer, 20, "%F %T", utc_time);
         return std::string(buffer);
     }
 
     uint64_t byte_stream::remaining_bytes() const
     {
         return m_remaining_bytes;
+    }
+
+    const uint8_t* byte_stream::data() const
+    {
+        return m_data;
+    }
+
+    const uint8_t* byte_stream::data_offset() const
+    {
+        return m_data + m_offset;
+    }
+
+    uint64_t byte_stream::offset() const
+    {
+        return m_offset;
     }
 }

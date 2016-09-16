@@ -7,7 +7,7 @@
 #include <fstream>
 #include <string>
 
-#include <petro/extractor/h264_extractor.hpp>
+#include <petro/extractor/nalu_extractor.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -20,28 +20,34 @@ int main(int argc, char* argv[])
 
     auto filename = std::string(argv[1]);
 
-    std::ifstream check(filename, std::ios::binary);
+    petro::extractor::nalu_extractor extractor;
+    extractor.set_file_path(filename);
 
-    if (!check.is_open() || !check.good())
+    if (!extractor.open())
     {
         std::cerr << "Error reading file: " << filename << std::endl;
         return 1;
     }
 
-    petro::extractor::h264_extractor extractor(filename);
-
     // Create the h264 output file
     std::ofstream h264_file(argv[2], std::ios::binary);
 
+    // Create start code buffer
+    std::vector<char> start_code(extractor.nalu_header_size());
+    extractor.write_nalu_header((uint8_t*)start_code.data());
+
     // Write the sps and pps first
-    h264_file.write((char*)extractor.sps().data(), extractor.sps().size());
-    h264_file.write((char*)extractor.pps().data(), extractor.pps().size());
+    h264_file.write(start_code.data(), start_code.size());
+    h264_file.write((char*)extractor.sps_data(), extractor.sps_size());
+    h264_file.write(start_code.data(), start_code.size());
+    h264_file.write((char*)extractor.pps_data(), extractor.pps_size());
 
     // Write the h264 samples (a single sample might contain multiple NALUs)
-    while (extractor.load_next_sample())
+    while (!extractor.at_end())
     {
-        auto sample = extractor.sample_data();
-        h264_file.write((char*)sample.data(), sample.size());
+        h264_file.write(start_code.data(), start_code.size());
+        h264_file.write((char*)extractor.nalu_data(), extractor.nalu_size());
+        extractor.advance();
     }
 
     h264_file.close();

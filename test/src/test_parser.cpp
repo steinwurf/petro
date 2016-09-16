@@ -9,7 +9,6 @@
 #include <vector>
 #include <sstream>
 #include <memory>
-#include <fstream>
 #include <iterator>
 
 #include <petro/box/root.hpp>
@@ -21,12 +20,15 @@
 #include <petro/box/trak.hpp>
 #include <petro/box/udta.hpp>
 
+#include <boost/iostreams/device/mapped_file.hpp>
+
 #include <gtest/gtest.h>
 
 TEST(test_parser, read_data)
 {
-    auto test_filename = "test.mp4";
-    std::ifstream test_mp4(test_filename, std::ios::binary);
+    auto test_filename = "test1.mp4";
+    boost::iostreams::mapped_file_source test_mp4(test_filename);
+
     EXPECT_TRUE(test_mp4.is_open());
 
     using trak_type = petro::box::trak<petro::parser<>>;
@@ -43,9 +45,9 @@ TEST(test_parser, read_data)
         petro::box::ftyp> p;
 
     auto root = std::make_shared<petro::box::root>();
-    petro::byte_stream bs(test_mp4);
+    petro::byte_stream bs((uint8_t*)test_mp4.data(), test_mp4.size());
 
-    p.read(root, bs);
+    p.read(bs, root);
 
     // check that we can get the children and cast them to their appropiate
     // type.
@@ -82,15 +84,15 @@ TEST(test_parser, read_data)
 
 TEST(test_parser, no_boxes)
 {
-    auto test_filename = "test.mp4";
-    std::ifstream test_mp4(test_filename, std::ios::binary);
+    auto test_filename = "test1.mp4";
+    boost::iostreams::mapped_file_source test_mp4(test_filename);
     EXPECT_TRUE(test_mp4.is_open());
 
     petro::parser<> p;
 
     auto root = std::make_shared<petro::box::root>();
-    petro::byte_stream bs(test_mp4);
-    p.read(root, bs);
+    petro::byte_stream bs((uint8_t*)test_mp4.data(), test_mp4.size());
+    p.read(bs, root);
 
     // check that the children can be found, but only as basic boxes.
 

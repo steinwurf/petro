@@ -45,17 +45,15 @@ namespace box
 
         for (uint8_t i = 0; i < m_num_of_sequence_parameter_sets; ++i)
         {
-            std::vector<uint8_t> sps;
             auto sequence_parameter_set_length = bs.read_uint16_t();
             m_remaining_bytes -= 2;
             assert(sequence_parameter_set_length <= m_remaining_bytes);
-            for (uint16_t i = 0; i < sequence_parameter_set_length; ++i)
-            {
-                sps.push_back(bs.read_uint8_t());
-                m_remaining_bytes -= 1;
-            }
+
             m_sequence_parameter_sets.push_back(
-                std::make_shared<petro::sequence_parameter_set>(sps));
+                std::make_shared<petro::sequence_parameter_set>(
+                    bs.data_offset(), sequence_parameter_set_length));
+            bs.skip(sequence_parameter_set_length);
+            m_remaining_bytes -= sequence_parameter_set_length;
         }
 
         m_num_of_picture_parameter_sets = bs.read_uint8_t();
@@ -63,17 +61,18 @@ namespace box
 
         for (uint8_t i = 0; i < m_num_of_picture_parameter_sets; ++i)
         {
-            std::vector<uint8_t> pps;
             auto picture_parameter_set_length = bs.read_uint16_t();
             m_remaining_bytes -= 2;
             assert(picture_parameter_set_length <= m_remaining_bytes);
-            for (uint16_t i = 0; i < picture_parameter_set_length; ++i)
-            {
-                pps.push_back(bs.read_uint8_t());
-                m_remaining_bytes -= 1;
-            }
+
+
             m_picture_parameter_sets.push_back(
-                std::make_shared<petro::picture_parameter_set>(pps));
+                std::make_shared<petro::picture_parameter_set>(
+                    bs.data_offset(),
+                    picture_parameter_set_length));
+
+            bs.skip(picture_parameter_set_length);
+            m_remaining_bytes -= picture_parameter_set_length;
         }
 
         bs.skip(m_remaining_bytes);

@@ -55,7 +55,6 @@ namespace box
             // pre_defined
             bs.skip(2);
             m_remaining_bytes -= 2;
-
             bs.skip(m_remaining_bytes);
         }
 

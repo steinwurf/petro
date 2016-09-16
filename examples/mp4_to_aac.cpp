@@ -7,7 +7,7 @@
 #include <fstream>
 #include <string>
 
-#include <petro/extractor/aac_extractor.hpp>
+#include <petro/extractor/aac_sample_extractor.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -20,24 +20,27 @@ int main(int argc, char* argv[])
 
     auto filename = std::string(argv[1]);
 
-    std::ifstream check(filename, std::ios::binary);
+    petro::extractor::aac_sample_extractor extractor;
+    extractor.set_file_path(filename);
 
-    if (!check.is_open() || !check.good())
+    if (!extractor.open())
     {
         std::cerr << "Error reading file: " << filename << std::endl;
         return 1;
     }
 
-    petro::extractor::aac_extractor extractor(filename);
 
     // Create the aac output file
     std::ofstream aac_file(argv[2], std::ios::binary);
 
+    std::vector<uint8_t> adts_header(extractor.adts_header_size());
     // Write the adts samples
-    while (extractor.load_next_sample())
+    while (!extractor.at_end())
     {
-        auto next_adts = extractor.sample_data();
-        aac_file.write((char*)next_adts.data(), next_adts.size());
+        extractor.write_adts_header(adts_header.data());
+        aac_file.write((char*)adts_header.data(), adts_header.size());
+        aac_file.write((char*)extractor.sample_data(), extractor.sample_size());
+        extractor.advance();
     }
 
     aac_file.close();
