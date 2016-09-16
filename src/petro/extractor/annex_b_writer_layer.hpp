@@ -14,11 +14,13 @@ namespace petro
 {
 namespace extractor
 {
+    /// Layer for writing an annex b formatted samples.
     template<class Super>
     class annex_b_writer_layer : public Super
     {
     public:
 
+        //( Opens this and the underlying layers.)
         bool open()
         {
             if (!Super::open())
@@ -30,18 +32,22 @@ namespace extractor
             return true;
         }
 
+        //( Resets this and the underlying layers.
         void reset()
         {
             Super::reset();
             update_state();
         }
 
+        //( Advances this and the underlying layers.
         void advance()
         {
             Super::advance();
             update_state();
         }
 
+        /// Writes the annex b formatted sample. Exactly the size returned from
+        /// annex_b_size will be used.
         void write_annex_b(uint8_t* buffer) const
         {
             assert(!Super::at_end());
@@ -57,6 +63,7 @@ namespace extractor
             }
         }
 
+        /// Returns the number bytes that will be used in write_annex_b
         uint32_t annex_b_size() const
         {
             assert(!Super::at_end());
@@ -69,6 +76,9 @@ namespace extractor
             return size;
         }
 
+    private:
+
+        /// Updates the state of this layer.
         void update_state()
         {
             if (Super::at_end())
