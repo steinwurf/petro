@@ -16,6 +16,8 @@ namespace petro
 {
 namespace extractor
 {
+    /// This layer exposes information about the avc track. This information is
+    /// used by the sample extractor layer to extract the avc samples.
     template<class Super>
     class avc_track_layer : public Super
     {
