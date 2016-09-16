@@ -25,7 +25,8 @@ Latest
 * Patch: the `read_time32` and `read_time64` now handles timestamps before
   1970-01-01 00:00:00.
 * Major: Renamed `aac_extractor` -> `aac_sample_extractor`.
-* Major: Renamed `h264_extractor` -> `h264_sample_extractor`.
+* Major: Renamed `h264_extractor` -> `avc_sample_extractor`.
+* Minor: Added `annex_b_writer` for writing annex_b samples.
 * Major: Added external dependency on boost.
 
 4.0.0
