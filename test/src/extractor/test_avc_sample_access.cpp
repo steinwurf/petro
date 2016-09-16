@@ -11,6 +11,19 @@ TEST(extractor_avc_sample_access, api)
 {
     petro::extractor::avc_sample_access access;
 
+    std::vector<std::vector<uint8_t>> expected_nalus
+    {
+        {
+            0x01, 0x02, 0x03
+        },
+        {
+            0x01, 0x02, 0x03, 0x04
+        },
+        {
+            0x01, 0x02
+        }
+    };
+
     {
         uint32_t size_length = 4;
         SCOPED_TRACE(testing::Message() << "size length: " << size_length);
@@ -23,19 +36,6 @@ TEST(extractor_avc_sample_access, api)
 
         access.read(size_length, avc_sample.data(), avc_sample.size());
         ASSERT_EQ(3U, access.nalu_count());
-
-        std::vector<std::vector<uint8_t>> expected_nalus
-        {
-            {
-                0x01, 0x02, 0x03
-            },
-            {
-                0x01, 0x02, 0x03, 0x04
-            },
-            {
-                0x01, 0x02
-            }
-        };
 
         for (uint32_t i = 0; i < access.nalu_count(); ++i)
         {
@@ -60,19 +60,6 @@ TEST(extractor_avc_sample_access, api)
         access.read(size_length, avc_sample.data(), avc_sample.size());
         ASSERT_EQ(3U, access.nalu_count());
 
-        std::vector<std::vector<uint8_t>> expected_nalus
-        {
-            {
-                0x01, 0x02, 0x03
-            },
-            {
-                0x01, 0x02, 0x03, 0x04
-            },
-            {
-                0x01, 0x02
-            }
-        };
-
         for (uint32_t i = 0; i < access.nalu_count(); ++i)
         {
             auto nalu_size = access.nalu_size_at(i);
@@ -96,19 +83,6 @@ TEST(extractor_avc_sample_access, api)
         access.read(size_length, avc_sample.data(), avc_sample.size());
         ASSERT_EQ(3U, access.nalu_count());
 
-        std::vector<std::vector<uint8_t>> expected_nalus
-        {
-            {
-                0x01, 0x02, 0x03
-            },
-            {
-                0x01, 0x02, 0x03, 0x04
-            },
-            {
-                0x01, 0x02
-            }
-        };
-
         for (uint32_t i = 0; i < access.nalu_count(); ++i)
         {
             auto nalu_size = access.nalu_size_at(i);
@@ -131,19 +105,6 @@ TEST(extractor_avc_sample_access, api)
 
         access.read(size_length, avc_sample.data(), avc_sample.size());
         ASSERT_EQ(3U, access.nalu_count());
-
-        std::vector<std::vector<uint8_t>> expected_nalus
-        {
-            {
-                0x01, 0x02, 0x03
-            },
-            {
-                0x01, 0x02, 0x03, 0x04
-            },
-            {
-                0x01, 0x02
-            }
-        };
 
         for (uint32_t i = 0; i < access.nalu_count(); ++i)
         {

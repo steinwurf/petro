@@ -15,6 +15,8 @@ namespace petro
 {
 namespace extractor
 {
+    /// This layer exposes information about the aac track. This information is
+    /// used by the sample extractor layer to extract the aac samples.
     template<class Super>
     class aac_track_layer : public Super
     {
