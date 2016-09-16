@@ -15,6 +15,7 @@ namespace petro
 {
 namespace extractor
 {
+    /// Class for accesing the elements in an avc sample.
     class avc_sample_access
     {
 
