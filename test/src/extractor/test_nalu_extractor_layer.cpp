@@ -19,7 +19,7 @@ namespace
         stub::function<uint32_t()> sample_size;
         stub::function<void()> advance;
         stub::function<void()> reset;
-        stub::function<const uint8_t*()> sample_data;
+        stub::function<const uint8_t* ()> sample_data;
         stub::function<uint32_t()> nalu_length_size;
     };
 

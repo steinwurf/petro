@@ -31,13 +31,13 @@ namespace petro
 
     public:
 
-        bit_reader(const uint8_t* data, uint32_t size):
+        bit_reader(const uint8_t* data, uint32_t size) :
             m_data(data),
             m_bits(size * 8),
             m_bit_offset(0)
         { }
 
-        bit_reader(std::vector<uint8_t>& data):
+        bit_reader(std::vector<uint8_t>& data) :
             m_data(data.data()),
             m_bits(data.size() * 8),
             m_bit_offset(0)

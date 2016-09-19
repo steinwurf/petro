@@ -13,26 +13,26 @@
 
 namespace petro
 {
-namespace box
-{
-    /// item information
-    class iinf : public box
+    namespace box
     {
-
-    public:
-
-        static const std::string TYPE;
-
-    public:
-        iinf(std::weak_ptr<box> parent):
-            box(iinf::TYPE, parent)
-        { }
-
-        void read(uint64_t size, byte_stream& bs)
+        /// item information
+        class iinf : public box
         {
-            box::read(size, bs);
-            bs.skip(m_remaining_bytes);
-        }
-    };
-}
+
+        public:
+
+            static const std::string TYPE;
+
+        public:
+            iinf(std::weak_ptr<box> parent) :
+                box(iinf::TYPE, parent)
+            { }
+
+            void read(uint64_t size, byte_stream& bs)
+            {
+                box::read(size, bs);
+                bs.skip(m_remaining_bytes);
+            }
+        };
+    }
 }

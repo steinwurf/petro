@@ -29,70 +29,70 @@
 
 namespace petro
 {
-namespace extractor
-{
-    /// This layer exposes the "root" of the tree constructed using the mp4 box
-    /// parser.
-    template<class Super>
-    class parser_layer : public Super
+    namespace extractor
     {
-    public:
-
-        /// Open this and the underlying layer, returns false upon failure.
-        bool open()
+        /// This layer exposes the "root" of the tree constructed using the mp4 box
+        /// parser.
+        template<class Super>
+        class parser_layer : public Super
         {
-            if (!Super::open())
+        public:
+
+            /// Open this and the underlying layer, returns false upon failure.
+            bool open()
             {
-                Super::close();
-                return false;
+                if (!Super::open())
+                {
+                    Super::close();
+                    return false;
+                }
+
+                parser<
+                    box::moov<parser<
+                            box::trak<parser<
+                                    box::mdia<parser<
+                                            box::hdlr,
+                                            box::mdhd,
+                                            box::minf<parser<
+                                                    box::stbl<parser<
+                                                            box::stco,
+                                                            box::stsc,
+                                                            box::stsd,
+                                                            box::co64,
+                                                            box::ctts,
+                                                            box::stts,
+                                                            box::stsz
+                                                    >>
+                                            >>
+                                    >>
+                            >>
+                    >>
+                > parser;
+
+                byte_stream bs(Super::data(), Super::data_size());
+
+                m_root = parser.read(bs);
+                return true;
             }
 
-            parser<
-                box::moov<parser<
-                    box::trak<parser<
-                        box::mdia<parser<
-                            box::hdlr,
-                            box::mdhd,
-                            box::minf<parser<
-                                box::stbl<parser<
-                                    box::stco,
-                                    box::stsc,
-                                    box::stsd,
-                                    box::co64,
-                                    box::ctts,
-                                    box::stts,
-                                    box::stsz
-                                >>
-                            >>
-                        >>
-                    >>
-                >>
-            > parser;
+            /// Close this and the underlying layer.
+            void close()
+            {
+                Super::close();
+                m_root.reset();
+            }
 
-            byte_stream bs(Super::data(), Super::data_size());
+            /// Return a shared pointer to the root box
+            std::shared_ptr<box::box> root() const
+            {
+                assert(m_root != nullptr);
+                return m_root;
+            }
 
-            m_root = parser.read(bs);
-            return true;
-        }
+        private:
 
-        /// Close this and the underlying layer.
-        void close()
-        {
-            Super::close();
-            m_root.reset();
-        }
+            std::shared_ptr<box::box> m_root;
 
-        /// Return a shared pointer to the root box
-        std::shared_ptr<box::box> root() const
-        {
-            assert(m_root != nullptr);
-            return m_root;
-        }
-
-    private:
-
-        std::shared_ptr<box::box> m_root;
-
-    };
-}
+        };
+    }
 }

@@ -13,26 +13,26 @@
 
 namespace petro
 {
-namespace box
-{
-    /// independent and disposable samples
-    class sdtp : public box
+    namespace box
     {
-
-    public:
-
-        static const std::string TYPE;
-
-    public:
-        sdtp(std::weak_ptr<box> parent):
-            box(sdtp::TYPE, parent)
-        { }
-
-        void read(uint64_t size, byte_stream& bs)
+        /// independent and disposable samples
+        class sdtp : public box
         {
-            box::read(size, bs);
-            bs.skip(m_remaining_bytes);
-        }
-    };
-}
+
+        public:
+
+            static const std::string TYPE;
+
+        public:
+            sdtp(std::weak_ptr<box> parent) :
+                box(sdtp::TYPE, parent)
+            { }
+
+            void read(uint64_t size, byte_stream& bs)
+            {
+                box::read(size, bs);
+                bs.skip(m_remaining_bytes);
+            }
+        };
+    }
 }

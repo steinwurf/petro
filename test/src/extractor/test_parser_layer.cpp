@@ -15,7 +15,7 @@ namespace
     {
         stub::function<bool()> open;
         stub::function<void()> close;
-        stub::function<const uint8_t*()> data;
+        stub::function<const uint8_t* ()> data;
         stub::function<uint32_t()> data_size;
     };
 

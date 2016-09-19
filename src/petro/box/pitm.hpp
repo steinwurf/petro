@@ -13,26 +13,26 @@
 
 namespace petro
 {
-namespace box
-{
-    /// primary item reference
-    class pitm : public box
+    namespace box
     {
-
-    public:
-
-        static const std::string TYPE;
-
-    public:
-        pitm(std::weak_ptr<box> parent):
-            box(pitm::TYPE, parent)
-        { }
-
-        void read(uint64_t size, byte_stream& bs)
+        /// primary item reference
+        class pitm : public box
         {
-            box::read(size, bs);
-            bs.skip(m_remaining_bytes);
-        }
-    };
-}
+
+        public:
+
+            static const std::string TYPE;
+
+        public:
+            pitm(std::weak_ptr<box> parent) :
+                box(pitm::TYPE, parent)
+            { }
+
+            void read(uint64_t size, byte_stream& bs)
+            {
+                box::read(size, bs);
+                bs.skip(m_remaining_bytes);
+            }
+        };
+    }
 }

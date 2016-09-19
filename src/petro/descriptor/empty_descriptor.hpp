@@ -13,16 +13,16 @@
 
 namespace petro
 {
-namespace descriptor
-{
-    class empty_descriptor : public descriptor
+    namespace descriptor
     {
-    public:
-        empty_descriptor(byte_stream& bs, uint8_t tag):
-            descriptor(bs, tag)
+        class empty_descriptor : public descriptor
         {
-            bs.skip(m_remaining_bytes);
-        }
-    };
-}
+        public:
+            empty_descriptor(byte_stream& bs, uint8_t tag) :
+                descriptor(bs, tag)
+            {
+                bs.skip(m_remaining_bytes);
+            }
+        };
+    }
 }

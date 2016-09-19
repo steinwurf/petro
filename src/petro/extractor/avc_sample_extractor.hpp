@@ -13,14 +13,14 @@
 
 namespace petro
 {
-namespace extractor
-{
-    /// stack for extracting avc samples
-    using avc_sample_extractor =
-        timestamp_extractor_layer<
-        sample_extractor_layer<
-        avc_track_layer<
-        parser_layer<
-        memory_mapped_file_layer>>>>;
-}
+    namespace extractor
+    {
+        /// stack for extracting avc samples
+        using avc_sample_extractor =
+            timestamp_extractor_layer<
+            sample_extractor_layer<
+            avc_track_layer<
+            parser_layer<
+            memory_mapped_file_layer>>>>;
+    }
 }

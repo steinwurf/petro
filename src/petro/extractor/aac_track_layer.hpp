@@ -13,99 +13,99 @@
 
 namespace petro
 {
-namespace extractor
-{
-    /// This layer exposes information about the aac track. This information is
-    /// used by the sample extractor layer to extract the aac samples.
-    template<class Super>
-    class aac_track_layer : public Super
+    namespace extractor
     {
-    public:
-
-        /// open this and the underlying layer, returns false upon failure.
-        bool open()
+        /// This layer exposes information about the aac track. This information is
+        /// used by the sample extractor layer to extract the aac samples.
+        template<class Super>
+        class aac_track_layer : public Super
         {
-            if (!Super::open())
+        public:
+
+            /// open this and the underlying layer, returns false upon failure.
+            bool open()
             {
-                Super::close();
-                return false;
+                if (!Super::open())
+                {
+                    Super::close();
+                    return false;
+                }
+
+                auto root = Super::root();
+
+                auto mp4a = root->get_child("mp4a");
+                if (mp4a == nullptr)
+                {
+                    Super::close();
+                    return false;
+                }
+
+                auto trak = mp4a->get_parent("trak");
+                if (trak == nullptr)
+                {
+                    Super::close();
+                    return false;
+                }
+
+                auto esds = mp4a->template get_child<box::esds>();
+                if (esds == nullptr)
+                {
+                    Super::close();
+                    return false;
+                }
+
+                m_trak = trak;
+
+                auto descriptor = esds->descriptor()->decoder_config_descriptor();
+                m_mpeg_audio_object_type = descriptor->mpeg_audio_object_type();
+                m_frequency_index = descriptor->frequency_index();
+                m_channel_configuration = descriptor->channel_configuration();
+
+                return true;
             }
 
-            auto root = Super::root();
-
-            auto mp4a = root->get_child("mp4a");
-            if (mp4a == nullptr)
+            /// close this and the underlying layer
+            void close()
             {
+                m_trak.reset();
+                m_mpeg_audio_object_type = 0;
+                m_frequency_index = 0;
+                m_channel_configuration = 0;
                 Super::close();
-                return false;
             }
 
-            auto trak = mp4a->get_parent("trak");
-            if (trak == nullptr)
+            /// Returns a shared pointer to the AAC trak box.
+            std::shared_ptr<const box::box> trak() const
             {
-                Super::close();
-                return false;
+                assert(m_trak != nullptr);
+                return m_trak;
             }
 
-            auto esds = mp4a->template get_child<box::esds>();
-            if (esds == nullptr)
+            /// Returns the MPEG audio object type
+            uint8_t mpeg_audio_object_type() const
             {
-                Super::close();
-                return false;
+                return m_mpeg_audio_object_type;
             }
 
-            m_trak = trak;
+            /// Returns the frequncy index
+            uint32_t frequency_index() const
+            {
+                return m_frequency_index;
+            }
 
-            auto descriptor = esds->descriptor()->decoder_config_descriptor();
-            m_mpeg_audio_object_type = descriptor->mpeg_audio_object_type();
-            m_frequency_index = descriptor->frequency_index();
-            m_channel_configuration = descriptor->channel_configuration();
+            /// Returns the channel configuration
+            uint8_t channel_configuration() const
+            {
+                return m_channel_configuration;
+            }
 
-            return true;
-        }
+        private:
 
-        /// close this and the underlying layer
-        void close()
-        {
-            m_trak.reset();
-            m_mpeg_audio_object_type = 0;
-            m_frequency_index = 0;
-            m_channel_configuration = 0;
-            Super::close();
-        }
+            std::shared_ptr<const box::box> m_trak;
 
-        /// Returns a shared pointer to the AAC trak box.
-        std::shared_ptr<const box::box> trak() const
-        {
-            assert(m_trak != nullptr);
-            return m_trak;
-        }
-
-        /// Returns the MPEG audio object type
-        uint8_t mpeg_audio_object_type() const
-        {
-            return m_mpeg_audio_object_type;
-        }
-
-        /// Returns the frequncy index
-        uint32_t frequency_index() const
-        {
-            return m_frequency_index;
-        }
-
-        /// Returns the channel configuration
-        uint8_t channel_configuration() const
-        {
-            return m_channel_configuration;
-        }
-
-    private:
-
-        std::shared_ptr<const box::box> m_trak;
-
-        uint8_t m_mpeg_audio_object_type = 0;
-        uint32_t m_frequency_index = 0;
-        uint8_t m_channel_configuration = 0;
-    };
-}
+            uint8_t m_mpeg_audio_object_type = 0;
+            uint32_t m_frequency_index = 0;
+            uint8_t m_channel_configuration = 0;
+        };
+    }
 }

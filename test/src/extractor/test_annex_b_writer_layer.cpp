@@ -20,7 +20,7 @@ namespace
         stub::function<uint32_t()> nalu_header_size;
         stub::function<bool()> at_end;
         stub::function<uint32_t()> nalu_length_size;
-        stub::function<const uint8_t*()> sample_data;
+        stub::function<const uint8_t* ()> sample_data;
         stub::function<uint32_t()> sample_size;
     };
 
@@ -66,10 +66,10 @@ TEST(extractor_annex_b_writer_layer, api)
     stack.write_annex_b(annex_b.data());
     EXPECT_EQ(expected_annex_b, annex_b);
     EXPECT_TRUE(layer.write_nalu_header.expect_calls()
-        .with(annex_b.data())
-        .with(annex_b.data() + 7)
-        .with(annex_b.data() + 7 + 8)
-        .to_bool());
+                .with(annex_b.data())
+                .with(annex_b.data() + 7)
+                .with(annex_b.data() + 7 + 8)
+                .to_bool());
 
     layer.at_end.set_return(true);
     stack.advance();

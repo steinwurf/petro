@@ -13,26 +13,26 @@
 
 namespace petro
 {
-namespace box
-{
-    /// scheme type box
-    class schm : public box
+    namespace box
     {
-
-    public:
-
-        static const std::string TYPE;
-
-    public:
-        schm(std::weak_ptr<box> parent):
-            box(schm::TYPE, parent)
-        { }
-
-        void read(uint64_t size, byte_stream& bs)
+        /// scheme type box
+        class schm : public box
         {
-            box::read(size, bs);
-            bs.skip(m_remaining_bytes);
-        }
-    };
-}
+
+        public:
+
+            static const std::string TYPE;
+
+        public:
+            schm(std::weak_ptr<box> parent) :
+                box(schm::TYPE, parent)
+            { }
+
+            void read(uint64_t size, byte_stream& bs)
+            {
+                box::read(size, bs);
+                bs.skip(m_remaining_bytes);
+            }
+        };
+    }
 }

@@ -9,8 +9,8 @@
 
 namespace petro
 {
-namespace box
-{
-    const std::string co64::TYPE = "co64";
-}
+    namespace box
+    {
+        const std::string co64::TYPE = "co64";
+    }
 }

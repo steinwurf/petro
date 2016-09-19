@@ -9,8 +9,8 @@
 
 namespace petro
 {
-namespace box
-{
-    const std::string imif::TYPE = "imif";
-}
+    namespace box
+    {
+        const std::string imif::TYPE = "imif";
+    }
 }

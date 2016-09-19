@@ -18,20 +18,20 @@ namespace
     struct dummy_trak : public petro::box::box
     {
         dummy_trak() :
-           petro::box::box("trak", std::weak_ptr<box>())
+            petro::box::box("trak", std::weak_ptr<box>())
         { }
     };
 
     struct dummy_mp4a : public petro::box::box
     {
         dummy_mp4a(std::shared_ptr<petro::box::box> parent) :
-           petro::box::box("mp4a", parent)
+            petro::box::box("mp4a", parent)
         { }
     };
 
     struct dummy_root
     {
-        dummy_root(std::shared_ptr<dummy_mp4a> mp4a):
+        dummy_root(std::shared_ptr<dummy_mp4a> mp4a) :
             m_dummy_mp4a(mp4a)
         { }
 

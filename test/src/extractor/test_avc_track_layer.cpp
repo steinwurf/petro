@@ -15,7 +15,7 @@ namespace
 {
     struct dummy_parameter_set
     {
-        dummy_parameter_set(const uint8_t* data, uint32_t size):
+        dummy_parameter_set(const uint8_t* data, uint32_t size) :
             m_data(data),
             m_size(size)
         { }
@@ -65,7 +65,7 @@ namespace
     struct dummy_trak : public petro::box::box
     {
         dummy_trak() :
-           petro::box::box("dummy_trak", std::weak_ptr<petro::box::box>())
+            petro::box::box("dummy_trak", std::weak_ptr<petro::box::box>())
         { }
     };
 

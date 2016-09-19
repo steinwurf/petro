@@ -13,26 +13,26 @@
 
 namespace petro
 {
-namespace box
-{
-    /// sample padding bits
-    class padb : public box
+    namespace box
     {
-
-    public:
-
-        static const std::string TYPE;
-
-    public:
-        padb(std::weak_ptr<box> parent):
-            box(padb::TYPE, parent)
-        { }
-
-        void read(uint64_t size, byte_stream& bs)
+        /// sample padding bits
+        class padb : public box
         {
-            box::read(size, bs);
-            bs.skip(m_remaining_bytes);
-        }
-    };
-}
+
+        public:
+
+            static const std::string TYPE;
+
+        public:
+            padb(std::weak_ptr<box> parent) :
+                box(padb::TYPE, parent)
+            { }
+
+            void read(uint64_t size, byte_stream& bs)
+            {
+                box::read(size, bs);
+                bs.skip(m_remaining_bytes);
+            }
+        };
+    }
 }

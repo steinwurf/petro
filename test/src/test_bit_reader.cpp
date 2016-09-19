@@ -98,7 +98,8 @@ TEST(test_bit_reader, read_bit)
 
 TEST(test_bit_reader, read_bits_2)
 {
-    std::vector<uint8_t> data {
+    std::vector<uint8_t> data
+    {
         0x00, //0000 0000
         0xFF, //1111 1111
         0xF0, //1111 0000

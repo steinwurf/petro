@@ -33,7 +33,7 @@ TEST(box_test_unknown, describe)
 TEST(box_test_unknown, get_child)
 {
     auto parent = std::make_shared<petro::box::box>(
-        "parent", std::weak_ptr<petro::box::box>());
+                      "parent", std::weak_ptr<petro::box::box>());
 
     auto child_type = "child";
     auto child = std::make_shared<petro::box::unknown>(child_type, parent);

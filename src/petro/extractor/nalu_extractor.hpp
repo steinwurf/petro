@@ -11,12 +11,12 @@
 
 namespace petro
 {
-namespace extractor
-{
-    /// Stack extracting nalu samples
-    using nalu_extractor =
-        nalu_header_writer_layer<
-        nalu_extractor_layer<
-        avc_sample_extractor>>;
-}
+    namespace extractor
+    {
+        /// Stack extracting nalu samples
+        using nalu_extractor =
+            nalu_header_writer_layer<
+            nalu_extractor_layer<
+            avc_sample_extractor>>;
+    }
 }

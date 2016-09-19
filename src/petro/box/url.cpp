@@ -9,8 +9,8 @@
 
 namespace petro
 {
-namespace box
-{
-    const std::string url::TYPE = "url ";
-}
+    namespace box
+    {
+        const std::string url::TYPE = "url ";
+    }
 }

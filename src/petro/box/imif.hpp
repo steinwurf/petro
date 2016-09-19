@@ -13,26 +13,26 @@
 
 namespace petro
 {
-namespace box
-{
-    /// IPMP Information box
-    class imif : public box
+    namespace box
     {
-
-    public:
-
-        static const std::string TYPE;
-
-    public:
-        imif(std::weak_ptr<box> parent):
-            box(imif::TYPE, parent)
-        { }
-
-        void read(uint64_t size, byte_stream& bs)
+        /// IPMP Information box
+        class imif : public box
         {
-            box::read(size, bs);
-            bs.skip(m_remaining_bytes);
-        }
-    };
-}
+
+        public:
+
+            static const std::string TYPE;
+
+        public:
+            imif(std::weak_ptr<box> parent) :
+                box(imif::TYPE, parent)
+            { }
+
+            void read(uint64_t size, byte_stream& bs)
+            {
+                box::read(size, bs);
+                bs.skip(m_remaining_bytes);
+            }
+        };
+    }
 }

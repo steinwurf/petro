@@ -68,12 +68,12 @@ TEST(box_test_box, children)
 {
     auto parent_type = "parent";
     auto parent = std::make_shared<petro::box::box>(
-        parent_type, std::weak_ptr<petro::box::box>());
+                      parent_type, std::weak_ptr<petro::box::box>());
     EXPECT_EQ(0U, parent->children().size());
 
     auto child_type = "child";
     auto child = std::make_shared<petro::box::box>(
-        child_type, parent);
+                     child_type, parent);
 
     parent->add_child(child);
     EXPECT_EQ(1U, parent->children().size());

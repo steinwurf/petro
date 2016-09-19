@@ -9,8 +9,8 @@
 
 namespace petro
 {
-namespace box
-{
-    const std::string padb::TYPE = "padb";
-}
+    namespace box
+    {
+        const std::string padb::TYPE = "padb";
+    }
 }

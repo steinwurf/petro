@@ -16,12 +16,12 @@
 
 namespace petro
 {
-    byte_stream::byte_stream(const uint8_t* data, uint64_t size):
+    byte_stream::byte_stream(const uint8_t* data, uint64_t size) :
         m_data(data),
         m_remaining_bytes(size)
     { }
 
-    byte_stream::byte_stream(byte_stream& bs, uint64_t size):
+    byte_stream::byte_stream(byte_stream& bs, uint64_t size) :
         m_data(bs.m_data),
         m_remaining_bytes(size),
         m_offset(bs.m_offset)
@@ -68,10 +68,10 @@ namespace petro
         assert(m_remaining_bytes >= 4);
 
         return
-           (int32_t) read_uint8_t() << 24 |
-           (int32_t) read_uint8_t() << 16 |
-           (int32_t) read_uint8_t() << 8 |
-           (int32_t) read_uint8_t();
+            (int32_t) read_uint8_t() << 24 |
+            (int32_t) read_uint8_t() << 16 |
+            (int32_t) read_uint8_t() << 8 |
+            (int32_t) read_uint8_t();
     }
 
     uint32_t byte_stream::read_uint32_t()
@@ -79,10 +79,10 @@ namespace petro
         assert(m_remaining_bytes >= 4);
 
         return
-           (uint32_t) read_uint8_t() << 24 |
-           (uint32_t) read_uint8_t() << 16 |
-           (uint32_t) read_uint8_t() << 8 |
-           (uint32_t) read_uint8_t();
+            (uint32_t) read_uint8_t() << 24 |
+            (uint32_t) read_uint8_t() << 16 |
+            (uint32_t) read_uint8_t() << 8 |
+            (uint32_t) read_uint8_t();
     }
 
     int64_t byte_stream::read_int64_t()
@@ -90,14 +90,14 @@ namespace petro
         assert(m_remaining_bytes >= 8);
 
         return
-           (int64_t) read_uint8_t() << 56 |
-           (int64_t) read_uint8_t() << 48 |
-           (int64_t) read_uint8_t() << 40 |
-           (int64_t) read_uint8_t() << 32 |
-           (int64_t) read_uint8_t() << 24 |
-           (int64_t) read_uint8_t() << 16 |
-           (int64_t) read_uint8_t() << 8 |
-           (int64_t) read_uint8_t();
+            (int64_t) read_uint8_t() << 56 |
+            (int64_t) read_uint8_t() << 48 |
+            (int64_t) read_uint8_t() << 40 |
+            (int64_t) read_uint8_t() << 32 |
+            (int64_t) read_uint8_t() << 24 |
+            (int64_t) read_uint8_t() << 16 |
+            (int64_t) read_uint8_t() << 8 |
+            (int64_t) read_uint8_t();
     }
 
     uint64_t byte_stream::read_uint64_t()
@@ -105,14 +105,14 @@ namespace petro
         assert(m_remaining_bytes >= 8);
 
         return
-           (uint64_t) read_uint8_t() << 56 |
-           (uint64_t) read_uint8_t() << 48 |
-           (uint64_t) read_uint8_t() << 40 |
-           (uint64_t) read_uint8_t() << 32 |
-           (uint64_t) read_uint8_t() << 24 |
-           (uint64_t) read_uint8_t() << 16 |
-           (uint64_t) read_uint8_t() << 8 |
-           (uint64_t) read_uint8_t();
+            (uint64_t) read_uint8_t() << 56 |
+            (uint64_t) read_uint8_t() << 48 |
+            (uint64_t) read_uint8_t() << 40 |
+            (uint64_t) read_uint8_t() << 32 |
+            (uint64_t) read_uint8_t() << 24 |
+            (uint64_t) read_uint8_t() << 16 |
+            (uint64_t) read_uint8_t() << 8 |
+            (uint64_t) read_uint8_t();
     }
 
     std::string byte_stream::read_type()

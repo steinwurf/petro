@@ -13,32 +13,32 @@
 
 namespace petro
 {
-namespace box
-{
-    /// container for an individual track or stream
-    template<class Parser>
-    class trak : public box
+    namespace box
     {
-
-    public:
-
-        static const std::string TYPE;
-
-    public:
-        trak(std::weak_ptr<box> parent):
-            box(trak::TYPE, parent)
-        { }
-
-        void read(uint64_t size, byte_stream& bs)
+        /// container for an individual track or stream
+        template<class Parser>
+        class trak : public box
         {
-            box::read(size, bs);
-            Parser p;
-            auto branched_bs = byte_stream(bs, m_remaining_bytes);
-            p.read(branched_bs, shared_from_this());
-        }
-    };
 
-    template<class Parser>
-    const std::string trak<Parser>::TYPE = "trak";
-}
+        public:
+
+            static const std::string TYPE;
+
+        public:
+            trak(std::weak_ptr<box> parent) :
+                box(trak::TYPE, parent)
+            { }
+
+            void read(uint64_t size, byte_stream& bs)
+            {
+                box::read(size, bs);
+                Parser p;
+                auto branched_bs = byte_stream(bs, m_remaining_bytes);
+                p.read(branched_bs, shared_from_this());
+            }
+        };
+
+        template<class Parser>
+        const std::string trak<Parser>::TYPE = "trak";
+    }
 }

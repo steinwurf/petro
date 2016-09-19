@@ -9,8 +9,8 @@
 
 namespace petro
 {
-namespace box
-{
-    const std::string free::TYPE = "free";
-}
+    namespace box
+    {
+        const std::string free::TYPE = "free";
+    }
 }

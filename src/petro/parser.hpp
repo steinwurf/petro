@@ -26,7 +26,7 @@ namespace petro
             byte_stream& bs,
             std::weak_ptr<box::box> parent = std::make_shared<box::root>())
         {
-            while(bs.remaining_bytes() != 0)
+            while (bs.remaining_bytes() != 0)
             {
                 parse(bs, parent);
             }

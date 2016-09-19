@@ -14,60 +14,60 @@
 
 namespace
 {
-void check_sample(std::ifstream& expected, const uint8_t* data, uint32_t size)
-{
-    // read data
-    std::vector<uint8_t> expected_sample(size);
-    expected.read((char*)expected_sample.data(), expected_sample.size());
-    std::vector<uint8_t> actual_sample(data, data + size);
-
-    ASSERT_EQ(expected_sample, actual_sample);
-}
-
-void test_h264_file(
-    const std::string& h264_file,
-    const std::vector<bool>& expected_beginning_of_avc_samples,
-    const std::string& mp4_file)
-{
-    std::ifstream test_h264(h264_file, std::ios::binary);
-    EXPECT_TRUE(test_h264.is_open());
-    EXPECT_TRUE(test_h264.good());
-
-    petro::extractor::nalu_extractor extractor;
-    extractor.set_file_path(mp4_file);
-    EXPECT_EQ(mp4_file, extractor.file_path());
-    EXPECT_TRUE(extractor.open());
-
-    std::vector<uint8_t> nalu_header(extractor.nalu_header_size());
-    extractor.write_nalu_header(nalu_header.data());
-
-    check_sample(test_h264, nalu_header.data(), nalu_header.size());
-    check_sample(test_h264, extractor.sps_data(), extractor.sps_size());
-
-    check_sample(test_h264, nalu_header.data(), nalu_header.size());
-    check_sample(test_h264, extractor.pps_data(), extractor.pps_size());
-
-    uint32_t i = 0;
-    while (!extractor.at_end())
+    void check_sample(std::ifstream& expected, const uint8_t* data, uint32_t size)
     {
-        EXPECT_EQ(
-            expected_beginning_of_avc_samples[i],
-            extractor.is_beginning_of_avc_sample());
+        // read data
+        std::vector<uint8_t> expected_sample(size);
+        expected.read((char*)expected_sample.data(), expected_sample.size());
+        std::vector<uint8_t> actual_sample(data, data + size);
 
-        check_sample(test_h264, nalu_header.data(), nalu_header.size());
-
-        auto nalu_data = extractor.nalu_data();
-        auto nalu_size = extractor.nalu_size();
-        check_sample(test_h264, nalu_data, nalu_size);
-
-        extractor.advance();
-        ++i;
+        ASSERT_EQ(expected_sample, actual_sample);
     }
 
-    // expect test_h264 to be eof.
-    EXPECT_EQ(std::istream::traits_type::eof(), test_h264.get());
-    test_h264.close();
-}
+    void test_h264_file(
+        const std::string& h264_file,
+        const std::vector<bool>& expected_beginning_of_avc_samples,
+        const std::string& mp4_file)
+    {
+        std::ifstream test_h264(h264_file, std::ios::binary);
+        EXPECT_TRUE(test_h264.is_open());
+        EXPECT_TRUE(test_h264.good());
+
+        petro::extractor::nalu_extractor extractor;
+        extractor.set_file_path(mp4_file);
+        EXPECT_EQ(mp4_file, extractor.file_path());
+        EXPECT_TRUE(extractor.open());
+
+        std::vector<uint8_t> nalu_header(extractor.nalu_header_size());
+        extractor.write_nalu_header(nalu_header.data());
+
+        check_sample(test_h264, nalu_header.data(), nalu_header.size());
+        check_sample(test_h264, extractor.sps_data(), extractor.sps_size());
+
+        check_sample(test_h264, nalu_header.data(), nalu_header.size());
+        check_sample(test_h264, extractor.pps_data(), extractor.pps_size());
+
+        uint32_t i = 0;
+        while (!extractor.at_end())
+        {
+            EXPECT_EQ(
+                expected_beginning_of_avc_samples[i],
+                extractor.is_beginning_of_avc_sample());
+
+            check_sample(test_h264, nalu_header.data(), nalu_header.size());
+
+            auto nalu_data = extractor.nalu_data();
+            auto nalu_size = extractor.nalu_size();
+            check_sample(test_h264, nalu_data, nalu_size);
+
+            extractor.advance();
+            ++i;
+        }
+
+        // expect test_h264 to be eof.
+        EXPECT_EQ(std::istream::traits_type::eof(), test_h264.get());
+        test_h264.close();
+    }
 }
 
 TEST(extractor_test_nalu_extractor, test1_h264_file)

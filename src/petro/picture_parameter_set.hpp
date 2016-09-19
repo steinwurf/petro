@@ -14,7 +14,7 @@ namespace petro
     class picture_parameter_set
     {
     public:
-        picture_parameter_set(const uint8_t* data, uint32_t size):
+        picture_parameter_set(const uint8_t* data, uint32_t size) :
             m_data(data),
             m_size(size)
         { }

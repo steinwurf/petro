@@ -16,27 +16,27 @@
 
 namespace petro
 {
-namespace box
-{
-    /// unknown box
-    class unknown : public box
+    namespace box
     {
-    public:
-
-        unknown(const std::string& type, std::weak_ptr<box> parent):
-            box(type, parent)
-        { }
-
-        void read(uint64_t size, byte_stream& bs)
+        /// unknown box
+        class unknown : public box
         {
-            box::read(size, bs);
-            bs.skip(m_remaining_bytes);
-        }
+        public:
 
-        virtual std::string type() const
-        {
-            return m_type + "?";
-        }
-    };
-}
+            unknown(const std::string& type, std::weak_ptr<box> parent) :
+                box(type, parent)
+            { }
+
+            void read(uint64_t size, byte_stream& bs)
+            {
+                box::read(size, bs);
+                bs.skip(m_remaining_bytes);
+            }
+
+            virtual std::string type() const
+            {
+                return m_type + "?";
+            }
+        };
+    }
 }

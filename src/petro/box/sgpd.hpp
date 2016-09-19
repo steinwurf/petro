@@ -13,26 +13,26 @@
 
 namespace petro
 {
-namespace box
-{
-    /// sample group description
-    class sgpd : public box
+    namespace box
     {
-
-    public:
-
-        static const std::string TYPE;
-
-    public:
-        sgpd(std::weak_ptr<box> parent):
-            box(sgpd::TYPE, parent)
-        { }
-
-        void read(uint64_t size, byte_stream& bs)
+        /// sample group description
+        class sgpd : public box
         {
-            box::read(size, bs);
-            bs.skip(m_remaining_bytes);
-        }
-    };
-}
+
+        public:
+
+            static const std::string TYPE;
+
+        public:
+            sgpd(std::weak_ptr<box> parent) :
+                box(sgpd::TYPE, parent)
+            { }
+
+            void read(uint64_t size, byte_stream& bs)
+            {
+                box::read(size, bs);
+                bs.skip(m_remaining_bytes);
+            }
+        };
+    }
 }

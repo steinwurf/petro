@@ -18,7 +18,7 @@ namespace petro
     {
 
     public:
-        sequence_parameter_set(const uint8_t* data, uint32_t size):
+        sequence_parameter_set(const uint8_t* data, uint32_t size) :
             m_data(data),
             m_size(size)
         {
