@@ -50,8 +50,8 @@ namespace petro
                 ss << "  entries (sample_number): ";
                 auto seperator = "";
                 uint32_t max_print = 5;
-                for (uint32_t i = 0; i < std::min(
-                         (uint32_t)m_entries.size(), max_print); ++i)
+                for (uint32_t i = 0;
+                     i < std::min((uint32_t)m_entries.size(), max_print); ++i)
                 {
                     auto entry = m_entries[i];
                     ss << seperator;
@@ -73,7 +73,7 @@ namespace petro
             {
                 auto sample_number = sample_index + 1;
                 auto result = std::find(
-                                  m_entries.begin(), m_entries.end(), sample_number);
+                    m_entries.begin(), m_entries.end(), sample_number);
                 return result != m_entries.end();
             }
 

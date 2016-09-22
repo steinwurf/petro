@@ -82,18 +82,18 @@ namespace petro
         {
             std::stringstream ss;
             ss << box::describe() << std::endl;
-            ss << "  configuration_version: " << (uint32_t)m_configuration_version <<
-               std::endl;
-            ss << "  avc_profile_indication: " << (uint32_t)m_avc_profile_indication <<
-               std::endl;
-            ss << "  profile_compatibility: " << (uint32_t)m_profile_compatibility <<
-               std::endl;
-            ss << "  avc_level_indication: " << (uint32_t)m_avc_level_indication <<
-               std::endl;
-            ss << "  length_size_minus_one: " << (uint32_t)m_length_size_minus_one <<
-               std::endl;
-            ss << "  num_of_sequence_parameter_sets: " << (uint32_t)
-               m_num_of_sequence_parameter_sets << std::endl;
+            ss << "  configuration_version: " << (uint32_t)m_configuration_version
+               << std::endl;
+            ss << "  avc_profile_indication: " << (uint32_t)m_avc_profile_indication
+               << std::endl;
+            ss << "  profile_compatibility: " << (uint32_t)m_profile_compatibility
+               << std::endl;
+            ss << "  avc_level_indication: " << (uint32_t)m_avc_level_indication
+               << std::endl;
+            ss << "  length_size_minus_one: " << (uint32_t)m_length_size_minus_one
+               << std::endl;
+            ss << "  num_of_sequence_parameter_sets: "
+               << (uint32_t) m_num_of_sequence_parameter_sets << std::endl;
 
             ss << "  sequence_parameter_sets:" << std::endl;
             for (const auto& sps : m_sequence_parameter_sets)

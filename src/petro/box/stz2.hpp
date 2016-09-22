@@ -81,8 +81,8 @@ namespace petro
                 ss << "  samples (size): ";
                 auto seperator = "";
                 uint32_t max_print = 5;
-                for (uint32_t i = 0; i < std::min(
-                         (uint32_t)m_entry_sizes.size(), max_print); ++i)
+                for (uint32_t i = 0;
+                     i < std::min((uint32_t)m_entry_sizes.size(), max_print); ++i)
                 {
                     ss << seperator;
                     ss << "(" << m_entry_sizes[i] << ")";

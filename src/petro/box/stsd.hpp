@@ -299,7 +299,7 @@ namespace petro
                 auto mdia = get_parent("mdia");
                 assert(mdia != nullptr);
                 auto hdlr = std::dynamic_pointer_cast<const petro::box::hdlr>(
-                                mdia->get_child("hdlr"));
+                    mdia->get_child("hdlr"));
 
                 for (uint32_t i = 0; i < m_entry_count; ++i)
                 {

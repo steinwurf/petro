@@ -53,7 +53,7 @@ namespace petro
             std::shared_ptr<const Child> get_child() const
             {
                 return std::dynamic_pointer_cast<const Child>(
-                           get_child(Child::TYPE));
+                    get_child(Child::TYPE));
             }
 
         protected:

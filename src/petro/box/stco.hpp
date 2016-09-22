@@ -51,8 +51,8 @@ namespace petro
                 ss << "  entries (chunk_offset): ";
                 auto seperator = "";
                 uint32_t max_print = 5;
-                for (uint32_t i = 0; i < std::min(
-                         (uint32_t)m_entries.size(), max_print); ++i)
+                for (uint32_t i = 0;
+                     i < std::min((uint32_t)m_entries.size(), max_print); ++i)
                 {
                     auto entry = m_entries[i];
                     ss << seperator;

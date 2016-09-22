@@ -49,23 +49,23 @@ namespace petro
 
                 parser<
                     box::moov<parser<
-                            box::trak<parser<
-                                    box::mdia<parser<
-                                            box::hdlr,
-                                            box::mdhd,
-                                            box::minf<parser<
-                                                    box::stbl<parser<
-                                                            box::stco,
-                                                            box::stsc,
-                                                            box::stsd,
-                                                            box::co64,
-                                                            box::ctts,
-                                                            box::stts,
-                                                            box::stsz
-                                                    >>
-                                            >>
+                        box::trak<parser<
+                            box::mdia<parser<
+                                box::hdlr,
+                                box::mdhd,
+                                box::minf<parser<
+                                    box::stbl<parser<
+                                        box::stco,
+                                        box::stsc,
+                                        box::stsd,
+                                        box::co64,
+                                        box::ctts,
+                                        box::stts,
+                                        box::stsz
                                     >>
+                                >>
                             >>
+                        >>
                     >>
                 > parser;
 

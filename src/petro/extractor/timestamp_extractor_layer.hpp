@@ -83,7 +83,7 @@ namespace petro
             {
                 assert(m_stts != nullptr);
                 return presentation_time(
-                           m_stts, m_ctts, m_timescale, Super::sample_index());
+                    m_stts, m_ctts, m_timescale, Super::sample_index());
             }
 
         private:
