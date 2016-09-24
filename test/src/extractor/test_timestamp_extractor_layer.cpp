@@ -11,33 +11,33 @@
 
 namespace
 {
-    struct dummy_trak
+struct dummy_trak
+{
+    template<class Child>
+    std::shared_ptr<const Child> get_child() const
     {
-        template<class Child>
-        std::shared_ptr<const Child> get_child() const
-        {
-            if (Child::TYPE == petro::box::stts::TYPE)
-                return std::dynamic_pointer_cast<const Child>(m_stts);
-            if (Child::TYPE == petro::box::mdhd::TYPE)
-                return std::dynamic_pointer_cast<const Child>(m_mdhd);
-            return nullptr;
-        }
+        if (Child::TYPE == petro::box::stts::TYPE)
+            return std::dynamic_pointer_cast<const Child>(m_stts);
+        if (Child::TYPE == petro::box::mdhd::TYPE)
+            return std::dynamic_pointer_cast<const Child>(m_mdhd);
+        return nullptr;
+    }
 
-        std::shared_ptr<const petro::box::stts> m_stts;
-        std::shared_ptr<const petro::box::mdhd> m_mdhd;
-    };
+    std::shared_ptr<const petro::box::stts> m_stts;
+    std::shared_ptr<const petro::box::mdhd> m_mdhd;
+};
 
-    struct dummy_layer
-    {
-        stub::function<bool()> open;
-        stub::function<void()> close;
-        stub::function<const dummy_trak*()> trak;
-        stub::function<const uint8_t* ()> data;
-        stub::function<uint32_t()> sample_index;
-    };
+struct dummy_layer
+{
+    stub::function<bool()> open;
+    stub::function<void()> close;
+    stub::function<const dummy_trak*()> trak;
+    stub::function<const uint8_t* ()> data;
+    stub::function<uint32_t()> sample_index;
+};
 
-    using dummy_stack =
-        petro::extractor::timestamp_extractor_layer<dummy_layer>;
+using dummy_stack =
+    petro::extractor::timestamp_extractor_layer<dummy_layer>;
 }
 
 TEST(extractor_test_timestamp_extractor_layer, api)

@@ -9,8 +9,8 @@
 
 namespace petro
 {
-    namespace box
-    {
-        const std::string schi::TYPE = "schi";
-    }
+namespace box
+{
+const std::string schi::TYPE = "schi";
+}
 }

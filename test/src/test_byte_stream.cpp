@@ -395,7 +395,7 @@ TEST(test_byte_stream, read_fixed_point_1616)
     {
         0.0,
         1 << 16
-    };
+      };
 
     // create byte_stream
     auto bs = petro::byte_stream(data.data(), data.size());

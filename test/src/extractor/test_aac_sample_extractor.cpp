@@ -13,15 +13,15 @@
 
 namespace
 {
-    void check_sample(std::ifstream& expected, const uint8_t* data, uint32_t size)
-    {
-        // read data
-        std::vector<uint8_t> expected_sample(size);
-        expected.read((char*)expected_sample.data(), expected_sample.size());
-        std::vector<uint8_t> actual_sample(data, data + size);
+void check_sample(std::ifstream& expected, const uint8_t* data, uint32_t size)
+{
+    // read data
+    std::vector<uint8_t> expected_sample(size);
+    expected.read((char*)expected_sample.data(), expected_sample.size());
+    std::vector<uint8_t> actual_sample(data, data + size);
 
-        ASSERT_EQ(expected_sample, actual_sample);
-    }
+    ASSERT_EQ(expected_sample, actual_sample);
+}
 }
 
 TEST(extractor_test_aac_sample_extractor, test_aac_file)

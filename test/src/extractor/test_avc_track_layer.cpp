@@ -13,105 +13,105 @@
 
 namespace
 {
-    struct dummy_parameter_set
+struct dummy_parameter_set
+{
+    dummy_parameter_set(const uint8_t* data, uint32_t size) :
+        m_data(data),
+        m_size(size)
+    { }
+
+    const uint8_t* data() const
     {
-        dummy_parameter_set(const uint8_t* data, uint32_t size) :
-            m_data(data),
-            m_size(size)
-        { }
+        return m_data;
+    }
 
-        const uint8_t* data() const
-        {
-            return m_data;
-        }
-
-        uint32_t size() const
-        {
-            return m_size;
-        }
-
-        const uint8_t* m_data;
-        uint32_t m_size;
-    };
-
-    struct dummy_avcc
+    uint32_t size() const
     {
-        dummy_avcc() :
-            m_picture_parameter_set((const uint8_t*)1, 1U),
-            m_sequence_parameter_set((const uint8_t*)2, 2U)
-        { }
+        return m_size;
+    }
 
-        const dummy_parameter_set* picture_parameter_set(uint32_t index) const
-        {
-            (void) index;
-            return &m_picture_parameter_set;
-        }
+    const uint8_t* m_data;
+    uint32_t m_size;
+};
 
-        const dummy_parameter_set* sequence_parameter_set(uint32_t index) const
-        {
-            (void) index;
-            return &m_sequence_parameter_set;
-        }
+struct dummy_avcc
+{
+    dummy_avcc() :
+        m_picture_parameter_set((const uint8_t*)1, 1U),
+        m_sequence_parameter_set((const uint8_t*)2, 2U)
+    { }
 
-        uint32_t length_size() const
-        {
-            return 42;
-        }
-
-        dummy_parameter_set m_picture_parameter_set;
-        dummy_parameter_set m_sequence_parameter_set;
-    };
-
-    struct dummy_trak : public petro::box::box
+    const dummy_parameter_set* picture_parameter_set(uint32_t index) const
     {
-        dummy_trak() :
-            petro::box::box("dummy_trak", std::weak_ptr<petro::box::box>())
-        { }
-    };
+        (void) index;
+        return &m_picture_parameter_set;
+    }
 
-    struct dummy_avc1
+    const dummy_parameter_set* sequence_parameter_set(uint32_t index) const
     {
-        dummy_avc1() :
-            m_trak(std::make_shared<dummy_trak>())
-        { }
+        (void) index;
+        return &m_sequence_parameter_set;
+    }
 
-        template<class Box>
-        const dummy_avcc* get_child() const
-        {
-            return &m_dummy_avcc;
-        }
-
-        std::shared_ptr<const petro::box::box> get_parent(
-            const std::string& type) const
-        {
-            (void) type;
-            return m_trak;
-        }
-
-        std::shared_ptr<const dummy_trak> m_trak;
-        dummy_avcc m_dummy_avcc;
-    };
-
-    struct dummy_root
+    uint32_t length_size() const
     {
+        return 42;
+    }
 
-        const dummy_avc1* get_child(const std::string& type) const
-        {
-            (void) type;
-            return &m_dummy_avc1;
-        }
+    dummy_parameter_set m_picture_parameter_set;
+    dummy_parameter_set m_sequence_parameter_set;
+};
 
-        dummy_avc1 m_dummy_avc1;
-    };
+struct dummy_trak : public petro::box::box
+{
+    dummy_trak() :
+        petro::box::box("dummy_trak", std::weak_ptr<petro::box::box>())
+    { }
+};
 
-    struct dummy_layer
+struct dummy_avc1
+{
+    dummy_avc1() :
+        m_trak(std::make_shared<dummy_trak>())
+    { }
+
+    template<class Box>
+    const dummy_avcc* get_child() const
     {
-        stub::function<bool()> open;
-        stub::function<void()> close;
-        stub::function<std::shared_ptr<dummy_root>()> root;
-    };
+        return &m_dummy_avcc;
+    }
 
-    using dummy_stack = petro::extractor::avc_track_layer<dummy_layer>;
+    std::shared_ptr<const petro::box::box> get_parent(
+        const std::string& type) const
+    {
+        (void) type;
+        return m_trak;
+    }
+
+    std::shared_ptr<const dummy_trak> m_trak;
+    dummy_avcc m_dummy_avcc;
+};
+
+struct dummy_root
+{
+
+    const dummy_avc1* get_child(const std::string& type) const
+    {
+        (void) type;
+        return &m_dummy_avc1;
+    }
+
+    dummy_avc1 m_dummy_avc1;
+};
+
+struct dummy_layer
+{
+    stub::function<bool()> open;
+    stub::function<void()> close;
+    stub::function<std::shared_ptr<dummy_root>()> root;
+};
+
+using dummy_stack = petro::extractor::avc_track_layer<dummy_layer>;
 }
 
 TEST(extractor_test_avc_track_layer, api)

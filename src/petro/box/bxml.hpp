@@ -13,20 +13,20 @@
 
 namespace petro
 {
-    namespace box
-    {
-        /// binary XML container
-        class bxml : public box
-        {
+namespace box
+{
+/// binary XML container
+class bxml : public box
+{
 
-        public:
+public:
 
-            static const std::string TYPE;
+    static const std::string TYPE;
 
-        public:
-            bxml(std::weak_ptr<box> parent);
+public:
+    bxml(std::weak_ptr<box> parent);
 
-            void read(uint64_t size, byte_stream& bs);
-        };
-    }
+    void read(uint64_t size, byte_stream& bs);
+};
+}
 }

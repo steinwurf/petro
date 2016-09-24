@@ -9,8 +9,8 @@
 
 namespace petro
 {
-    namespace box
-    {
-        const std::string trun::TYPE = "trun";
-    }
+namespace box
+{
+const std::string trun::TYPE = "trun";
+}
 }

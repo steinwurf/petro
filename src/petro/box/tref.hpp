@@ -13,26 +13,26 @@
 
 namespace petro
 {
-    namespace box
+namespace box
+{
+/// track reference container
+class tref : public box
+{
+
+public:
+
+    static const std::string TYPE;
+
+public:
+    tref(std::weak_ptr<box> parent) :
+        box(tref::TYPE, parent)
+    { }
+
+    void read(uint64_t size, byte_stream& bs)
     {
-        /// track reference container
-        class tref : public box
-        {
-
-        public:
-
-            static const std::string TYPE;
-
-        public:
-            tref(std::weak_ptr<box> parent) :
-                box(tref::TYPE, parent)
-            { }
-
-            void read(uint64_t size, byte_stream& bs)
-            {
-                box::read(size, bs);
-                bs.skip(m_remaining_bytes);
-            }
-        };
+        box::read(size, bs);
+        bs.skip(m_remaining_bytes);
     }
+};
+}
 }

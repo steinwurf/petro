@@ -9,8 +9,8 @@
 
 namespace petro
 {
-    namespace box
-    {
-        const std::string iloc::TYPE = "iloc";
-    }
+namespace box
+{
+const std::string iloc::TYPE = "iloc";
+}
 }

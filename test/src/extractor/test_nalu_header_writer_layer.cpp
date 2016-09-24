@@ -11,10 +11,10 @@
 
 namespace
 {
-    struct dummy_layer
-    { };
+struct dummy_layer
+{ };
 
-    using dummy_stack = petro::extractor::nalu_header_writer_layer<dummy_layer>;
+using dummy_stack = petro::extractor::nalu_header_writer_layer<dummy_layer>;
 }
 TEST(extractor_test_nalu_header_writer_layer, init)
 {

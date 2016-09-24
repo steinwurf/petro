@@ -14,15 +14,15 @@
 
 namespace petro
 {
-    namespace extractor
-    {
-        /// stack for extracting aac samples
-        using aac_sample_extractor =
-            timestamp_extractor_layer<
-            adts_writer_layer<
-            sample_extractor_layer<
-            aac_track_layer<
-            parser_layer<
-            memory_mapped_file_layer>>>>>;
-    }
+namespace extractor
+{
+/// stack for extracting aac samples
+using aac_sample_extractor =
+    timestamp_extractor_layer<
+    adts_writer_layer<
+    sample_extractor_layer<
+    aac_track_layer<
+    parser_layer<
+    memory_mapped_file_layer>>>>>;
+}
 }

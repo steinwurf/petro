@@ -7,21 +7,21 @@
 
 namespace petro
 {
-    class flags
+class flags
+{
+public:
+
+    void read(byte_stream& bs)
     {
-    public:
+        // read 24 bytes
+        m_data.push_back(bs.read_uint8_t());
+        m_data.push_back(bs.read_uint8_t());
+        m_data.push_back(bs.read_uint8_t());
+    }
 
-        void read(byte_stream& bs)
-        {
-            // read 24 bytes
-            m_data.push_back(bs.read_uint8_t());
-            m_data.push_back(bs.read_uint8_t());
-            m_data.push_back(bs.read_uint8_t());
-        }
+public:
 
-    public:
+    std::vector<uint8_t> m_data;
 
-        std::vector<uint8_t> m_data;
-
-    };
+};
 }

@@ -13,33 +13,33 @@
 
 namespace petro
 {
-    namespace box
+namespace box
+{
+/// media data container
+class mdat : public box
+{
+
+public:
+
+    static const std::string TYPE;
+
+public:
+    mdat(std::weak_ptr<box> parent) :
+        box(mdat::TYPE, parent)
+    { }
+
+    void read(uint64_t size, byte_stream& bs)
     {
-        /// media data container
-        class mdat : public box
-        {
-
-        public:
-
-            static const std::string TYPE;
-
-        public:
-            mdat(std::weak_ptr<box> parent) :
-                box(mdat::TYPE, parent)
-            { }
-
-            void read(uint64_t size, byte_stream& bs)
-            {
-                box::read(size, bs);
-                bs.skip(m_remaining_bytes);
-            }
-
-            std::string describe() const
-            {
-                std::stringstream ss;
-                ss << box::describe() << std::endl;
-                return ss.str();
-            }
-        };
+        box::read(size, bs);
+        bs.skip(m_remaining_bytes);
     }
+
+    std::string describe() const
+    {
+        std::stringstream ss;
+        ss << box::describe() << std::endl;
+        return ss.str();
+    }
+};
+}
 }

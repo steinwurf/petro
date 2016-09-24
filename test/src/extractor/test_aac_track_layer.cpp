@@ -15,45 +15,45 @@
 
 namespace
 {
-    struct dummy_trak : public petro::box::box
+struct dummy_trak : public petro::box::box
+{
+    dummy_trak() :
+        petro::box::box("trak", std::weak_ptr<box>())
+    { }
+};
+
+struct dummy_mp4a : public petro::box::box
+{
+    dummy_mp4a(std::shared_ptr<petro::box::box> parent) :
+        petro::box::box("mp4a", parent)
+    { }
+};
+
+struct dummy_root
+{
+    dummy_root(std::shared_ptr<dummy_mp4a> mp4a) :
+        m_dummy_mp4a(mp4a)
+    { }
+
+    std::shared_ptr<const petro::box::box> get_child(
+        const std::string& type) const
     {
-        dummy_trak() :
-            petro::box::box("trak", std::weak_ptr<box>())
-        { }
-    };
+        if (type == "mp4a")
+            return m_dummy_mp4a;
+        return nullptr;
+    }
 
-    struct dummy_mp4a : public petro::box::box
-    {
-        dummy_mp4a(std::shared_ptr<petro::box::box> parent) :
-            petro::box::box("mp4a", parent)
-        { }
-    };
+    std::shared_ptr<const dummy_mp4a> m_dummy_mp4a;
+};
 
-    struct dummy_root
-    {
-        dummy_root(std::shared_ptr<dummy_mp4a> mp4a) :
-            m_dummy_mp4a(mp4a)
-        { }
+struct dummy_layer
+{
+    stub::function<bool()> open;
+    stub::function<void()> close;
+    stub::function<std::shared_ptr<dummy_root>()> root;
+};
 
-        std::shared_ptr<const petro::box::box> get_child(
-            const std::string& type) const
-        {
-            if (type == "mp4a")
-                return m_dummy_mp4a;
-            return nullptr;
-        }
-
-        std::shared_ptr<const dummy_mp4a> m_dummy_mp4a;
-    };
-
-    struct dummy_layer
-    {
-        stub::function<bool()> open;
-        stub::function<void()> close;
-        stub::function<std::shared_ptr<dummy_root>()> root;
-    };
-
-    using dummy_stack = petro::extractor::aac_track_layer<dummy_layer>;
+using dummy_stack = petro::extractor::aac_track_layer<dummy_layer>;
 }
 
 TEST(extractor_test_aac_track_layer, api)

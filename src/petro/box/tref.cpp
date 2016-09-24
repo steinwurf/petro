@@ -9,8 +9,8 @@
 
 namespace petro
 {
-    namespace box
-    {
-        const std::string tref::TYPE = "tref";
-    }
+namespace box
+{
+const std::string tref::TYPE = "tref";
+}
 }

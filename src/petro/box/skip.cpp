@@ -9,8 +9,8 @@
 
 namespace petro
 {
-    namespace box
-    {
-        const std::string skip::TYPE = "skip";
-    }
+namespace box
+{
+const std::string skip::TYPE = "skip";
+}
 }

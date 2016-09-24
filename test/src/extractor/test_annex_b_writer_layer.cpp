@@ -10,21 +10,21 @@
 
 namespace
 {
-    struct dummy_layer
-    {
-        stub::function<bool()> open;
-        stub::function<void()> close;
-        stub::function<void()> reset;
-        stub::function<void()> advance;
-        stub::function<void(uint8_t*)> write_nalu_header;
-        stub::function<uint32_t()> nalu_header_size;
-        stub::function<bool()> at_end;
-        stub::function<uint32_t()> nalu_length_size;
-        stub::function<const uint8_t* ()> sample_data;
-        stub::function<uint32_t()> sample_size;
-    };
+struct dummy_layer
+{
+    stub::function<bool()> open;
+    stub::function<void()> close;
+    stub::function<void()> reset;
+    stub::function<void()> advance;
+    stub::function<void(uint8_t*)> write_nalu_header;
+    stub::function<uint32_t()> nalu_header_size;
+    stub::function<bool()> at_end;
+    stub::function<uint32_t()> nalu_length_size;
+    stub::function<const uint8_t* ()> sample_data;
+    stub::function<uint32_t()> sample_size;
+};
 
-    using dummy_stack = petro::extractor::annex_b_writer_layer<dummy_layer>;
+using dummy_stack = petro::extractor::annex_b_writer_layer<dummy_layer>;
 }
 
 TEST(extractor_annex_b_writer_layer, api)

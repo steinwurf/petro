@@ -11,15 +11,15 @@
 
 namespace
 {
-    struct dummy_layer
-    {
-        stub::function<bool()> open;
-        stub::function<void()> close;
-        stub::function<const uint8_t* ()> data;
-        stub::function<uint32_t()> data_size;
-    };
+struct dummy_layer
+{
+    stub::function<bool()> open;
+    stub::function<void()> close;
+    stub::function<const uint8_t* ()> data;
+    stub::function<uint32_t()> data_size;
+};
 
-    using dummy_stack = petro::extractor::parser_layer<dummy_layer>;
+using dummy_stack = petro::extractor::parser_layer<dummy_layer>;
 }
 
 TEST(extractor_test_parser_layer, api)

@@ -14,30 +14,30 @@
 #include "../descriptor/elemetary_stream_descriptor.hpp"
 namespace petro
 {
-    namespace box
-    {
-        /// MPEG-4 Elementary Stream Descriptor
-        class esds : public full_box
-        {
-        public:
+namespace box
+{
+/// MPEG-4 Elementary Stream Descriptor
+class esds : public full_box
+{
+public:
 
-            static const std::string TYPE;
+    static const std::string TYPE;
 
-        public:
+public:
 
-            using descriptor_type =
-                std::shared_ptr<descriptor::elemetary_stream_descriptor>;
+    using descriptor_type =
+        std::shared_ptr<descriptor::elemetary_stream_descriptor>;
 
-        public:
-            esds(std::weak_ptr<box> parent);
-            void read(uint64_t size, byte_stream& bs);
-            std::string describe() const;
+public:
+    esds(std::weak_ptr<box> parent);
+    void read(uint64_t size, byte_stream& bs);
+    std::string describe() const;
 
-            descriptor_type descriptor() const;
+    descriptor_type descriptor() const;
 
-        private:
+private:
 
-            descriptor_type m_descriptor;
-        };
-    }
+    descriptor_type m_descriptor;
+};
+}
 }

@@ -13,26 +13,26 @@
 
 namespace petro
 {
-    namespace box
+namespace box
+{
+/// XML container
+class xml : public box
+{
+
+public:
+
+    static const std::string TYPE;
+
+public:
+    xml(std::weak_ptr<box> parent) :
+        box(xml::TYPE, parent)
+    { }
+
+    void read(uint64_t size, byte_stream& bs)
     {
-        /// XML container
-        class xml : public box
-        {
-
-        public:
-
-            static const std::string TYPE;
-
-        public:
-            xml(std::weak_ptr<box> parent) :
-                box(xml::TYPE, parent)
-            { }
-
-            void read(uint64_t size, byte_stream& bs)
-            {
-                box::read(size, bs);
-                bs.skip(m_remaining_bytes);
-            }
-        };
+        box::read(size, bs);
+        bs.skip(m_remaining_bytes);
     }
+};
+}
 }

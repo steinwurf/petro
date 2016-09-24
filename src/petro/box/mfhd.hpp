@@ -13,26 +13,26 @@
 
 namespace petro
 {
-    namespace box
+namespace box
+{
+/// movie fragment header
+class mfhd : public box
+{
+
+public:
+
+    static const std::string TYPE;
+
+public:
+    mfhd(std::weak_ptr<box> parent) :
+        box(mfhd::TYPE, parent)
+    { }
+
+    void read(uint64_t size, byte_stream& bs)
     {
-        /// movie fragment header
-        class mfhd : public box
-        {
-
-        public:
-
-            static const std::string TYPE;
-
-        public:
-            mfhd(std::weak_ptr<box> parent) :
-                box(mfhd::TYPE, parent)
-            { }
-
-            void read(uint64_t size, byte_stream& bs)
-            {
-                box::read(size, bs);
-                bs.skip(m_remaining_bytes);
-            }
-        };
+        box::read(size, bs);
+        bs.skip(m_remaining_bytes);
     }
+};
+}
 }
