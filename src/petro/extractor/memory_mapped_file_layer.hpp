@@ -14,67 +14,67 @@ namespace petro
 {
 namespace extractor
 {
-    /// Provides the stack with data, and acts as the final layer.
-    class memory_mapped_file_layer
+/// Provides the stack with data, and acts as the final layer.
+class memory_mapped_file_layer
+{
+public:
+
+    /// Opens the file. Remember to set the file path before calling this.
+    /// Returns true if successful.
+    bool open()
     {
-    public:
-
-        /// Opens the file. Remember to set the file path before calling this.
-        /// Returns true if successful.
-        bool open()
+        assert(!m_file_path.empty());
+        assert(!m_file.is_open());
+        try
         {
-            assert(!m_file_path.empty());
-            assert(!m_file.is_open());
-            try
-            {
-                m_file.open(m_file_path);
-            }
-            catch(std::exception& e)
-            {
-                (void) e;
-                return false;
-            }
-            return m_file.is_open();
+            m_file.open(m_file_path);
         }
-
-        /// Sets the file path of the fíle to open.
-        void set_file_path(const std::string& file_path)
+        catch (std::exception& e)
         {
-            assert(!m_file.is_open());
-            m_file_path = file_path;
+            (void) e;
+            return false;
         }
+        return m_file.is_open();
+    }
 
-        /// Returns the file path of the fíle to open.
-        std::string file_path() const
-        {
-            assert(!m_file.is_open());
-            return m_file_path;
-        }
+    /// Sets the file path of the fíle to open.
+    void set_file_path(const std::string& file_path)
+    {
+        assert(!m_file.is_open());
+        m_file_path = file_path;
+    }
 
-        /// Closes the file.
-        void close()
-        {
-            m_file.close();
-        }
+    /// Returns the file path of the fíle to open.
+    std::string file_path() const
+    {
+        assert(!m_file.is_open());
+        return m_file_path;
+    }
 
-        /// Returns a pointer to the file
-        const uint8_t* data() const
-        {
-            assert(m_file.is_open());
-            return (uint8_t*)m_file.data();
-        }
+    /// Closes the file.
+    void close()
+    {
+        m_file.close();
+    }
 
-        /// Returns the size of the file
-        uint64_t data_size() const
-        {
-            assert(m_file.is_open());
-            return m_file.size();
-        }
+    /// Returns a pointer to the file
+    const uint8_t* data() const
+    {
+        assert(m_file.is_open());
+        return (uint8_t*)m_file.data();
+    }
 
-    private:
+    /// Returns the size of the file
+    uint64_t data_size() const
+    {
+        assert(m_file.is_open());
+        return m_file.size();
+    }
 
-        boost::iostreams::mapped_file_source m_file;
-        std::string m_file_path;
-    };
+private:
+
+    boost::iostreams::mapped_file_source m_file;
+    std::string m_file_path;
+};
 }
 }

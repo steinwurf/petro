@@ -15,24 +15,24 @@ namespace petro
 {
 namespace box
 {
-    /// sample degradation priority
-    class stdp : public box
+/// sample degradation priority
+class stdp : public box
+{
+
+public:
+
+    static const std::string TYPE;
+
+public:
+    stdp(std::weak_ptr<box> parent) :
+        box(stdp::TYPE, parent)
+    { }
+
+    void read(uint64_t size, byte_stream& bs)
     {
-
-    public:
-
-        static const std::string TYPE;
-
-    public:
-        stdp(std::weak_ptr<box> parent):
-            box(stdp::TYPE, parent)
-        { }
-
-        void read(uint64_t size, byte_stream& bs)
-        {
-            box::read(size, bs);
-            bs.skip(m_remaining_bytes);
-        }
-    };
+        box::read(size, bs);
+        bs.skip(m_remaining_bytes);
+    }
+};
 }
 }

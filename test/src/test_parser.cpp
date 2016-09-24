@@ -34,9 +34,9 @@ TEST(test_parser, read_data)
     using trak_type = petro::box::trak<petro::parser<>>;
 
     using moov_type = petro::box::moov<petro::parser<
-        petro::box::mvhd,
-        trak_type
-    >>;
+                      petro::box::mvhd,
+                      trak_type
+                      >>;
 
     petro::parser<
         petro::box::mdat,

@@ -11,6 +11,6 @@ namespace petro
 {
 namespace box
 {
-    const std::string xml::TYPE = "xml ";
+const std::string xml::TYPE = "xml ";
 }
 }

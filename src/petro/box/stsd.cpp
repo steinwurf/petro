@@ -11,6 +11,6 @@ namespace petro
 {
 namespace box
 {
-    const std::string stsd::TYPE = "stsd";
+const std::string stsd::TYPE = "stsd";
 }
 }

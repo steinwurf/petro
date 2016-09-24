@@ -15,24 +15,24 @@ namespace petro
 {
 namespace box
 {
-    /// movie extends header box
-    class mehd : public box
+/// movie extends header box
+class mehd : public box
+{
+
+public:
+
+    static const std::string TYPE;
+
+public:
+    mehd(std::weak_ptr<box> parent) :
+        box(mehd::TYPE, parent)
+    { }
+
+    void read(uint64_t size, byte_stream& bs)
     {
-
-    public:
-
-        static const std::string TYPE;
-
-    public:
-        mehd(std::weak_ptr<box> parent):
-            box(mehd::TYPE, parent)
-        { }
-
-        void read(uint64_t size, byte_stream& bs)
-        {
-            box::read(size, bs);
-            bs.skip(m_remaining_bytes);
-        }
-    };
+        box::read(size, bs);
+        bs.skip(m_remaining_bytes);
+    }
+};
 }
 }

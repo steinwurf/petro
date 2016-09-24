@@ -11,6 +11,6 @@ namespace petro
 {
 namespace box
 {
-    const std::string iinf::TYPE = "iinf";
+const std::string iinf::TYPE = "iinf";
 }
 }

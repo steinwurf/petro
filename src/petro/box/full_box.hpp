@@ -17,37 +17,37 @@ namespace petro
 {
 namespace box
 {
-    class full_box : public box
+class full_box : public box
+{
+public:
+
+    full_box(const std::string& type, std::weak_ptr<box> parent) :
+        box(type, parent)
+    { }
+
+    void read(uint64_t size, byte_stream& bs)
     {
-    public:
+        box::read(size, bs);
+        m_version = bs.read_uint8_t();
+        m_remaining_bytes -= 1;
+        m_flags.read(bs);
+        m_remaining_bytes -= 3;
+    }
 
-        full_box(const std::string& type, std::weak_ptr<box> parent):
-            box(type, parent)
-        { }
+    virtual std::string describe() const
+    {
+        std::stringstream ss;
+        ss << box::describe() << std::endl;
+        ss << "  version: " << (uint32_t)m_version;
 
-        void read(uint64_t size, byte_stream& bs)
-        {
-            box::read(size, bs);
-            m_version = bs.read_uint8_t();
-            m_remaining_bytes -= 1;
-            m_flags.read(bs);
-            m_remaining_bytes -= 3;
-        }
+        return ss.str();
+    }
 
-        virtual std::string describe() const
-        {
-            std::stringstream ss;
-            ss << box::describe() << std::endl;
-            ss << "  version: " << (uint32_t)m_version;
+protected:
 
-            return ss.str();
-        }
+    uint8_t m_version;
+    flags m_flags;
 
-    protected:
-
-        uint8_t m_version;
-        flags m_flags;
-
-    };
+};
 }
 }

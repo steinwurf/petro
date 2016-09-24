@@ -11,6 +11,6 @@ namespace petro
 {
 namespace box
 {
-    const std::string co64::TYPE = "co64";
+const std::string co64::TYPE = "co64";
 }
 }

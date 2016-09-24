@@ -10,15 +10,15 @@
 
 namespace
 {
-    struct dummy_extractor
-    {
-        stub::function<uint64_t()> timestamp;
-        stub::function<void()> advance;
-        stub::function<void()> reset;
-        stub::function<bool()> at_end;
-    };
+struct dummy_extractor
+{
+    stub::function<uint64_t()> timestamp;
+    stub::function<void()> advance;
+    stub::function<void()> reset;
+    stub::function<bool()> at_end;
+};
 
-    using extractor_stack = petro::extractor::looper_layer<dummy_extractor>;
+using extractor_stack = petro::extractor::looper_layer<dummy_extractor>;
 }
 
 TEST(extractor_test_looper_layer, not_looping)

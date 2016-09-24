@@ -11,6 +11,6 @@ namespace petro
 {
 namespace box
 {
-    const std::string ipmc::TYPE = "ipmc";
+const std::string ipmc::TYPE = "ipmc";
 }
 }

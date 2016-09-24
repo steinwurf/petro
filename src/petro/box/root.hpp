@@ -16,23 +16,23 @@ namespace petro
 {
 namespace box
 {
-    /// root object
-    class root : public box
+/// root object
+class root : public box
+{
+public:
+
+    root() :
+        box("root", std::weak_ptr<box>())
+    { }
+
+    /// hide box implementation
+    void read(uint64_t size, byte_stream& bs) override
     {
-    public:
-
-        root():
-            box("root", std::weak_ptr<box>())
-        { }
-
-        /// hide box implementation
-        void read(uint64_t size, byte_stream& bs) override
-        {
-            (void) size;
-            (void) bs;
-            // root cannot be read.
-            assert(0);
-        }
-    };
+        (void) size;
+        (void) bs;
+        // root cannot be read.
+        assert(0);
+    }
+};
 }
 }

@@ -11,15 +11,15 @@
 
 namespace
 {
-    struct dummy_layer
-    {
-        stub::function<uint8_t()> channel_configuration;
-        stub::function<uint8_t()> mpeg_audio_object_type;
-        stub::function<uint32_t()> frequency_index;
-        stub::function<uint32_t()> sample_size;
-    };
+struct dummy_layer
+{
+    stub::function<uint8_t()> channel_configuration;
+    stub::function<uint8_t()> mpeg_audio_object_type;
+    stub::function<uint32_t()> frequency_index;
+    stub::function<uint32_t()> sample_size;
+};
 
-    using dummy_stack = petro::extractor::adts_writer_layer<dummy_layer>;
+using dummy_stack = petro::extractor::adts_writer_layer<dummy_layer>;
 }
 
 TEST(extractor_test_adts_writer_layer, api)

@@ -11,6 +11,6 @@ namespace petro
 {
 namespace box
 {
-    const std::string url::TYPE = "url ";
+const std::string url::TYPE = "url ";
 }
 }

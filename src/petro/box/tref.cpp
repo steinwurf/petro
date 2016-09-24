@@ -11,6 +11,6 @@ namespace petro
 {
 namespace box
 {
-    const std::string tref::TYPE = "tref";
+const std::string tref::TYPE = "tref";
 }
 }

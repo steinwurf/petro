@@ -11,6 +11,6 @@ namespace petro
 {
 namespace box
 {
-    const std::string hdlr::TYPE = "hdlr";
+const std::string hdlr::TYPE = "hdlr";
 }
 }

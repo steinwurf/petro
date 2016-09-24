@@ -11,6 +11,6 @@ namespace petro
 {
 namespace box
 {
-    const std::string imif::TYPE = "imif";
+const std::string imif::TYPE = "imif";
 }
 }

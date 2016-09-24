@@ -15,24 +15,24 @@ namespace petro
 {
 namespace box
 {
-    /// track extends defaults
-    class trex : public box
+/// track extends defaults
+class trex : public box
+{
+
+public:
+
+    static const std::string TYPE;
+
+public:
+    trex(std::weak_ptr<box> parent) :
+        box(trex::TYPE, parent)
+    { }
+
+    void read(uint64_t size, byte_stream& bs)
     {
-
-    public:
-
-        static const std::string TYPE;
-
-    public:
-        trex(std::weak_ptr<box> parent):
-            box(trex::TYPE, parent)
-        { }
-
-        void read(uint64_t size, byte_stream& bs)
-        {
-            box::read(size, bs);
-            bs.skip(m_remaining_bytes);
-        }
-    };
+        box::read(size, bs);
+        bs.skip(m_remaining_bytes);
+    }
+};
 }
 }

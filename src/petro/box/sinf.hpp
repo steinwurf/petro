@@ -16,31 +16,31 @@ namespace petro
 {
 namespace box
 {
-    /// protection scheme information box
-    template<class Parser>
-    class sinf : public box
+/// protection scheme information box
+template<class Parser>
+class sinf : public box
+{
+
+public:
+
+    static const std::string TYPE;
+
+public:
+    sinf(std::weak_ptr<box> parent) :
+        box(sinf::TYPE, parent)
+    { }
+
+    void read(uint64_t size, byte_stream& bs)
     {
+        box::read(size, bs);
+        Parser p;
+        auto branched_bs = byte_stream(bs, m_remaining_bytes);
+        p.read(branched_bs, shared_from_this());
+        assert(branched_bs.remaining_bytes() == 0);
+    }
+};
 
-    public:
-
-        static const std::string TYPE;
-
-    public:
-        sinf(std::weak_ptr<box> parent):
-            box(sinf::TYPE, parent)
-        { }
-
-        void read(uint64_t size, byte_stream& bs)
-        {
-            box::read(size, bs);
-            Parser p;
-            auto branched_bs = byte_stream(bs, m_remaining_bytes);
-            p.read(branched_bs, shared_from_this());
-            assert(branched_bs.remaining_bytes() == 0);
-        }
-    };
-
-    template<class Parser>
-    const std::string sinf<Parser>::TYPE = "sinf";
+template<class Parser>
+const std::string sinf<Parser>::TYPE = "sinf";
 }
 }

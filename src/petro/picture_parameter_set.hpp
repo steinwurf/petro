@@ -11,36 +11,36 @@
 
 namespace petro
 {
-    class picture_parameter_set
+class picture_parameter_set
+{
+public:
+    picture_parameter_set(const uint8_t* data, uint32_t size) :
+        m_data(data),
+        m_size(size)
+    { }
+
+    const uint8_t* data() const
     {
-    public:
-        picture_parameter_set(const uint8_t* data, uint32_t size):
-            m_data(data),
-            m_size(size)
-        { }
+        return m_data;
+    }
 
-        const uint8_t* data() const
-        {
-            return m_data;
-        }
+    uint32_t size() const
+    {
+        return m_size;
+    }
 
-        uint32_t size() const
-        {
-            return m_size;
-        }
+    std::string describe() const
+    {
+        std::stringstream ss;
+        ss << "pps:" << std::endl;
+        ss << "      size: " << size() << std::endl;
 
-        std::string describe() const
-        {
-            std::stringstream ss;
-            ss << "pps:" << std::endl;
-            ss << "      size: " << size() << std::endl;
+        return ss.str();
+    }
 
-            return ss.str();
-        }
+private:
 
-    private:
-
-        const uint8_t* m_data;
-        uint32_t m_size;
-    };
+    const uint8_t* m_data;
+    uint32_t m_size;
+};
 }

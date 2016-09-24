@@ -15,65 +15,65 @@ namespace petro
 {
 namespace box
 {
-    /// hint media header, overall information (hint track only)
-    class hmhd : public full_box
+/// hint media header, overall information (hint track only)
+class hmhd : public full_box
+{
+
+public:
+
+    static const std::string TYPE;
+
+public:
+    hmhd(std::weak_ptr<box> parent) :
+        full_box(hmhd::TYPE, parent)
+    { }
+
+    void read(uint64_t size, byte_stream& bs)
     {
+        full_box::read(size, bs);
+        m_max_pdu_size = bs.read_uint16_t();
+        m_remaining_bytes -= 2;
 
-    public:
+        m_average_pdu_size = bs.read_uint16_t();
+        m_remaining_bytes -= 2;
 
-        static const std::string TYPE;
+        m_max_bit_rate = bs.read_uint32_t();
+        m_remaining_bytes -= 4;
 
-    public:
-        hmhd(std::weak_ptr<box> parent):
-            full_box(hmhd::TYPE, parent)
-        { }
+        m_average_bit_rate = bs.read_uint32_t();
+        m_remaining_bytes -= 4;
 
-        void read(uint64_t size, byte_stream& bs)
-        {
-            full_box::read(size, bs);
-            m_max_pdu_size = bs.read_uint16_t();
-            m_remaining_bytes -= 2;
+        // reserved
+        bs.skip(4);
+        m_remaining_bytes -= 4;
 
-            m_average_pdu_size = bs.read_uint16_t();
-            m_remaining_bytes -= 2;
+        bs.skip(m_remaining_bytes);
+    }
 
-            m_max_bit_rate = bs.read_uint32_t();
-            m_remaining_bytes -= 4;
+    virtual std::string describe() const
+    {
+        std::stringstream ss;
+        ss << full_box::describe() << std::endl;
+        ss << "  max_pdu_size: " << m_max_pdu_size << std::endl;
+        ss << "  average_pdu_size: " << m_average_pdu_size << std::endl;
+        ss << "  max_bit_rate: " << m_max_bit_rate << std::endl;
+        ss << "  average_bit_rate: " << m_average_bit_rate << std::endl;
+        return ss.str();
+    }
 
-            m_average_bit_rate = bs.read_uint32_t();
-            m_remaining_bytes -= 4;
+private:
 
-            // reserved
-            bs.skip(4);
-            m_remaining_bytes -= 4;
+    /// the size in bytes of the largest PDU in this (hint) stream
+    uint16_t m_max_pdu_size;
 
-            bs.skip(m_remaining_bytes);
-        }
+    /// the average size of a PDU over the entire presentation
+    uint16_t m_average_pdu_size;
 
-        virtual std::string describe() const
-        {
-            std::stringstream ss;
-            ss << full_box::describe() << std::endl;
-            ss << "  max_pdu_size: " << m_max_pdu_size << std::endl;
-            ss << "  average_pdu_size: " << m_average_pdu_size << std::endl;
-            ss << "  max_bit_rate: " << m_max_bit_rate << std::endl;
-            ss << "  average_bit_rate: " << m_average_bit_rate << std::endl;
-            return ss.str();
-        }
+    /// the maximum rate in bits/second over any window of one second
+    uint32_t m_max_bit_rate;
 
-    private:
-
-        /// the size in bytes of the largest PDU in this (hint) stream
-        uint16_t m_max_pdu_size;
-
-        /// the average size of a PDU over the entire presentation
-        uint16_t m_average_pdu_size;
-
-        /// the maximum rate in bits/second over any window of one second
-        uint32_t m_max_bit_rate;
-
-        /// the average rate in bits/second over the entire presentation
-        uint32_t m_average_bit_rate;
-    };
+    /// the average rate in bits/second over the entire presentation
+    uint32_t m_average_bit_rate;
+};
 }
 }

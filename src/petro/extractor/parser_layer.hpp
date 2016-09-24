@@ -31,68 +31,68 @@ namespace petro
 {
 namespace extractor
 {
-    /// This layer exposes the "root" of the tree constructed using the mp4 box
-    /// parser.
-    template<class Super>
-    class parser_layer : public Super
+/// This layer exposes the "root" of the tree constructed using the mp4 box
+/// parser.
+template<class Super>
+class parser_layer : public Super
+{
+public:
+
+    /// Open this and the underlying layer, returns false upon failure.
+    bool open()
     {
-    public:
-
-        /// Open this and the underlying layer, returns false upon failure.
-        bool open()
+        if (!Super::open())
         {
-            if (!Super::open())
-            {
-                Super::close();
-                return false;
-            }
+            Super::close();
+            return false;
+        }
 
-            parser<
-                box::moov<parser<
-                    box::trak<parser<
-                        box::mdia<parser<
-                            box::hdlr,
-                            box::mdhd,
-                            box::minf<parser<
-                                box::stbl<parser<
-                                    box::stco,
-                                    box::stsc,
-                                    box::stsd,
-                                    box::co64,
-                                    box::ctts,
-                                    box::stts,
-                                    box::stsz
-                                >>
+        parser<
+            box::moov<parser<
+                box::trak<parser<
+                    box::mdia<parser<
+                        box::hdlr,
+                        box::mdhd,
+                        box::minf<parser<
+                            box::stbl<parser<
+                                box::stco,
+                                box::stsc,
+                                box::stsd,
+                                box::co64,
+                                box::ctts,
+                                box::stts,
+                                box::stsz
                             >>
                         >>
                     >>
                 >>
-            > parser;
+            >>
+        > parser;
 
-            byte_stream bs(Super::data(), Super::data_size());
+        byte_stream bs(Super::data(), Super::data_size());
 
-            m_root = parser.read(bs);
-            return true;
-        }
+        m_root = parser.read(bs);
+        return true;
+    }
 
-        /// Close this and the underlying layer.
-        void close()
-        {
-            Super::close();
-            m_root.reset();
-        }
+    /// Close this and the underlying layer.
+    void close()
+    {
+        Super::close();
+        m_root.reset();
+    }
 
-        /// Return a shared pointer to the root box
-        std::shared_ptr<box::box> root() const
-        {
-            assert(m_root != nullptr);
-            return m_root;
-        }
+    /// Return a shared pointer to the root box
+    std::shared_ptr<box::box> root() const
+    {
+        assert(m_root != nullptr);
+        return m_root;
+    }
 
-    private:
+private:
 
-        std::shared_ptr<box::box> m_root;
+    std::shared_ptr<box::box> m_root;
 
-    };
+};
 }
 }

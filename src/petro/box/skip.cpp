@@ -11,6 +11,6 @@ namespace petro
 {
 namespace box
 {
-    const std::string skip::TYPE = "skip";
+const std::string skip::TYPE = "skip";
 }
 }

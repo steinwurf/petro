@@ -15,24 +15,24 @@ namespace petro
 {
 namespace box
 {
-    /// Null media header, overall information (some tracks only)
-    class nmhd : public full_box
+/// Null media header, overall information (some tracks only)
+class nmhd : public full_box
+{
+
+public:
+
+    static const std::string TYPE;
+
+public:
+    nmhd(std::weak_ptr<box> parent) :
+        full_box(nmhd::TYPE, parent)
+    { }
+
+    void read(uint64_t size, byte_stream& bs)
     {
-
-    public:
-
-        static const std::string TYPE;
-
-    public:
-        nmhd(std::weak_ptr<box> parent):
-            full_box(nmhd::TYPE, parent)
-        { }
-
-        void read(uint64_t size, byte_stream& bs)
-        {
-            full_box::read(size, bs);
-            bs.skip(m_remaining_bytes);
-        }
-    };
+        full_box::read(size, bs);
+        bs.skip(m_remaining_bytes);
+    }
+};
 }
 }

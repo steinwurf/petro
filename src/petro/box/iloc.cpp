@@ -11,6 +11,6 @@ namespace petro
 {
 namespace box
 {
-    const std::string iloc::TYPE = "iloc";
+const std::string iloc::TYPE = "iloc";
 }
 }

@@ -15,24 +15,24 @@ namespace petro
 {
 namespace box
 {
-    /// urn
-    class urn : public box
+/// urn
+class urn : public box
+{
+
+public:
+
+    static const std::string TYPE;
+
+public:
+    urn(std::weak_ptr<box> parent) :
+        box(urn::TYPE, parent)
+    { }
+
+    void read(uint64_t size, byte_stream& bs)
     {
-
-    public:
-
-        static const std::string TYPE;
-
-    public:
-        urn(std::weak_ptr<box> parent):
-            box(urn::TYPE, parent)
-        { }
-
-        void read(uint64_t size, byte_stream& bs)
-        {
-            box::read(size, bs);
-            bs.skip(m_remaining_bytes);
-        }
-    };
+        box::read(size, bs);
+        bs.skip(m_remaining_bytes);
+    }
+};
 }
 }
