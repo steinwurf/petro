@@ -19,7 +19,7 @@ if '-fPIC' in bld.env.CXXFLAGS:
     bld.shlib(
         features='cxx',
         source=bld.path.ant_glob('**/*.cpp'),
-        target='petro',
+        target='petro_shared',
         use=['boost_includes', 'boost_iostreams'],
         export_includes=['..']
     )
