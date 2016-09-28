@@ -18,9 +18,13 @@ namespace extractor
 struct avc_sample_extractor
 {
     /// Constructor
+    ///
+    /// Note: Why we need to declare and define both constructor and destructor
+    /// when using std::unique_ptr and pimpl:
+    /// http://stackoverflow.com/a/9954553/1717320
     avc_sample_extractor();
 
-    /// Destructor
+    /// Destructor (see constructor why definition of destructor is needed)
     ~avc_sample_extractor();
 
     /// Open this an the underlying layers
