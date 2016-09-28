@@ -7,3 +7,19 @@ bld.stlib(
     use=['boost_includes', 'boost_iostreams'],
     export_includes=['..']
 )
+
+# Configure with -fPIC to enable building a shared lib:
+#    ./waf configure ... --cxxflags=-fPIC
+#
+# The -fPIC flag is needed to build a shared library read more about that here:
+# http://stackoverflow.com/a/19768349
+
+if '-fPIC' in bld.env.CXXFLAGS:
+
+    bld.shlib(
+        features='cxx',
+        source=bld.path.ant_glob('**/*.cpp'),
+        target='petro_shared',
+        use=['boost_includes', 'boost_iostreams'],
+        export_includes=['..']
+    )

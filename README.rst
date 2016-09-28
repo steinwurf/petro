@@ -13,3 +13,13 @@ Usage
 .. image:: https://raw.githubusercontent.com/steinwurf/petro/master/petro.gif
 
 More examples of how to use petro is located in the examples folder.
+
+Building shared library
+-----------------------
+
+Configure with -fPIC to enable building a shared lib::
+
+    ./waf configure ... --cxxflags=-fPIC
+
+The `-fPIC` flag is needed to build a shared library read more about that here:
+http://stackoverflow.com/a/19768349
