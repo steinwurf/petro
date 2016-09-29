@@ -53,17 +53,17 @@ TEST(extractor_test_sample_extractor_layer, init)
     // This buffer is made up, to create a dummy stsc box. please see
     // stsc.hpp for information related to this.
     std::vector<uint8_t> stsc_buffer =
-    {
-        // These values have already been read by the parser:
-        // 0x00, 0x00, 0x00, 0xXX, // box size
-        // 's', 't', 's', 'c', // box type
-        0x00, // full_box version
-        0x00, 0x00, 0x00, // full_box flag
-        0x00, 0x00, 0x00, 0x01, // stsc entry count 1
-        0x00, 0x00, 0x00, 0x01, // stsc entry first_chunk
-        0x00, 0x00, 0x00, 0x01, // stsc entry samples_per_chunk
-        0x00, 0x00, 0x00, 0x01, // stsc entry sample_description_index
-    };
+        {
+            // These values have already been read by the parser:
+            // 0x00, 0x00, 0x00, 0xXX, // box size
+            // 's', 't', 's', 'c', // box type
+            0x00, // full_box version
+            0x00, 0x00, 0x00, // full_box flag
+            0x00, 0x00, 0x00, 0x01, // stsc entry count 1
+            0x00, 0x00, 0x00, 0x01, // stsc entry first_chunk
+            0x00, 0x00, 0x00, 0x01, // stsc entry samples_per_chunk
+            0x00, 0x00, 0x00, 0x01, // stsc entry sample_description_index
+        };
     // size including attributes read by parser:
     auto stsc_size = stsc_buffer.size() + 8;
 
@@ -82,15 +82,15 @@ TEST(extractor_test_sample_extractor_layer, init)
     // This buffer is made up, to create a dummy stsz box. please see
     // stsz.hpp for information related to this.
     std::vector<uint8_t> stsz_buffer =
-    {
-        // These values have already been read by the parser:
-        // 0x00, 0x00, 0x00, 0xXX, // box size
-        // 's', 't', 's', 'z', // box type
-        0x00, // full_box version
-        0x00, 0x00, 0x00, // full_box flag
-        0x00, 0x00, 0x00, sample_size, // stsz sample size
-        0x00, 0x00, 0x00, 0x02, // stsz sample count
-    };
+        {
+            // These values have already been read by the parser:
+            // 0x00, 0x00, 0x00, 0xXX, // box size
+            // 's', 't', 's', 'z', // box type
+            0x00, // full_box version
+            0x00, 0x00, 0x00, // full_box flag
+            0x00, 0x00, 0x00, sample_size, // stsz sample size
+            0x00, 0x00, 0x00, 0x02, // stsz sample count
+        };
     // size including attributes read by parser:
     auto stsz_size = stsz_buffer.size() + 8;
 
@@ -110,16 +110,16 @@ TEST(extractor_test_sample_extractor_layer, init)
     uint8_t chunk_offset1 = 1U;
     uint8_t chunk_offset2 = 2U;
     std::vector<uint8_t> co64_buffer =
-    {
-        // These values have already been read by the parser:
-        // 0x00, 0x00, 0x00, 0xXX, // box size
-        // 'c', 'o', '6', '4', // box type
-        0x00, // full_box version
-        0x00, 0x00, 0x00, // full_box flag
-        0x00, 0x00, 0x00, 0x02, // co64 entry count
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, chunk_offset1, // entry 1
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, chunk_offset2  // entry 2
-    };
+        {
+            // These values have already been read by the parser:
+            // 0x00, 0x00, 0x00, 0xXX, // box size
+            // 'c', 'o', '6', '4', // box type
+            0x00, // full_box version
+            0x00, 0x00, 0x00, // full_box flag
+            0x00, 0x00, 0x00, 0x02, // co64 entry count
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, chunk_offset1, // entry 1
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, chunk_offset2  // entry 2
+        };
     // size including attributes read by parser:
     auto co64_size = co64_buffer.size() + 8;
 

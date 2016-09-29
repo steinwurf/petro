@@ -38,9 +38,9 @@ TEST(extractor_test_adts_writer_layer, api)
 
     stack.write_adts_header(header.data());
     std::vector<uint8_t> expected_header =
-    {
-        0xFF, 0xF1, 0x4C, 0x40, 0x01, 0x60, 0xB0
-    };
+        {
+            0xFF, 0xF1, 0x4C, 0x40, 0x01, 0x60, 0xB0
+        };
 
     EXPECT_EQ(expected_header, header);
 }

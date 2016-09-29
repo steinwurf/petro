@@ -33,9 +33,9 @@ TEST(extractor_test_parser_layer, api)
     EXPECT_EQ(1U, layer.close.calls());
 
     std::vector<uint8_t> data =
-    {
-        0x00, 0x00, 0x00, 0x09, 'b', 'a', 'b', 'y', 0x42
-    };
+        {
+            0x00, 0x00, 0x00, 0x09, 'b', 'a', 'b', 'y', 0x42
+        };
 
     layer.data.set_return(data.data());
     layer.data_size.set_return(data.size());

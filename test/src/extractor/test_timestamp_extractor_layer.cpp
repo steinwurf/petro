@@ -59,16 +59,16 @@ TEST(extractor_test_timestamp_extractor_layer, api)
     // This buffer is made up, to create a dummy stts box. please see
     // stts.hpp for information related to this.
     std::vector<uint8_t> stts_buffer =
-    {
-        // These values have already been read by the parser:
-        // 0x00, 0x00, 0x00, 0xXX, // box size
-        // 's', 't', 't', 's', // box type
-        0x00, // full_box version
-        0x00, 0x00, 0x00, // full_box flag
-        0x00, 0x00, 0x00, 0x01, // stts entry count 1
-        0x00, 0x00, 0x00, 0x03, // stts entry sample_count
-        0x00, 0x00, 0x00, 0x06, // stts entry sample_delta
-    };
+        {
+            // These values have already been read by the parser:
+            // 0x00, 0x00, 0x00, 0xXX, // box size
+            // 's', 't', 't', 's', // box type
+            0x00, // full_box version
+            0x00, 0x00, 0x00, // full_box flag
+            0x00, 0x00, 0x00, 0x01, // stts entry count 1
+            0x00, 0x00, 0x00, 0x03, // stts entry sample_count
+            0x00, 0x00, 0x00, 0x06, // stts entry sample_delta
+        };
     // size including attributes read by parser:
     auto stts_size = stts_buffer.size() + 8;
 
@@ -86,19 +86,19 @@ TEST(extractor_test_timestamp_extractor_layer, api)
     // This buffer is made up, to create a dummy mdhd box. please see
     // mdhd.hpp for information related to this.
     std::vector<uint8_t> mdhd_buffer =
-    {
-        // These values have already been read by the parser:
-        // 0x00, 0x00, 0x00, 0xXX, // box size
-        // 'm', 'd', 'h', 'd', // box type
-        0x00, // full_box version
-        0x00, 0x00, 0x00, // full_box flag
-        0x00, 0x00, 0x00, 0x00, // mdhd m_creation_time
-        0x00, 0x00, 0x00, 0x00, // mdhd m_modification_time
-        0x00, 0x00, 0x00, 0x42, // mdhd m_timescale
-        0x00, 0x00, 0x00, 0x00, // mdhd m_duration
-        0x00, 0x00, // mdhd langauge code
-        0x00, 0x00  // mdhd predefined
-    };
+        {
+            // These values have already been read by the parser:
+            // 0x00, 0x00, 0x00, 0xXX, // box size
+            // 'm', 'd', 'h', 'd', // box type
+            0x00, // full_box version
+            0x00, 0x00, 0x00, // full_box flag
+            0x00, 0x00, 0x00, 0x00, // mdhd m_creation_time
+            0x00, 0x00, 0x00, 0x00, // mdhd m_modification_time
+            0x00, 0x00, 0x00, 0x42, // mdhd m_timescale
+            0x00, 0x00, 0x00, 0x00, // mdhd m_duration
+            0x00, 0x00, // mdhd langauge code
+            0x00, 0x00  // mdhd predefined
+        };
     // size including attributes read by parser:
     auto mdhd_size = mdhd_buffer.size() + 8;
 
