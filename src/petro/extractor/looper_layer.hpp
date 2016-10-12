@@ -32,16 +32,22 @@ public:
         m_loop = false;
     }
 
-    /// Returns the samples timestamp, offset based on the looping
-    uint64_t timestamp() const
+    /// Returns the sample's decoding timestamp with the loop offset
+    uint64_t decoding_timestamp() const
     {
-        return m_loop_offset + Super::timestamp();
+        return m_loop_offset + Super::decoding_timestamp();
+    }
+
+    /// Returns the sample's presentation timestamp with the loop offset
+    uint64_t presentation_timestamp() const
+    {
+        return m_loop_offset + Super::presentation_timestamp();
     }
 
     /// Advances to the next sample
     void advance()
     {
-        auto timestamp = Super::timestamp();
+        auto timestamp = Super::decoding_timestamp();
         Super::advance();
         if (m_loop && Super::at_end())
         {

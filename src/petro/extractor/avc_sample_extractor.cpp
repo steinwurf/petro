@@ -61,12 +61,6 @@ std::string avc_sample_extractor::file_path() const
     return m_impl->file_path();
 }
 
-uint64_t avc_sample_extractor::timestamp() const
-{
-    assert(m_impl);
-    return m_impl->timestamp();
-}
-
 uint64_t avc_sample_extractor::decoding_timestamp() const
 {
     assert(m_impl);

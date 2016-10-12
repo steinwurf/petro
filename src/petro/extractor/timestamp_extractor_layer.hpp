@@ -65,12 +65,6 @@ public:
         Super::close();
     }
 
-    /// Return the timestamp related to the current sample
-    uint64_t timestamp() const
-    {
-        return presentation_timestamp();
-    }
-
     /// Return the decoding timestamp related to the current sample
     uint64_t decoding_timestamp() const
     {

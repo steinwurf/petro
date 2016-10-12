@@ -6,7 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
-* Minor: Changed `avc_sample_extractor` to use the pimpl pattern. 
+* Major: Removed the ambiguous ``timestamp`` function from extractors.
+* Minor: Properly apply loop offset for decoding and presentation timestamps
+  in ``looper_layer``.
+* Minor: Changed `avc_sample_extractor` to use the pimpl pattern.
 * Minor: Enabled building petro as a shared library
 
 5.0.0
