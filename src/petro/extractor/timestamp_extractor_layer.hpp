@@ -42,7 +42,6 @@ public:
             return false;
         }
         m_video_length = mvhd->duration() * 1000000 / mvhd->timescale();
-        printf("Length: %3.6f\n", m_video_length / 1000000.0);
 
         auto trak = Super::trak();
 
