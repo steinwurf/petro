@@ -145,6 +145,7 @@ TEST(extractor_test_timestamp_extractor_layer, api)
             0x00, 0x00, 0x00, 0x00, // mvhd m_rate
             0x00, 0x00  // mvhd m_volume
         };
+    // Extend the buffer with zeroes to reach the full size of the mvhd box
     mvhd_buffer.resize(mvhd_buffer.size() + 10 + 4 * 9 + 6 * 4 + 4);
     // size including attributes read by parser:
     auto mvhd_size = mvhd_buffer.size() + 8;
