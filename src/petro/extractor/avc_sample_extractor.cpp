@@ -61,6 +61,13 @@ std::string avc_sample_extractor::file_path() const
     return m_impl->file_path();
 }
 
+/// Return the total video length in microseconds
+uint64_t avc_sample_extractor::video_length() const
+{
+    assert(m_impl);
+    return m_impl->video_length();
+}
+
 uint64_t avc_sample_extractor::decoding_timestamp() const
 {
     assert(m_impl);

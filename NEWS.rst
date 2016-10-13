@@ -7,8 +7,9 @@ every change, see the Git log.
 Latest
 ------
 * Major: Removed the ambiguous ``timestamp`` function from extractors.
-* Minor: Properly apply loop offset for decoding and presentation timestamps
-  in ``looper_layer``.
+* Minor: Added the ``video_length`` function in ``timestamp_extractor_lalyer``.
+* Minor: Use the total video length as a loop offset for decoding and
+  presentation timestamps in ``looper_layer``.
 * Minor: Changed `avc_sample_extractor` to use the pimpl pattern.
 * Minor: Enabled building petro as a shared library
 

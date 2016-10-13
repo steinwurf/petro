@@ -11,6 +11,7 @@
 #include "../decoding_time.hpp"
 #include "../presentation_time.hpp"
 #include "../box/mdhd.hpp"
+#include "../box/mvhd.hpp"
 #include "../box/stts.hpp"
 #include "../box/ctts.hpp"
 
@@ -32,6 +33,17 @@ public:
             Super::close();
             return false;
         }
+
+        auto root = Super::root();
+        auto mvhd = root->template get_child<box::mvhd>();
+        if (mvhd == nullptr)
+        {
+            close();
+            return false;
+        }
+        m_video_length = mvhd->duration() * 1000000 / mvhd->timescale();
+        printf("Length: %3.6f\n", m_video_length / 1000000.0);
+
         auto trak = Super::trak();
 
         auto mdhd = trak->template get_child<box::mdhd>();
@@ -59,6 +71,7 @@ public:
     void close()
     {
         m_timescale = 0;
+        m_video_length = 0;
         m_stts.reset();
         m_ctts.reset();
 
@@ -80,12 +93,21 @@ public:
             m_stts, m_ctts, m_timescale, Super::sample_index());
     }
 
+    /// Return the total video length in microseconds
+    uint64_t video_length() const
+    {
+        return m_video_length;
+    }
+
 private:
 
     uint32_t m_timescale = 0;
 
     std::shared_ptr<const box::stts> m_stts;
     std::shared_ptr<const box::ctts> m_ctts;
+
+    // Total video length in microseconds
+    uint64_t m_video_length = 0;
 
 };
 }

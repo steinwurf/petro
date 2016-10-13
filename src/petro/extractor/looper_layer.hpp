@@ -47,11 +47,10 @@ public:
     /// Advances to the next sample
     void advance()
     {
-        auto timestamp = Super::decoding_timestamp();
         Super::advance();
         if (m_loop && Super::at_end())
         {
-            m_loop_offset += timestamp;
+            m_loop_offset += Super::video_length();
             m_loops++;
             Super::reset();
         }
