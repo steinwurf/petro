@@ -11,6 +11,7 @@
 #include "../decoding_time.hpp"
 #include "../presentation_time.hpp"
 #include "../box/mdhd.hpp"
+#include "../box/mvhd.hpp"
 #include "../box/stts.hpp"
 #include "../box/ctts.hpp"
 
@@ -32,6 +33,16 @@ public:
             Super::close();
             return false;
         }
+
+        auto root = Super::root();
+        auto mvhd = root->template get_child<box::mvhd>();
+        if (mvhd == nullptr)
+        {
+            close();
+            return false;
+        }
+        m_media_duration = mvhd->duration() * 1000000 / mvhd->timescale();
+
         auto trak = Super::trak();
 
         auto mdhd = trak->template get_child<box::mdhd>();
@@ -59,16 +70,11 @@ public:
     void close()
     {
         m_timescale = 0;
+        m_media_duration = 0;
         m_stts.reset();
         m_ctts.reset();
 
         Super::close();
-    }
-
-    /// Return the timestamp related to the current sample
-    uint64_t timestamp() const
-    {
-        return presentation_timestamp();
     }
 
     /// Return the decoding timestamp related to the current sample
@@ -86,12 +92,21 @@ public:
             m_stts, m_ctts, m_timescale, Super::sample_index());
     }
 
+    /// Return the total media duration in microseconds
+    uint64_t media_duration() const
+    {
+        return m_media_duration;
+    }
+
 private:
 
     uint32_t m_timescale = 0;
 
     std::shared_ptr<const box::stts> m_stts;
     std::shared_ptr<const box::ctts> m_ctts;
+
+    // Total media duration in microseconds
+    uint64_t m_media_duration = 0;
 
 };
 }

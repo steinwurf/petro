@@ -6,7 +6,11 @@ every change, see the Git log.
 
 Latest
 ------
-* Minor: Changed `avc_sample_extractor` to use the pimpl pattern. 
+* Major: Removed the ambiguous ``timestamp`` function from extractors.
+* Minor: Added the ``media_duration`` function in ``timestamp_extractor_layer``.
+* Minor: Use the total media duration as a loop offset for decoding and
+  presentation timestamps in ``looper_layer``.
+* Minor: Changed `avc_sample_extractor` to use the pimpl pattern.
 * Minor: Enabled building petro as a shared library
 
 5.0.0

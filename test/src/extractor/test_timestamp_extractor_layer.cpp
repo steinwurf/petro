@@ -11,6 +11,19 @@
 
 namespace
 {
+struct dummy_root
+{
+    template<class Child>
+    std::shared_ptr<const Child> get_child() const
+    {
+        if (Child::TYPE == petro::box::mvhd::TYPE)
+            return std::dynamic_pointer_cast<const Child>(m_mvhd);
+        return nullptr;
+    }
+
+    std::shared_ptr<const petro::box::mvhd> m_mvhd;
+};
+
 struct dummy_trak
 {
     template<class Child>
@@ -32,6 +45,7 @@ struct dummy_layer
     stub::function<bool()> open;
     stub::function<void()> close;
     stub::function<const dummy_trak*()> trak;
+    stub::function<const dummy_root*()> root;
     stub::function<const uint8_t* ()> data;
     stub::function<uint32_t()> sample_index;
 };
@@ -109,18 +123,53 @@ TEST(extractor_test_timestamp_extractor_layer, api)
 
     trak.m_mdhd = mdhd;
 
+    dummy_root root;
+
+    //-------------//
+    // create mvhd //
+    //-------------//
+
+    // This buffer is made up, to create a dummy mvhd box. please see
+    // mvhd.hpp for information related to this.
+    std::vector<uint8_t> mvhd_buffer =
+        {
+            // These values have already been read by the parser:
+            // 0x00, 0x00, 0x00, 0xXX, // box size
+            // 'm', 'v', 'h', 'd', // box type
+            0x00, // full_box version
+            0x00, 0x00, 0x00, // full_box flag
+            0x00, 0x00, 0x00, 0x00, // mvhd m_creation_time
+            0x00, 0x00, 0x00, 0x00, // mvhd m_modification_time
+            0x00, 0x00, 0x00, 0x02, // mvhd m_timescale
+            0x00, 0x00, 0x00, 0x06, // mvhd m_duration
+            0x00, 0x00, 0x00, 0x00, // mvhd m_rate
+            0x00, 0x00  // mvhd m_volume
+        };
+    // Extend the buffer with zeroes to reach the full size of the mvhd box
+    mvhd_buffer.resize(mvhd_buffer.size() + 10 + 4 * 9 + 6 * 4 + 4);
+    // size including attributes read by parser:
+    auto mvhd_size = mvhd_buffer.size() + 8;
+
+    petro::byte_stream mvhd_byte_stream(mvhd_buffer.data(), mvhd_buffer.size());
+    auto mvhd =
+        std::make_shared<petro::box::mvhd>(std::weak_ptr<petro::box::box>());
+    mvhd->read(mvhd_size, mvhd_byte_stream);
+
+    root.m_mvhd = mvhd;
+
     layer.trak.set_return(&trak);
+    layer.root.set_return(&root);
     layer.sample_index.set_return(0);
 
     // test stack
 
     EXPECT_TRUE(stack.open());
 
-    // The value is not verified. This is merly a test that checks for
+    // The value is not verified. This is merely a test that checks for
     // consistency - not correctness.
     EXPECT_EQ(90909U, stack.decoding_timestamp());
     EXPECT_EQ(90909U, stack.presentation_timestamp());
-    EXPECT_EQ(90909U, stack.timestamp());
+    EXPECT_EQ(3000000U, stack.media_duration());
 
     stack.close();
     EXPECT_EQ(2U, layer.close.calls());
