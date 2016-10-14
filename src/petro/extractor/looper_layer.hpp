@@ -50,11 +50,11 @@ public:
         Super::advance();
         if (m_loop && Super::at_end())
         {
-            // Use the total video length as a loop offset to keep audio and
-            // video in sync. The video length is the maximum of the lengths
+            // Use the total media duration as a loop offset to keep audio and
+            // video in sync. The media duration is the maximum of the lengths
             // of the video and audio tracks, so the offset will be the same
             // for video and audio extractors.
-            m_loop_offset += Super::video_length();
+            m_loop_offset += Super::media_duration();
             m_loops++;
             Super::reset();
         }

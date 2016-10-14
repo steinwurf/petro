@@ -41,7 +41,7 @@ public:
             close();
             return false;
         }
-        m_video_length = mvhd->duration() * 1000000 / mvhd->timescale();
+        m_media_duration = mvhd->duration() * 1000000 / mvhd->timescale();
 
         auto trak = Super::trak();
 
@@ -70,7 +70,7 @@ public:
     void close()
     {
         m_timescale = 0;
-        m_video_length = 0;
+        m_media_duration = 0;
         m_stts.reset();
         m_ctts.reset();
 
@@ -92,10 +92,10 @@ public:
             m_stts, m_ctts, m_timescale, Super::sample_index());
     }
 
-    /// Return the total video length in microseconds
-    uint64_t video_length() const
+    /// Return the total media duration in microseconds
+    uint64_t media_duration() const
     {
-        return m_video_length;
+        return m_media_duration;
     }
 
 private:
@@ -105,8 +105,8 @@ private:
     std::shared_ptr<const box::stts> m_stts;
     std::shared_ptr<const box::ctts> m_ctts;
 
-    // Total video length in microseconds
-    uint64_t m_video_length = 0;
+    // Total media duration in microseconds
+    uint64_t m_media_duration = 0;
 
 };
 }

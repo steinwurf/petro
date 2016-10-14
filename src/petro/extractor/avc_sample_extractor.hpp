@@ -42,8 +42,8 @@ struct avc_sample_extractor
     /// Returns the file path of the fíle to open.
     std::string file_path() const;
 
-    /// Return the total video length in microseconds
-    uint64_t video_length() const;
+    /// Return the total media duration in microseconds
+    uint64_t media_duration() const;
 
     /// Return the decoding timestamp related to the current sample
     uint64_t decoding_timestamp() const;

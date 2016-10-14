@@ -169,7 +169,7 @@ TEST(extractor_test_timestamp_extractor_layer, api)
     // consistency - not correctness.
     EXPECT_EQ(90909U, stack.decoding_timestamp());
     EXPECT_EQ(90909U, stack.presentation_timestamp());
-    EXPECT_EQ(3000000U, stack.video_length());
+    EXPECT_EQ(3000000U, stack.media_duration());
 
     stack.close();
     EXPECT_EQ(2U, layer.close.calls());
