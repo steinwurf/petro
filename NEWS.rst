@@ -6,6 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+6.0.0
+-----
 * Major: Removed the ambiguous ``timestamp`` function from extractors.
 * Minor: Added the ``media_duration`` function in ``timestamp_extractor_layer``.
 * Minor: Use the total media duration as a loop offset for decoding and
