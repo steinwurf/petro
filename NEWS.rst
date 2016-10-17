@@ -6,7 +6,7 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Minor: Changed `aac_sample_extractor` to use the pimpl pattern.
 
 6.0.0
 -----
