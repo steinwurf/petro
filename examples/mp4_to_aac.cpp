@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include <string>
 
 #include <petro/extractor/aac_sample_extractor.hpp>
