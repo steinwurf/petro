@@ -61,7 +61,7 @@ void test_h264_file(const std::string& h264_file, const std::string& mp4_file)
         while ((uint32_t)(sample_data - extractor.sample_data()) < sample_size)
         {
             uint32_t nalu_size = read_nalu_size(sample_data, nalu_length_size);
-            sample_data += extractor.nalu_length_size();
+            sample_data += nalu_length_size;
 
             check_sample(test_h264, sample_data, nalu_size);
             sample_data += nalu_size;
