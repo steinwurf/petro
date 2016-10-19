@@ -61,7 +61,6 @@ std::string avc_sample_extractor::file_path() const
     return m_impl->file_path();
 }
 
-/// Return the total media duration in microseconds
 uint64_t avc_sample_extractor::media_duration() const
 {
     assert(m_impl);
