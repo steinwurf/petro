@@ -115,3 +115,18 @@ TEST(test_sequence_parameter_set, width3840_height2160)
     EXPECT_EQ(3840U, sps.width());
     EXPECT_EQ(2160U, sps.height());
 }
+
+TEST(test_sequence_parameter_set, width560_height320)
+{
+    /// sps taken from test1.mp4
+    std::vector<uint8_t> data =
+        {
+            0x67, 0x42, 0xC0, 0x1E, 0xD9, 0x00, 0x8C, 0x29, 0xB0,
+            0x11, 0x00, 0x00, 0x03, 0x00, 0x01, 0x00, 0x00, 0x03,
+            0x00, 0x3C, 0x8F, 0x16, 0x2E, 0x48
+        };
+
+    petro::sequence_parameter_set sps(data.data(), data.size());
+    EXPECT_EQ(560U, sps.width());
+    EXPECT_EQ(320U, sps.height());
+}
