@@ -6,6 +6,14 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+7.0.0
+-----
+* Major: Upgrade to waf-tools 4
+* Major: Upgrade to boost 3
+* Minor: Upgrade to gtest 4
+* Minor: Upgrade to stub 6
 * Minor: Changed `aac_sample_extractor` to use the pimpl pattern.
 
 6.0.0
