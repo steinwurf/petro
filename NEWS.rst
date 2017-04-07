@@ -8,6 +8,10 @@ Latest
 ------
 * tbd
 
+7.1.0
+-----
+* Minor: Added missing functions to `aac_sample_extractor`.
+
 7.0.0
 -----
 * Major: Upgrade to waf-tools 4
