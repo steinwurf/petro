@@ -30,7 +30,6 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-
     // Create the aac output file
     std::ofstream aac_file(argv[2], std::ios::binary);
 

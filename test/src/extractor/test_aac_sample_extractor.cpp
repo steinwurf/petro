@@ -37,6 +37,10 @@ TEST(extractor_test_aac_sample_extractor, test_aac_file)
     EXPECT_TRUE(extractor.open());
     EXPECT_EQ(7U, extractor.adts_header_size());
 
+    EXPECT_EQ(2U, extractor.mpeg_audio_object_type());
+    EXPECT_EQ(3U, extractor.frequency_index());
+    EXPECT_EQ(2U, extractor.channel_configuration());
+
     std::vector<uint8_t> adts_header(extractor.adts_header_size());
 
     EXPECT_FALSE(extractor.at_end());

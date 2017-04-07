@@ -122,5 +122,24 @@ uint32_t aac_sample_extractor::adts_header_size() const
     assert(m_impl);
     return m_impl->adts_header_size();
 }
+
+uint8_t aac_sample_extractor::mpeg_audio_object_type() const
+{
+    assert(m_impl);
+    return m_impl->mpeg_audio_object_type();
+}
+
+uint32_t aac_sample_extractor::frequency_index() const
+{
+    assert(m_impl);
+    return m_impl->frequency_index();
+}
+
+uint8_t aac_sample_extractor::channel_configuration() const
+{
+    assert(m_impl);
+    return m_impl->channel_configuration();
+}
+
 }
 }

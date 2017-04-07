@@ -72,6 +72,15 @@ struct aac_sample_extractor
     /// Return the size of the adts header
     uint32_t adts_header_size() const;
 
+    /// Returns the MPEG audio object type
+    uint8_t mpeg_audio_object_type() const;
+
+    /// Returns the frequncy index
+    uint32_t frequency_index() const;
+
+    /// Returns the channel configuration
+    uint8_t channel_configuration() const;
+
 private:
 
     // Private implemenation
