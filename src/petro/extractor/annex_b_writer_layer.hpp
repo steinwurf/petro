@@ -20,7 +20,7 @@ class annex_b_writer_layer : public Super
 {
 public:
 
-    //( Opens this and the underlying layers.)
+    /// Opens this and the underlying layers.
     bool open()
     {
         if (!Super::open())
@@ -32,14 +32,14 @@ public:
         return true;
     }
 
-    //( Resets this and the underlying layers.
+    /// Resets this and the underlying layers.
     void reset()
     {
         Super::reset();
         update_state();
     }
 
-    //( Advances this and the underlying layers.
+    /// Advances this and the underlying layers.
     void advance()
     {
         Super::advance();
@@ -76,6 +76,21 @@ public:
         return size;
     }
 
+    uint32_t nalu_count() const
+    {
+        return m_avc_sample_access.nalu_count();
+    }
+
+    const uint8_t* nalu_at(uint32_t index) const
+    {
+        return m_avc_sample_access.nalu_at(index);
+    }
+
+    uint32_t nalu_size_at(uint32_t index) const
+    {
+        return m_avc_sample_access.nalu_size_at(index);
+    }
+
 private:
 
     /// Updates the state of this layer.
@@ -92,6 +107,7 @@ private:
 
 private:
 
+    /// @todo consider making avc_sample_access a seperate layer
     avc_sample_access m_avc_sample_access;
 };
 }
