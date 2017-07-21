@@ -6,7 +6,8 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Minor: Moved ``avc_sample_access`` to it's own layer called
+  ``avc_sample_access_layer``.
 
 7.1.0
 -----
