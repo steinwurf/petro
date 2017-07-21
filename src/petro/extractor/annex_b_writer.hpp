@@ -6,6 +6,7 @@
 #pragma once
 
 #include "annex_b_writer_layer.hpp"
+#include "avc_sample_access_layer.hpp"
 #include "avc_sample_extractor.hpp"
 #include "nalu_header_writer_layer.hpp"
 
@@ -17,6 +18,7 @@ namespace extractor
 using annex_b_writer =
     annex_b_writer_layer<
     nalu_header_writer_layer<
-    avc_sample_extractor>>;
+    avc_sample_access_layer<
+    avc_sample_extractor>>>;
 }
 }
