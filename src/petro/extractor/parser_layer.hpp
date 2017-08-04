@@ -91,7 +91,7 @@ public:
     }
 
     /// Return a shared pointer to the root box
-    std::shared_ptr<box::box> root() const
+    std::shared_ptr<box::base_box> root() const
     {
         assert(m_root != nullptr);
         return m_root;
@@ -99,7 +99,7 @@ public:
 
 private:
 
-    std::shared_ptr<box::box> m_root;
+    std::shared_ptr<box::base_box> m_root;
 
 };
 }

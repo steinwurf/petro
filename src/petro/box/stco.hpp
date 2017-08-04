@@ -31,10 +31,6 @@ public:
         full_box(data, size)
     { }
 
-    stco(std::weak_ptr<box> parent) :
-        full_box(stco::TYPE, parent)
-    { }
-
     void read(uint32_t size, byte_stream& bs)
     {
         full_box::read(size, bs);

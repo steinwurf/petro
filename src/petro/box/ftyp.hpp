@@ -31,10 +31,6 @@ public:
         box(data, size)
     { }
 
-    ftyp(std::weak_ptr<box> parent) :
-        box(ftyp::TYPE, parent)
-    { }
-
     void read(uint32_t size, byte_stream& bs)
     {
         box::read(size, bs);

@@ -24,8 +24,8 @@ public:
     static const std::string TYPE;
 
 public:
-    tref(std::weak_ptr<box> parent) :
-        box(tref::TYPE, parent)
+    tref(const uint8_t* data, uint64_t size) :
+        box(data, size)
     { }
 
     void read(uint32_t size, byte_stream& bs)

@@ -24,8 +24,8 @@ public:
     static const std::string TYPE;
 
 public:
-    sgpd(std::weak_ptr<box> parent) :
-        box(sgpd::TYPE, parent)
+    sgpd(const uint8_t* data, uint64_t size) :
+        box(data, size)
     { }
 
     void read(uint32_t size, byte_stream& bs)

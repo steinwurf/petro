@@ -24,8 +24,8 @@ public:
     static const std::string TYPE;
 
 public:
-    iinf(std::weak_ptr<box> parent) :
-        box(iinf::TYPE, parent)
+    iinf(const uint8_t* data, uint64_t size) :
+        box(data, size)
     { }
 
     void read(uint32_t size, byte_stream& bs)

@@ -29,10 +29,6 @@ public:
         full_box(data, size)
     { }
 
-    co64(std::weak_ptr<box> parent) :
-        full_box(co64::TYPE, parent)
-    { }
-
     void read(uint32_t size, byte_stream& bs)
     {
         full_box::read(size, bs);

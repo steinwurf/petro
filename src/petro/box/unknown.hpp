@@ -27,10 +27,6 @@ public:
         box(data, size)
     { }
 
-    unknown(const std::string& type, std::weak_ptr<box> parent) :
-        box(type, parent)
-    { }
-
     void read(uint32_t size, byte_stream& bs)
     {
         box::read(size, bs);

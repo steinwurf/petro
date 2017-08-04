@@ -24,9 +24,16 @@ public:
     static const std::string TYPE;
 
 public:
-    bxml(std::weak_ptr<box> parent);
 
-    void read(uint32_t size, byte_stream& bs);
+    bxml(const uint8_t* data, uint64_t size) :
+        box(data, size)
+    { }
+
+    void read(uint32_t size, byte_stream& bs)
+    {
+        box::read(size, bs);
+        bs.skip(m_remaining_bytes);
+    }
 };
 }
 }

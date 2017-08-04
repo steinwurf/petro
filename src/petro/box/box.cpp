@@ -10,14 +10,6 @@ namespace petro
 {
 namespace box
 {
-box::box(const std::string& type, std::weak_ptr<box> parent) :
-    m_type(type),
-    m_parent(parent),
-    m_size(0),
-    m_remaining_bytes(0),
-    m_bs((uint8_t*)&m_size, 1)
-{ }
-
 box::box(const uint8_t* data, uint64_t size) :
     m_bs(data, size)
 { }
@@ -158,86 +150,9 @@ uint64_t box::size() const
     return m_size;
 }
 
-const std::vector<std::shared_ptr<box>> box::children() const
-{
-    return m_children;
-}
-
-void box::add_child(std::shared_ptr<box> box)
-{
-    m_children.push_back(box);
-}
-
-void box::set_parent(std::weak_ptr<box> parent)
+void box::set_parent(std::weak_ptr<base_box> parent)
 {
     m_parent = parent;
-}
-
-std::shared_ptr<box> box::parent() const
-{
-    return m_parent.lock();
-}
-
-std::shared_ptr<box> box::get_parent(const std::string& type) const
-{
-    auto parent = m_parent.lock();
-    if (parent == nullptr || parent->type() == type)
-    {
-        return parent;
-    }
-    return parent->get_parent(type);
-}
-
-std::shared_ptr<const box> box::get_child(const std::string& type) const
-{
-    std::queue<std::shared_ptr<const box>> queue;
-    auto child = shared_from_this();
-    while (true)
-    {
-        for (auto c : child->m_children)
-        {
-            queue.push(c);
-        }
-
-        if (queue.empty())
-            break;
-
-        child = queue.front();
-        queue.pop();
-
-        if (child->m_type == type)
-        {
-            return child;
-        }
-    }
-    return nullptr;
-}
-
-std::vector<std::shared_ptr<const box>> box::get_children(
-    const std::string& type) const
-{
-    std::vector<std::shared_ptr<const box>> result;
-    std::queue<std::shared_ptr<const box>> queue;
-    auto child = shared_from_this();
-    while (true)
-    {
-        for (auto c : child->m_children)
-        {
-            queue.push(c);
-        }
-
-        if (queue.empty())
-            break;
-
-        child = queue.front();
-        queue.pop();
-
-        if (child->m_type == type)
-        {
-            result.push_back(child);
-        }
-    }
-    return result;
 }
 
 std::string box::describe() const

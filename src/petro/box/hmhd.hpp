@@ -24,8 +24,8 @@ public:
     static const std::string TYPE;
 
 public:
-    hmhd(std::weak_ptr<box> parent) :
-        full_box(hmhd::TYPE, parent)
+    hmhd(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
     { }
 
     void read(uint32_t size, byte_stream& bs)

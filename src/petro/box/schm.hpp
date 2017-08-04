@@ -24,8 +24,8 @@ public:
     static const std::string TYPE;
 
 public:
-    schm(std::weak_ptr<box> parent) :
-        box(schm::TYPE, parent)
+    schm(const uint8_t* data, uint64_t size) :
+        box(data, size)
     { }
 
     void read(uint32_t size, byte_stream& bs)

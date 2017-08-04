@@ -25,8 +25,8 @@ public:
     static const std::string TYPE;
 
 public:
-    stss(std::weak_ptr<box> parent) :
-        full_box(stss::TYPE, parent)
+    stss(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
     { }
 
     void read(uint32_t size, byte_stream& bs)

@@ -30,10 +30,6 @@ public:
         box(data, size)
     { }
 
-    stbl(std::weak_ptr<box> parent) :
-        box(stbl::TYPE, parent)
-    { }
-
     void parse_box_content(std::error_code& error) override
     {
         assert(!error);

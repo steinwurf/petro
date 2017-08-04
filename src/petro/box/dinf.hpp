@@ -26,8 +26,8 @@ public:
     static const std::string TYPE;
 
 public:
-    dinf(std::weak_ptr<box> parent) :
-        box(dinf::TYPE, parent)
+    dinf(const uint8_t* data, uint64_t size) :
+        box(data, size)
     { }
 
     void read(uint32_t size, byte_stream& bs)

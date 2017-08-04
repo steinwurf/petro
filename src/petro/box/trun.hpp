@@ -24,8 +24,8 @@ public:
     static const std::string TYPE;
 
 public:
-    trun(std::weak_ptr<box> parent) :
-        box(trun::TYPE, parent)
+    trun(const uint8_t* data, uint64_t size) :
+        box(data, size)
     { }
 
     void read(uint32_t size, byte_stream& bs)

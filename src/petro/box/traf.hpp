@@ -26,8 +26,8 @@ public:
     static const std::string TYPE;
 
 public:
-    traf(std::weak_ptr<box> parent) :
-        box(traf::TYPE, parent)
+    traf(const uint8_t* data, uint64_t size) :
+        box(data, size)
     { }
 
     void read(uint32_t size, byte_stream& bs)

@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <string>
 
-#include "box.hpp"
+#include "base_box.hpp"
 #include "../byte_stream.hpp"
 
 namespace petro
@@ -17,21 +17,20 @@ namespace petro
 namespace box
 {
 /// root object
-class root : public box
+class root : public base_box
 {
 public:
 
-    root() :
-        box("root", std::weak_ptr<box>())
-    { }
-
-    /// hide box implementation
-    void read(uint32_t size, byte_stream& bs) override
+    std::string type() const
     {
-        (void) size;
-        (void) bs;
-        // root cannot be read.
-        assert(0);
+        return "root";
+    }
+
+    std::string describe() const
+    {
+        std::stringstream ss;
+        ss << type() << std::endl;
+        return ss.str();
     }
 };
 }

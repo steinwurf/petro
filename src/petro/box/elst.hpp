@@ -49,8 +49,8 @@ public:
     static const std::string TYPE;
 
 public:
-    elst(std::weak_ptr<box> parent) :
-        full_box(elst::TYPE, parent)
+    elst(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
     { }
 
     void read(uint32_t size, byte_stream& bs)

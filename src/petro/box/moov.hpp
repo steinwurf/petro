@@ -33,10 +33,6 @@ public:
         box(data, size)
     { }
 
-    moov(std::weak_ptr<box> parent) :
-        box(moov::TYPE, parent)
-    { }
-
     void parse_box_content(std::error_code& error) override
     {
         assert(!error);

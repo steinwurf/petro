@@ -32,10 +32,6 @@ public:
         full_box(data, size)
     { }
 
-    stsz(std::weak_ptr<box> parent) :
-        full_box(stsz::TYPE, parent)
-    { }
-
     void read(uint32_t size, byte_stream& bs)
     {
         full_box::read(size, bs);

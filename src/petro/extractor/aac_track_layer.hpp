@@ -75,7 +75,7 @@ public:
     }
 
     /// Returns a shared pointer to the AAC trak box.
-    std::shared_ptr<const box::box> trak() const
+    std::shared_ptr<const box::base_box> trak() const
     {
         assert(m_trak != nullptr);
         return m_trak;
@@ -101,7 +101,7 @@ public:
 
 private:
 
-    std::shared_ptr<const box::box> m_trak;
+    std::shared_ptr<const box::base_box> m_trak;
 
     uint8_t m_mpeg_audio_object_type = 0;
     uint32_t m_frequency_index = 0;

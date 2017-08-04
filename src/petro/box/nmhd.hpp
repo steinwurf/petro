@@ -24,8 +24,8 @@ public:
     static const std::string TYPE;
 
 public:
-    nmhd(std::weak_ptr<box> parent) :
-        full_box(nmhd::TYPE, parent)
+    nmhd(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
     { }
 
     void read(uint32_t size, byte_stream& bs)

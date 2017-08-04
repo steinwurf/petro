@@ -25,8 +25,8 @@ public:
     static const std::string TYPE;
 
 public:
-    stz2(std::weak_ptr<box> parent) :
-        full_box(stz2::TYPE, parent)
+    stz2(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
     { }
 
     void read(uint32_t size, byte_stream& bs)

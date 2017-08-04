@@ -24,8 +24,8 @@ public:
     static const std::string TYPE;
 
 public:
-    iloc(std::weak_ptr<box> parent) :
-        box(iloc::TYPE, parent)
+    iloc(const uint8_t* data, uint64_t size) :
+        box(data, size)
     { }
 
     void read(uint32_t size, byte_stream& bs)
