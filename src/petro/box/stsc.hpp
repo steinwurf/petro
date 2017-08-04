@@ -53,6 +53,11 @@ public:
     static const std::string TYPE;
 
 public:
+
+    stsc(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
+    { }
+
     stsc(std::weak_ptr<box> parent) :
         full_box(stsc::TYPE, parent)
     { }

@@ -26,6 +26,11 @@ public:
     static const std::string TYPE;
 
 public:
+
+    stco(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
+    { }
+
     stco(std::weak_ptr<box> parent) :
         full_box(stco::TYPE, parent)
     { }

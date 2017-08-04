@@ -148,13 +148,8 @@ int main(int argc, char* argv[])
         >>
     > parser;
 
-    petro::byte_stream bs((uint8_t*)mp4_file.data(), mp4_file.size());
-    auto root = parser.read(bs);
-
-    endian::stream_reader<endian::big_endian> stream((uint8_t*)mp4_file.data(), mp4_file.size());
     std::error_code error;
-
-    auto root3 = parser.read3((uint8_t*)mp4_file.data(), mp4_file.size(), std::make_shared<petro::box::root>(), error);
+    auto root = parser.parse((uint8_t*)mp4_file.data(), mp4_file.size(), std::make_shared<petro::box::root>(), error);
     assert(!error);
 
     for (auto box : root->children())

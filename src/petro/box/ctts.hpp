@@ -37,6 +37,11 @@ public:
     static const std::string TYPE;
 
 public:
+
+    ctts(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
+    { }
+
     ctts(std::weak_ptr<box> parent) :
         full_box(ctts::TYPE, parent)
     { }

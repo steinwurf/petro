@@ -71,9 +71,15 @@ public:
             >>
         > parser;
 
-        byte_stream bs(Super::data(), Super::data_size());
+        std::error_code error;
+        m_root = parser.parse(
+            Super::data(),
+            Super::data_size(),
+            std::make_shared<petro::box::root>(),
+            error);
+        if (error)
+            return false;
 
-        m_root = parser.read(bs);
         return true;
     }
 

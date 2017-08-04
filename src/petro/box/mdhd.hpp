@@ -25,6 +25,11 @@ public:
     static const std::string TYPE;
 
 public:
+
+    mdhd(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
+    { }
+
     mdhd(std::weak_ptr<box> parent) :
         full_box(mdhd::TYPE, parent)
     { }

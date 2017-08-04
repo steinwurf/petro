@@ -37,20 +37,11 @@ public:
         box(moov::TYPE, parent)
     { }
 
-    void read(uint32_t size, byte_stream& bs)
-    {
-        box::read(size, bs);
-        Parser p;
-        auto branched_bs = byte_stream(bs, m_remaining_bytes);
-        p.read(branched_bs, shared_from_this());
-        assert(branched_bs.remaining_bytes() == 0);
-    }
-
     void parse_box_content(std::error_code& error) override
     {
         assert(!error);
         Parser p;
-        p.read3(
+        p.parse(
             m_bs.remaining_data(),
             m_bs.remaining_size(),
             shared_from_this(), error);

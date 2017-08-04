@@ -26,17 +26,29 @@ public:
     static const std::string TYPE;
 
 public:
+
+    minf(const uint8_t* data, uint64_t size) :
+        box(data, size)
+    { }
+
     minf(std::weak_ptr<box> parent) :
         box(minf::TYPE, parent)
     { }
 
-    void read(uint32_t size, byte_stream& bs)
+    void parse_box_content(std::error_code& error) override
     {
-        box::read(size, bs);
+        assert(!error);
         Parser p;
-        auto branched_bs = byte_stream(bs, m_remaining_bytes);
-        p.read(branched_bs, shared_from_this());
-        assert(branched_bs.remaining_bytes() == 0);
+        p.parse(
+            m_bs.remaining_data(),
+            m_bs.remaining_size(),
+            shared_from_this(), error);
+        if (error)
+            return;
+
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
     }
 };
 

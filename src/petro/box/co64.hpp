@@ -24,6 +24,11 @@ public:
     static const std::string TYPE;
 
 public:
+
+    co64(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
+    { }
+
     co64(std::weak_ptr<box> parent) :
         full_box(co64::TYPE, parent)
     { }
