@@ -4,6 +4,7 @@
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
 #include "byte_stream.hpp"
+#include "helper.hpp"
 
 #include <cassert>
 #include <iostream>
@@ -113,73 +114,6 @@ uint64_t byte_stream::read_uint64_t()
         (uint64_t) read_uint8_t() << 16 |
         (uint64_t) read_uint8_t() << 8 |
         (uint64_t) read_uint8_t();
-}
-
-std::string byte_stream::read_type()
-{
-    assert(m_remaining_bytes >= 4);
-    char c1 = read_uint8_t();
-    char c2 = read_uint8_t();
-    char c3 = read_uint8_t();
-    char c4 = read_uint8_t();
-
-    return {c1, c2, c3, c4};
-}
-
-double byte_stream::read_fixed_point_1616()
-{
-    return ((double) read_uint32_t()) / (1 << 16);
-}
-
-
-double byte_stream::read_fixed_point_0230()
-{
-    return ((double) read_uint32_t()) / (1 << 30);
-}
-
-float byte_stream::read_fixed_point_88()
-{
-    return ((float) read_uint16_t()) / (1 << 8);
-}
-
-std::string byte_stream::read_iso639()
-{
-    uint16_t n = read_uint16_t();
-    char c1 = 0x60 + ((n & 0x7C00) >> 10);  // Mask is 0111 1100 0000 0000
-    char c2 = 0x60 + ((n & 0x03E0) >> 5);   // Mask is 0000 0011 1110 0000
-    char c3 = 0x60 + ((n & 0x001F));        // Mask is 0000 0000 0001 1111
-    return {c1, c2, c3};
-}
-
-std::string byte_stream::read_time32()
-{
-    return read_time(read_uint32_t());
-}
-
-std::string byte_stream::read_time64()
-{
-    return read_time(read_uint64_t());
-}
-
-std::string byte_stream::read_time(uint64_t total_time)
-{
-    // mp4 time  is the seconds since 00:00, Jan 1 1904 UTC
-    // time_t    is the seconds since 00:00, Jan 1 1970 UTC
-    // seconds between 01/01/1904 00:00:00 and 01/01/1970 00:00:00
-    uint64_t seconds_between_1904_and_1970 = 2082844800;
-
-    // handle the limited time representation of time_t.
-    if (total_time < seconds_between_1904_and_1970)
-    {
-        return "before 1970-01-01 00:00:00";
-    }
-
-    std::time_t t = total_time - seconds_between_1904_and_1970;
-    // Convert time_t to tm as UTC time
-    auto utc_time = std::gmtime(&t);
-    char buffer[20];
-    std::strftime(buffer, 20, "%F %T", utc_time);
-    return std::string(buffer);
 }
 
 uint64_t byte_stream::remaining_bytes() const

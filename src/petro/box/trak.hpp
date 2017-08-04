@@ -25,11 +25,16 @@ public:
     static const std::string TYPE;
 
 public:
+
+    trak(const uint8_t* data, uint64_t size) :
+        box(data, size)
+    { }
+
     trak(std::weak_ptr<box> parent) :
         box(trak::TYPE, parent)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void read(uint32_t size, byte_stream& bs)
     {
         box::read(size, bs);
         Parser p;

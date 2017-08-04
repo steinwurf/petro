@@ -30,7 +30,7 @@ public:
         box(sinf::TYPE, parent)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void read(uint32_t size, byte_stream& bs)
     {
         box::read(size, bs);
         Parser p;

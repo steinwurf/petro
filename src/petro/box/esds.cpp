@@ -21,7 +21,7 @@ esds::esds(std::weak_ptr<box> parent) :
     full_box(esds::TYPE, parent)
 { }
 
-void esds::read(uint64_t size, byte_stream& bs)
+void esds::read(uint32_t size, byte_stream& bs)
 {
     full_box::read(size, bs);
 

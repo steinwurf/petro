@@ -23,11 +23,15 @@ class unknown : public box
 {
 public:
 
+    unknown(const uint8_t* data, uint64_t size) :
+        box(data, size)
+    { }
+
     unknown(const std::string& type, std::weak_ptr<box> parent) :
         box(type, parent)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void read(uint32_t size, byte_stream& bs)
     {
         box::read(size, bs);
         bs.skip(m_remaining_bytes);

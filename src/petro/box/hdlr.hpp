@@ -10,6 +10,7 @@
 
 #include "full_box.hpp"
 #include "../byte_stream.hpp"
+#include "../helper.hpp"
 
 namespace petro
 {
@@ -28,14 +29,14 @@ public:
         full_box(hdlr::TYPE, parent)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void read(uint32_t size, byte_stream& bs)
     {
         full_box::read(size, bs);
         // predefined
         bs.skip(4);
         m_remaining_bytes -= 4;
 
-        m_handler_type = bs.read_type();
+        m_handler_type = helper::type(bs.read_uint32_t());
         m_remaining_bytes -= 4;
 
         // reserved

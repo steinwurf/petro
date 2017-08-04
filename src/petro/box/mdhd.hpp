@@ -10,6 +10,7 @@
 
 #include "full_box.hpp"
 #include "../byte_stream.hpp"
+#include "../helper.hpp"
 
 namespace petro
 {
@@ -28,28 +29,28 @@ public:
         full_box(mdhd::TYPE, parent)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void read(uint32_t size, byte_stream& bs)
     {
         full_box::read(size, bs);
         if (m_version == 1)
         {
-            m_creation_time = bs.read_time64();
-            m_modification_time = bs.read_time64();
+            m_creation_time = helper::time64(bs.read_uint64_t());
+            m_modification_time = helper::time64(bs.read_uint64_t());
             m_timescale = bs.read_uint32_t();
             m_duration = bs.read_uint64_t();
             m_remaining_bytes -= 28;
         }
         else // m_version == 0
         {
-            m_creation_time = bs.read_time32();
-            m_modification_time = bs.read_time32();
+            m_creation_time = helper::time32(bs.read_uint32_t());
+            m_modification_time = helper::time32(bs.read_uint32_t());
             m_timescale = bs.read_uint32_t();
             m_duration = bs.read_uint32_t();
             m_remaining_bytes -= 16;
         }
 
         // ISO-639-2/T language code
-        m_language = bs.read_iso639();
+        m_language = helper::iso639(bs.read_uint16_t());
         m_remaining_bytes -= 2;
 
         // pre_defined

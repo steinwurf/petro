@@ -4,6 +4,7 @@
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
 #include "box.hpp"
+#include "../helper.hpp"
 
 namespace petro
 {
@@ -13,10 +14,15 @@ box::box(const std::string& type, std::weak_ptr<box> parent) :
     m_type(type),
     m_parent(parent),
     m_size(0),
-    m_remaining_bytes(0)
+    m_remaining_bytes(0),
+    m_bs((uint8_t*)&m_size, 1)
 { }
 
-void box::read(uint64_t size, byte_stream& bs)
+box::box(const uint8_t* data, uint64_t size) :
+    m_bs(data, size)
+{ }
+
+void box::read(uint32_t size, byte_stream& bs)
 {
     m_size = size;
 
@@ -62,6 +68,77 @@ void box::read(uint64_t size, byte_stream& bs)
     }
 }
 
+void box::parse(std::error_code& error)
+{
+    m_bs.seek(0, error);
+    if (error)
+        return;
+
+    // size is an integer that specifies the number of bytes in this
+    // box, including all its fields and contained boxes.
+    uint32_t first_size;
+    m_bs.read(first_size, error);
+    if (error)
+        return;
+
+    // type identifies the box type; standard boxes use a compact type,
+    // which is normally four printable characters,
+    // to permit ease of identification,
+    // and is shown so in the boxes below.
+    // User extensions use an extended type; in this case,
+    // the type field is set to "uuid".
+    uint32_t type_value;
+    m_bs.read(type_value, error);
+    if (error)
+        return;
+    m_type = helper::type(type_value);
+
+    uint64_t size = first_size;
+    if (first_size == 1)
+    {
+        // if size is 1 then the actual size is in the field
+        // largesize;
+        m_bs.read<uint64_t>(size, error);
+        if (error)
+            return;
+    }
+    else if (first_size == 0)
+    {
+        // if size is 0, the box's content extends to the end of buffer.
+        size = m_bs.size();
+    }
+
+    m_bs.resize(size);
+
+    if (m_type == "uuid")
+    {
+        std::string extended_type = "";
+        for (uint32_t i = 0; i < 16; ++i)
+        {
+            uint8_t c;
+            m_bs.read(c, error);
+            if (error)
+                return;
+
+            extended_type += c;
+        }
+
+        m_extended_type = extended_type;
+    }
+
+    parse_box_content(error);
+    if (error)
+        return;
+}
+
+void box::parse_box_content(std::error_code& error)
+{
+    assert(!error);
+    m_bs.skip(m_bs.remaining_size(), error);
+    if (error)
+        return;
+}
+
 std::string box::type() const
 {
     return m_type;
@@ -74,6 +151,10 @@ std::string box::extended_type() const
 
 uint64_t box::size() const
 {
+    if (m_bs.size() != 1)
+    {
+        return m_bs.size();
+    }
     return m_size;
 }
 
@@ -85,6 +166,11 @@ const std::vector<std::shared_ptr<box>> box::children() const
 void box::add_child(std::shared_ptr<box> box)
 {
     m_children.push_back(box);
+}
+
+void box::set_parent(std::weak_ptr<box> parent)
+{
+    m_parent = parent;
 }
 
 std::shared_ptr<box> box::parent() const
@@ -105,20 +191,23 @@ std::shared_ptr<box> box::get_parent(const std::string& type) const
 std::shared_ptr<const box> box::get_child(const std::string& type) const
 {
     std::queue<std::shared_ptr<const box>> queue;
-    queue.push(shared_from_this());
-    while (!queue.empty())
+    auto child = shared_from_this();
+    while (true)
     {
-        auto child = queue.front();
+        for (auto c : child->m_children)
+        {
+            queue.push(c);
+        }
+
+        if (queue.empty())
+            break;
+
+        child = queue.front();
         queue.pop();
 
         if (child->m_type == type)
         {
             return child;
-        }
-
-        for (auto c : child->m_children)
-        {
-            queue.push(c);
         }
     }
     return nullptr;
@@ -129,20 +218,23 @@ std::vector<std::shared_ptr<const box>> box::get_children(
 {
     std::vector<std::shared_ptr<const box>> result;
     std::queue<std::shared_ptr<const box>> queue;
-    queue.push(shared_from_this());
-    while (!queue.empty())
+    auto child = shared_from_this();
+    while (true)
     {
-        auto child = queue.front();
+        for (auto c : child->m_children)
+        {
+            queue.push(c);
+        }
+
+        if (queue.empty())
+            break;
+
+        child = queue.front();
         queue.pop();
 
         if (child->m_type == type)
         {
             result.push_back(child);
-        }
-
-        for (auto c : child->m_children)
-        {
-            queue.push(c);
         }
     }
     return result;

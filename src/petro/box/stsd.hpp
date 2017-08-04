@@ -35,7 +35,7 @@ public:
             box(format, parent)
         { }
 
-        void read(uint64_t size, byte_stream& bs)
+        void read(uint32_t size, byte_stream& bs)
         {
             box::read(size, bs);
             // reserved
@@ -73,7 +73,7 @@ public:
             sample_entry(coding_name, parent)
         { }
 
-        void read(uint64_t size, byte_stream& bs)
+        void read(uint32_t size, byte_stream& bs)
         {
             sample_entry::read(size, bs);
             // pre_defined
@@ -94,10 +94,10 @@ public:
             m_height = bs.read_uint16_t();
             m_remaining_bytes -= 2;
 
-            m_horizontal_resolution = bs.read_fixed_point_1616();
+            m_horizontal_resolution = helper::fixed_point_1616(bs.read_uint32_t());
             m_remaining_bytes -= 4;
 
-            m_vertical_resolution = bs.read_fixed_point_1616();
+            m_vertical_resolution = helper::fixed_point_1616(bs.read_uint32_t());
             m_remaining_bytes -= 4;
 
             // reserved
@@ -179,7 +179,7 @@ public:
             sample_entry(coding_name, parent)
         { }
 
-        void read(uint64_t size, byte_stream& bs)
+        void read(uint32_t size, byte_stream& bs)
         {
             sample_entry::read(size, bs);
             // reserved
@@ -199,7 +199,7 @@ public:
             m_remaining_bytes -= 2;
 
             // {timescale of media}<<16;
-            m_sample_rate = bs.read_fixed_point_1616();
+            m_sample_rate = helper::fixed_point_1616(bs.read_uint32_t());
             m_remaining_bytes -= 4;
 
             parser<esds> p;
@@ -245,7 +245,7 @@ public:
             sample_entry(protocol, parent)
         { }
 
-        void read(uint64_t size, byte_stream& bs)
+        void read(uint32_t size, byte_stream& bs)
         {
             sample_entry::read(size, bs);
             bs.skip(m_remaining_bytes);
@@ -273,7 +273,7 @@ public:
             sample_entry(format, parent)
         { }
 
-        void read(uint64_t size, byte_stream& bs)
+        void read(uint32_t size, byte_stream& bs)
         {
             sample_entry::read(size, bs);
             bs.skip(m_remaining_bytes);
@@ -289,7 +289,7 @@ public:
         full_box(stsd::TYPE, parent)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void read(uint32_t size, byte_stream& bs)
     {
         full_box::read(size, bs);
         m_entry_count = bs.read_uint32_t();
@@ -304,7 +304,7 @@ public:
         for (uint32_t i = 0; i < m_entry_count; ++i)
         {
             uint32_t entry_size = bs.read_uint32_t();
-            std::string entry_type = bs.read_type();
+            std::string entry_type = helper::type(bs.read_uint32_t());
 
             std::shared_ptr<sample_entry> entry = nullptr;
             if (hdlr != nullptr)

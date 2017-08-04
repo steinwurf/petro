@@ -28,7 +28,6 @@ namespace petro
 ///
 class bit_reader
 {
-
 public:
 
     bit_reader(const uint8_t* data, uint32_t size) :
@@ -37,7 +36,7 @@ public:
         m_bit_offset(0)
     { }
 
-    bit_reader(std::vector<uint8_t>& data) :
+    bit_reader(const std::vector<uint8_t>& data) :
         m_data(data.data()),
         m_bits(data.size() * 8),
         m_bit_offset(0)
@@ -86,7 +85,7 @@ public:
         return result;
     }
 
-    int64_t read_signed_exponential_golomb_code()
+    int32_t read_signed_exponential_golomb_code()
     {
         int64_t result = read_unsigned_exponential_golomb_code();
         if (result & 0x01)

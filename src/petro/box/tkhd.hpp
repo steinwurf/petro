@@ -29,18 +29,18 @@ public:
         full_box(tkhd::TYPE, parent)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void read(uint32_t size, byte_stream& bs)
     {
         full_box::read(size, bs);
 
-        m_track_enabled = (m_flags.m_data[2] & 0x01) != 0;
-        m_track_in_movie = (m_flags.m_data[2] & 0x02) != 0;
-        m_track_in_preview = (m_flags.m_data[2] & 0x04) != 0;
+        m_track_enabled = (m_flags[2] & 0x01) != 0;
+        m_track_in_movie = (m_flags[2] & 0x02) != 0;
+        m_track_in_preview = (m_flags[2] & 0x04) != 0;
 
         if (m_version == 1)
         {
-            m_creation_time = bs.read_time64();
-            m_modification_time = bs.read_time64();
+            m_creation_time = helper::time64(bs.read_uint64_t());
+            m_modification_time = helper::time64(bs.read_uint64_t());
             m_track_id = bs.read_uint32_t();
 
             // reserved
@@ -51,8 +51,8 @@ public:
         }
         else  // m_version == 0
         {
-            m_creation_time = bs.read_time32();
-            m_modification_time = bs.read_time32();
+            m_creation_time = helper::time32(bs.read_uint32_t());
+            m_modification_time = helper::time32(bs.read_uint32_t());
             m_track_id = bs.read_uint32_t();
 
             // reserved
@@ -71,7 +71,7 @@ public:
         m_alternate_group = bs.read_int16_t();
         m_remaining_bytes -= 2;
 
-        m_volume = bs.read_fixed_point_88();
+        m_volume = helper::fixed_point_88(bs.read_uint16_t());
         m_remaining_bytes -= 2;
 
         // reserved
@@ -81,10 +81,10 @@ public:
         m_matrix.read(bs);
         m_remaining_bytes -= 4 * 9;
 
-        m_width = bs.read_fixed_point_1616();
+        m_width = helper::fixed_point_1616(bs.read_uint32_t());
         m_remaining_bytes -= 4;
 
-        m_height = bs.read_fixed_point_1616();
+        m_height = helper::fixed_point_1616(bs.read_uint32_t());
         m_remaining_bytes -= 4;
         bs.skip(m_remaining_bytes);
     }

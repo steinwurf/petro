@@ -6,6 +6,7 @@
 #pragma once
 
 #include "byte_stream.hpp"
+#include "helper.hpp"
 
 namespace petro
 {
@@ -20,15 +21,15 @@ struct matrix
 {
     void read(byte_stream& bs)
     {
-        a = bs.read_fixed_point_1616();
-        b = bs.read_fixed_point_1616();
-        u = bs.read_fixed_point_0230();
-        c = bs.read_fixed_point_1616();
-        d = bs.read_fixed_point_1616();
-        v = bs.read_fixed_point_0230();
-        x = bs.read_fixed_point_1616();
-        y = bs.read_fixed_point_1616();
-        w = bs.read_fixed_point_0230();
+        a = helper::fixed_point_1616(bs.read_uint32_t());
+        b = helper::fixed_point_1616(bs.read_uint32_t());
+        u = helper::fixed_point_0230(bs.read_uint32_t());
+        c = helper::fixed_point_1616(bs.read_uint32_t());
+        d = helper::fixed_point_1616(bs.read_uint32_t());
+        v = helper::fixed_point_0230(bs.read_uint32_t());
+        x = helper::fixed_point_1616(bs.read_uint32_t());
+        y = helper::fixed_point_1616(bs.read_uint32_t());
+        w = helper::fixed_point_0230(bs.read_uint32_t());
         // read 9 * 4 (36) bytes
     }
 

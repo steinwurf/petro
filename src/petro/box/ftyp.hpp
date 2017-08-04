@@ -6,6 +6,7 @@
 #pragma once
 
 #include "../byte_stream.hpp"
+#include "../helper.hpp"
 #include "box.hpp"
 
 #include <cassert>
@@ -25,14 +26,19 @@ public:
     static const std::string TYPE;
 
 public:
+
+    ftyp(const uint8_t* data, uint64_t size) :
+        box(data, size)
+    { }
+
     ftyp(std::weak_ptr<box> parent) :
         box(ftyp::TYPE, parent)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void read(uint32_t size, byte_stream& bs)
     {
         box::read(size, bs);
-        m_major_brand = bs.read_type();
+        m_major_brand = helper::type(bs.read_uint32_t());
         m_remaining_bytes -= 4;
         m_minor_version = bs.read_uint32_t();
         m_remaining_bytes -= 4;
@@ -41,7 +47,7 @@ public:
 
         while (m_remaining_bytes != 0)
         {
-            m_compatible_brands.push_back(bs.read_type());
+            m_compatible_brands.push_back(helper::type(bs.read_uint32_t()));
             m_remaining_bytes -= 4;
         }
         assert(m_remaining_bytes == 0);

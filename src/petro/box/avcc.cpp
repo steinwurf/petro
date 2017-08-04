@@ -21,7 +21,7 @@ avcc::avcc(std::weak_ptr<box> parent) :
     box(avcc::TYPE, parent)
 { }
 
-void avcc::read(uint64_t size, byte_stream& bs)
+void avcc::read(uint32_t size, byte_stream& bs)
 {
     box::read(size, bs);
 

@@ -27,17 +27,22 @@ public:
     static const std::string TYPE;
 
 public:
+
+    mvhd(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
+    { }
+
     mvhd(std::weak_ptr<box> parent) :
         full_box(mvhd::TYPE, parent)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void read(uint32_t size, byte_stream& bs)
     {
         full_box::read(size, bs);
         if (m_version == 1)
         {
-            m_creation_time = bs.read_time64();
-            m_modification_time = bs.read_time64();
+            m_creation_time = helper::time64(bs.read_uint64_t());
+            m_modification_time = helper::time64(bs.read_uint64_t());
             m_timescale = bs.read_uint32_t();
             m_duration = bs.read_uint64_t();
             m_remaining_bytes -= 28;
@@ -45,16 +50,16 @@ public:
         else
         {
             assert(m_version == 0);
-            m_creation_time = bs.read_time32();
-            m_modification_time = bs.read_time32();
+            m_creation_time = helper::time32(bs.read_uint32_t());
+            m_modification_time = helper::time32(bs.read_uint32_t());
             m_timescale = bs.read_uint32_t();
             m_duration = bs.read_uint32_t();
             m_remaining_bytes -= 16;
         }
 
-        m_rate = bs.read_fixed_point_1616();
+        m_rate = helper::fixed_point_1616(bs.read_uint32_t());
         m_remaining_bytes -= 4;
-        m_volume = bs.read_fixed_point_88();
+        m_volume = helper::fixed_point_88(bs.read_uint16_t());
         m_remaining_bytes -= 2;
 
         // reserved

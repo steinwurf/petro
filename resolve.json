@@ -14,6 +14,13 @@
         "sources": ["github.com/steinwurf/boost.git"]
     },
     {
+        "name": "endian",
+        "resolver": "git",
+        "method": "semver",
+        "major": 4,
+        "sources": ["github.com/steinwurf/endian.git"]
+    },
+    {
         "name": "gtest",
         "internal": true,
         "resolver": "git",

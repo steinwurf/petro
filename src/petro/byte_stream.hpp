@@ -36,24 +36,10 @@ public:
     int64_t read_int64_t();
     uint64_t read_uint64_t();
 
-    std::string read_type();
-    double read_fixed_point_1616();
-    double read_fixed_point_0230();
-    float read_fixed_point_88();
-
-    std::string read_iso639();
-
-    std::string read_time32();
-    std::string read_time64();
-
     uint64_t remaining_bytes() const;
     const uint8_t* data() const;
     const uint8_t* data_offset() const;
     uint64_t offset() const;
-
-private:
-
-    std::string read_time(uint64_t total_time);
 
 private:
 

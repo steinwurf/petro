@@ -92,6 +92,14 @@ public:
                 }
             }
         }
+        else if (m_profile_idc == 183)
+        {
+            m_chroma_format_idc = 0;
+        }
+        else
+        {
+            m_chroma_format_idc = 1;
+        }
 
         m_log2_max_frame_num =
             bits.read_unsigned_exponential_golomb_code() + 4;

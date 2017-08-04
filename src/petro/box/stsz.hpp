@@ -31,7 +31,7 @@ public:
         full_box(stsz::TYPE, parent)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void read(uint32_t size, byte_stream& bs)
     {
         full_box::read(size, bs);
         m_sample_size = bs.read_uint32_t();
