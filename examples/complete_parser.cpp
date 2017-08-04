@@ -52,99 +52,99 @@ int main(int argc, char* argv[])
 
     petro::parser<
         petro::box::ftyp,
-        // petro::box::pdin,
+        petro::box::pdin,
         petro::box::moov<petro::parser<
-            petro::box::mvhd
-            // petro::box::trak<petro::parser<
-            //     petro::box::tkhd,
-            //     petro::box::tref,
-            //     petro::box::edts<petro::parser<
-            //         petro::box::elst
-            //     >>,
-            //     petro::box::mdia<petro::parser<
-            //         petro::box::mdhd,
-            //         petro::box::hdlr,
-            //         petro::box::minf<petro::parser<
-            //             petro::box::vmhd,
-            //             petro::box::smhd,
-            //             petro::box::hmhd,
-            //             petro::box::nmhd,
-            //             petro::box::dinf<petro::parser<
-            //                 petro::box::dref<petro::parser<
-            //                     petro::box::url,
-            //                     petro::box::urn
-            //                 >>
-            //             >>,
-            //             petro::box::stbl<petro::parser<
-            //                 petro::box::stsd,
-            //                 petro::box::stts,
-            //                 petro::box::ctts,
-            //                 petro::box::stsc,
-            //                 petro::box::stsz,
-            //                 petro::box::stz2,
-            //                 petro::box::stco,
-            //                 petro::box::co64,
-            //                 petro::box::stss,
-            //                 petro::box::stsh,
-            //                 petro::box::padb,
-            //                 petro::box::stdp,
-            //                 petro::box::sdtp,
-            //                 petro::box::sbgp,
-            //                 petro::box::sgpd,
-            //                 petro::box::subs
-            //             >>
-            //         >>,
-            //         petro::box::mdhd
-            //     >>
-            // >>,
-            // petro::box::mvex<petro::parser<
-            //     petro::box::mehd,
-            //     petro::box::trex
-            // >>,
-            // petro::box::ipmc,
-            // petro::box::udta<petro::parser<
-            //     petro::box::cprt
-            // >>
-        // >>,
-        // petro::box::moof<petro::parser<
-        //     petro::box::mfhd,
-        //     petro::box::traf<petro::parser<
-        //         petro::box::tfhd,
-        //         petro::box::trun,
-        //         petro::box::sdtp,
-        //         petro::box::sbgp,
-        //         petro::box::subs
-        //     >>
-        // >>,
-        // petro::box::mfra<petro::parser<
-        //     petro::box::tfra,
-        //     petro::box::mfro
-        // >>,
-        // petro::box::mdat,
-        // petro::box::free,
-        // petro::box::skip,
-        // petro::box::meta<petro::parser<
-        //     petro::box::hdlr,
-        //     petro::box::dinf<petro::parser<
-        //         petro::box::dref<petro::parser<
-        //             petro::box::url,
-        //             petro::box::urn
-        //         >>
-        //     >>,
-        //     petro::box::ipmc,
-        //     petro::box::iloc,
-        //     petro::box::ipro<petro::parser<
-        //         petro::box::sinf<petro::parser<
-        //             petro::box::frma,
-        //             petro::box::imif,
-        //             petro::box::schm,
-        //             petro::box::schi
-        //         >>
-        //     >>,
-        //     petro::box::iinf,
-        //     petro::box::xml,
-        //     petro::box::bxml,
-        //     petro::box::pitm
+            petro::box::mvhd,
+            petro::box::trak<petro::parser<
+                petro::box::tkhd,
+                petro::box::tref,
+                petro::box::edts<petro::parser<
+                    petro::box::elst
+                >>,
+                petro::box::mdia<petro::parser<
+                    petro::box::mdhd,
+                    petro::box::hdlr,
+                    petro::box::minf<petro::parser<
+                        petro::box::vmhd,
+                        petro::box::smhd,
+                        petro::box::hmhd,
+                        petro::box::nmhd,
+                        petro::box::dinf<petro::parser<
+                            petro::box::dref<petro::parser<
+                                petro::box::url,
+                                petro::box::urn
+                            >>
+                        >>,
+                        petro::box::stbl<petro::parser<
+                            petro::box::stsd,
+                            petro::box::stts,
+                            petro::box::ctts,
+                            petro::box::stsc,
+                            petro::box::stsz,
+                            petro::box::stz2,
+                            petro::box::stco,
+                            petro::box::co64,
+                            petro::box::stss,
+                            petro::box::stsh,
+                            petro::box::padb,
+                            petro::box::stdp,
+                            petro::box::sdtp,
+                            petro::box::sbgp,
+                            petro::box::sgpd,
+                            petro::box::subs
+                        >>
+                    >>,
+                    petro::box::mdhd
+                >>
+            >>,
+            petro::box::mvex<petro::parser<
+                petro::box::mehd,
+                petro::box::trex
+            >>,
+            petro::box::ipmc,
+            petro::box::udta<petro::parser<
+                petro::box::cprt
+            >>
+        >>,
+        petro::box::moof<petro::parser<
+            petro::box::mfhd,
+            petro::box::traf<petro::parser<
+                petro::box::tfhd,
+                petro::box::trun,
+                petro::box::sdtp,
+                petro::box::sbgp,
+                petro::box::subs
+            >>
+        >>,
+        petro::box::mfra<petro::parser<
+            petro::box::tfra,
+            petro::box::mfro
+        >>,
+        petro::box::mdat,
+        petro::box::free,
+        petro::box::skip,
+        petro::box::meta<petro::parser<
+            petro::box::hdlr,
+            petro::box::dinf<petro::parser<
+                petro::box::dref<petro::parser<
+                    petro::box::url,
+                    petro::box::urn
+                >>
+            >>,
+            petro::box::ipmc,
+            petro::box::iloc,
+            petro::box::ipro<petro::parser<
+                petro::box::sinf<petro::parser<
+                    petro::box::frma,
+                    petro::box::imif,
+                    petro::box::schm,
+                    petro::box::schi
+                >>
+            >>,
+            petro::box::iinf,
+            petro::box::xml,
+            petro::box::bxml,
+            petro::box::pitm
         >>
     > parser;
 

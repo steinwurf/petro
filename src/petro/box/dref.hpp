@@ -30,15 +30,23 @@ public:
         full_box(data, size)
     { }
 
-    void read(uint32_t size, byte_stream& bs)
+    void parse_full_box_content(std::error_code& error) override
     {
-        full_box::read(size, bs);
-        m_entry_count = bs.read_uint32_t();
-        m_remaining_bytes -= 4;
+        assert(!error);
+        m_bs.read(m_entry_count, error);
+        if (error)
+            return;
         Parser p;
         for (uint32_t i = 0; i < m_entry_count; ++i)
         {
-            p.parse(bs, shared_from_this());
+            auto box_size = p.parse_box(
+                m_bs.remaining_data(), m_bs.remaining_size(), shared_from_this(), error);
+            if (error)
+                return;
+
+            m_bs.skip(box_size, error);
+            if (error)
+                return;
         }
     }
 
