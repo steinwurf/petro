@@ -30,35 +30,35 @@ public:
         full_box(data, size)
     { }
 
-    void read(uint32_t size, byte_stream& bs)
-    {
-        full_box::read(size, bs);
-        // predefined
-        bs.skip(4);
-        m_remaining_bytes -= 4;
+    // void read(uint32_t size, byte_stream& bs)
+    // {
+    //     full_box::read(size, bs);
+    //     // predefined
+    //     bs.skip(4);
+    //     m_remaining_bytes -= 4;
 
-        m_handler_type = helper::type(bs.read_uint32_t());
-        m_remaining_bytes -= 4;
+    //     m_handler_type = helper::type(bs.read_uint32_t());
+    //     m_remaining_bytes -= 4;
 
-        // reserved
-        bs.skip(4 * 3);
-        m_remaining_bytes -= 4 * 3;
+    //     // reserved
+    //     bs.skip(4 * 3);
+    //     m_remaining_bytes -= 4 * 3;
 
-        while (m_remaining_bytes != 0)
-        {
-            m_name += bs.read_uint8_t();
-            m_remaining_bytes -= 1;
-        }
-    }
+    //     while (m_remaining_bytes != 0)
+    //     {
+    //         m_name += bs.read_uint8_t();
+    //         m_remaining_bytes -= 1;
+    //     }
+    // }
 
-    virtual std::string describe() const
-    {
-        std::stringstream ss;
-        ss << full_box::describe() << std::endl;
-        ss << "  handler_type: " << m_handler_type << std::endl;
-        ss << "  name: " << m_name << std::endl;
-        return ss.str();
-    }
+    // virtual std::string describe() const
+    // {
+    //     std::stringstream ss;
+    //     ss << full_box::describe() << std::endl;
+    //     ss << "  handler_type: " << m_handler_type << std::endl;
+    //     ss << "  name: " << m_name << std::endl;
+    //     return ss.str();
+    // }
 
     std::string handler_type() const
     {

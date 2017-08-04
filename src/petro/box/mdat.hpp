@@ -27,19 +27,6 @@ public:
     mdat(const uint8_t* data, uint64_t size) :
         box(data, size)
     { }
-
-    void read(uint32_t size, byte_stream& bs)
-    {
-        box::read(size, bs);
-        bs.skip(m_remaining_bytes);
-    }
-
-    std::string describe() const
-    {
-        std::stringstream ss;
-        ss << box::describe() << std::endl;
-        return ss.str();
-    }
 };
 }
 }

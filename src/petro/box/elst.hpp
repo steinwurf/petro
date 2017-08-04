@@ -53,37 +53,68 @@ public:
         full_box(data, size)
     { }
 
-    void read(uint32_t size, byte_stream& bs)
+    void parse_full_box_content(std::error_code& error) override
     {
-        full_box::read(size, bs);
-        m_entry_count = bs.read_uint32_t();
-        m_remaining_bytes -= 4;
+        m_bs.read(m_entry_count, error);
+        if (error)
+            return;
+
         for (uint32_t i = 0; i < m_entry_count; ++i)
         {
-            uint64_t segment_duration;
-            int64_t media_time;
             if (m_version == 1)
             {
-                segment_duration = bs.read_uint64_t();
-                media_time = bs.read_int64_t();
-                m_remaining_bytes -= 16;
-            }
-            else // m_version == 0
-            {
-                segment_duration = bs.read_uint32_t();
-                media_time = bs.read_int32_t();
-                m_remaining_bytes -= 8;
-            }
-            m_entries.push_back(
+                uint64_t segment_duration;
+                m_bs.read(segment_duration, error);
+                if (error)
+                    return;
+                int64_t media_time;
+                m_bs.read(media_time, error);
+                if (error)
+                    return;
+                uint16_t media_rate_integer;
+                m_bs.read(media_rate_integer, error);
+                if (error)
+                    return;
+                uint16_t media_rate_fraction;
+                m_bs.read(media_rate_fraction, error);
+                if (error)
+                    return;
+                m_entries.push_back(
                 {
                     segment_duration,
                     media_time,
-                    bs.read_uint16_t(),  // media_rate_integer
-                    bs.read_uint16_t()
-                }); // media_rate_fraction
-            m_remaining_bytes -= 4;
+                    media_rate_integer,
+                    media_rate_fraction
+                });
+            }
+            else // m_version == 0
+            {
+                uint32_t segment_duration;
+                m_bs.read(segment_duration, error);
+                if (error)
+                    return;
+                int32_t media_time;
+                m_bs.read(media_time, error);
+                if (error)
+                    return;
+                uint16_t media_rate_integer;
+                m_bs.read(media_rate_integer, error);
+                if (error)
+                    return;
+                uint16_t media_rate_fraction;
+                m_bs.read(media_rate_fraction, error);
+                if (error)
+                    return;
+                m_entries.push_back(
+                {
+                    segment_duration,
+                    media_time,
+                    media_rate_integer,
+                    media_rate_fraction
+                });
+            }
         }
-        bs.skip(m_remaining_bytes);
+        m_bs.skip(m_bs.remaining_size());
     }
 
     virtual std::string describe() const

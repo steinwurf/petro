@@ -31,23 +31,28 @@ public:
         box(data, size)
     { }
 
-    void read(uint32_t size, byte_stream& bs)
+    void parse_box_content(std::error_code& error) override
     {
-        box::read(size, bs);
-        m_major_brand = helper::type(bs.read_uint32_t());
-        m_remaining_bytes -= 4;
-        m_minor_version = bs.read_uint32_t();
-        m_remaining_bytes -= 4;
+        uint32_t major_brand_value;
+        m_bs.read(major_brand_value, error);
+        if (error)
+            return;
+        m_major_brand = helper::type(major_brand_value);
+        m_bs.read(m_minor_version);
+        if (error)
+            return;
 
-        assert(m_remaining_bytes % 4 == 0);
-
-        while (m_remaining_bytes != 0)
+        while (m_bs.remaining_size() != 0)
         {
-            m_compatible_brands.push_back(helper::type(bs.read_uint32_t()));
-            m_remaining_bytes -= 4;
+            uint32_t compatible_brand_value;
+            m_bs.read(compatible_brand_value, error);
+            if (error)
+                return;
+
+            m_compatible_brands.push_back(helper::type(compatible_brand_value));
         }
-        assert(m_remaining_bytes == 0);
     }
+
     virtual std::string describe() const
     {
         std::stringstream ss;

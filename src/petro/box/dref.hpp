@@ -39,12 +39,16 @@ public:
         Parser p;
         for (uint32_t i = 0; i < m_entry_count; ++i)
         {
-            auto box_size = p.parse_box(
-                m_bs.remaining_data(), m_bs.remaining_size(), shared_from_this(), error);
+            auto box = p.parse_box(
+                m_bs.remaining_data(),
+                m_bs.remaining_size(),
+                error);
+            add_child(box);
+            box->set_parent(shared_from_this());
             if (error)
                 return;
 
-            m_bs.skip(box_size, error);
+            m_bs.skip(box->size(), error);
             if (error)
                 return;
         }

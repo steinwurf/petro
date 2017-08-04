@@ -14,52 +14,6 @@ box::box(const uint8_t* data, uint64_t size) :
     m_bs(data, size)
 { }
 
-void box::read(uint32_t size, byte_stream& bs)
-{
-    m_size = size;
-
-    if (m_size == 1)
-    {
-        // if size is 1 then the actual size is in the field
-        // largesize;
-        m_size = bs.read_uint64_t();
-        m_remaining_bytes = m_size;
-        m_remaining_bytes -= 8;
-    }
-    else if (m_size == 0)
-    {
-        // if size is 0, then this box is the last one in the file,
-        // and its contents extend to the end of the file
-        // (normally only used for a Media Data Box (mdat)).
-        // This will not work for nested boxes (lucky mdat is never
-        // nested)
-        m_size = bs.remaining_bytes();
-        m_remaining_bytes = m_size;
-    }
-    else
-    {
-        m_remaining_bytes = m_size;
-    }
-
-    // the size is included in size, so we need to accommodate
-    // for this.
-    m_remaining_bytes -= 4;
-
-    // the type is included in size, so we need to accommodate for
-    // this.
-    m_remaining_bytes -= 4;
-
-    if (m_type == "uuid")
-    {
-        assert(m_remaining_bytes >= 16);
-        for (uint32_t i = 0; i < 16; ++i)
-        {
-            m_extended_type += bs.read_uint8_t();
-        }
-        m_remaining_bytes -= 16;
-    }
-}
-
 void box::parse(std::error_code& error)
 {
     m_bs.seek(0, error);
@@ -143,11 +97,7 @@ std::string box::extended_type() const
 
 uint64_t box::size() const
 {
-    if (m_bs.size() != 1)
-    {
-        return m_bs.size();
-    }
-    return m_size;
+    return m_bs.size();
 }
 
 void box::set_parent(std::weak_ptr<base_box> parent)

@@ -28,24 +28,28 @@ public:
         full_box(data, size)
     { }
 
-    void read(uint32_t size, byte_stream& bs)
+    void parse_full_box_content(std::error_code& error) override
     {
-        full_box::read(size, bs);
-        m_graphics_mode = bs.read_uint16_t();
-        m_remaining_bytes -= 2;
+        m_bs.read(m_graphics_mode, error);
+        if (error)
+            return;
+        std::vector<uint16_t> op_color(3);
+        for (uint32_t i = 0; i < op_color.size(); ++i)
+        {
+            uint16_t value;
+            m_bs.read(value, error);
+            if (error)
+                return;
+            op_color[i] = value;
+        }
+        m_op_color = op_color;
 
-        m_op_color.push_back(bs.read_uint16_t());
-        m_remaining_bytes -= 2;
-        m_op_color.push_back(bs.read_uint16_t());
-        m_remaining_bytes -= 2;
-        m_op_color.push_back(bs.read_uint16_t());
-        m_remaining_bytes -= 2;
-
-        bs.skip(m_remaining_bytes);
+        m_bs.skip(m_bs.remaining_size());
     }
 
     virtual std::string describe() const
     {
+        assert(m_op_color.size() != 0);
         std::stringstream ss;
         ss << full_box::describe() << std::endl;
         ss << "  graphics_mode: " << m_graphics_mode << std::endl;

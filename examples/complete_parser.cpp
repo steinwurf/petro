@@ -16,6 +16,7 @@
 
 void print_box(std::shared_ptr<petro::box::base_box> b, uint32_t level = 0)
 {
+    assert(b != nullptr);
     std::stringstream ss(b->describe());
     std::string line;
     while (std::getline(ss, line))

@@ -29,70 +29,70 @@ public:
         full_box(data, size)
     { }
 
-    void read(uint32_t size, byte_stream& bs)
-    {
-        full_box::read(size, bs);
-        bs.skip(3);
-        m_remaining_bytes -= 3;
+    // void read(uint32_t size, byte_stream& bs)
+    // {
+    //     full_box::read(size, bs);
+    //     bs.skip(3);
+    //     m_remaining_bytes -= 3;
 
-        m_field_size = bs.read_uint8_t();
-        m_remaining_bytes -= 1;
+    //     m_field_size = bs.read_uint8_t();
+    //     m_remaining_bytes -= 1;
 
-        m_sample_count = bs.read_uint32_t();
-        m_remaining_bytes -= 4;
+    //     m_sample_count = bs.read_uint32_t();
+    //     m_remaining_bytes -= 4;
 
-        for (uint32_t i = 0; i < m_sample_count; ++i)
-        {
-            if (m_field_size == 4)
-            {
-                uint8_t data = bs.read_uint8_t();
-                m_entry_sizes.push_back(data & 0x0F);
-                m_entry_sizes.push_back(data & 0xF0);
-                m_remaining_bytes -= 1;
-                i += 1;
-            }
-            else if (m_field_size == 8)
-            {
-                m_entry_sizes.push_back(bs.read_uint8_t());
-                m_remaining_bytes -= 1;
-            }
-            else if (m_field_size == 16)
-            {
-                m_entry_sizes.push_back(bs.read_uint16_t());
-                m_remaining_bytes -= 2;
-            }
-            else
-            {
-                // illegal field size
-                assert(0);
-            }
-            m_entry_sizes.push_back(bs.read_uint32_t());
-            m_remaining_bytes -= 4;
-        }
-        bs.skip(m_remaining_bytes);
-    }
+    //     for (uint32_t i = 0; i < m_sample_count; ++i)
+    //     {
+    //         if (m_field_size == 4)
+    //         {
+    //             uint8_t data = bs.read_uint8_t();
+    //             m_entry_sizes.push_back(data & 0x0F);
+    //             m_entry_sizes.push_back(data & 0xF0);
+    //             m_remaining_bytes -= 1;
+    //             i += 1;
+    //         }
+    //         else if (m_field_size == 8)
+    //         {
+    //             m_entry_sizes.push_back(bs.read_uint8_t());
+    //             m_remaining_bytes -= 1;
+    //         }
+    //         else if (m_field_size == 16)
+    //         {
+    //             m_entry_sizes.push_back(bs.read_uint16_t());
+    //             m_remaining_bytes -= 2;
+    //         }
+    //         else
+    //         {
+    //             // illegal field size
+    //             assert(0);
+    //         }
+    //         m_entry_sizes.push_back(bs.read_uint32_t());
+    //         m_remaining_bytes -= 4;
+    //     }
+    //     bs.skip(m_remaining_bytes);
+    // }
 
-    virtual std::string describe() const
-    {
-        std::stringstream ss;
-        ss << full_box::describe() << std::endl;
-        ss << "  field_size: " << m_field_size << std::endl;
-        ss << "  sample_count: " << m_sample_count << std::endl;
-        ss << "  samples (size): ";
-        auto seperator = "";
-        uint32_t max_print = 5;
-        for (uint32_t i = 0;
-             i < std::min((uint32_t)m_entry_sizes.size(), max_print); ++i)
-        {
-            ss << seperator;
-            ss << "(" << m_entry_sizes[i] << ")";
-            seperator =  ", ";
-        }
-        if (m_entry_sizes.size() > max_print)
-            ss << "...";
-        ss << std::endl;
-        return ss.str();
-    }
+    // virtual std::string describe() const
+    // {
+    //     std::stringstream ss;
+    //     ss << full_box::describe() << std::endl;
+    //     ss << "  field_size: " << m_field_size << std::endl;
+    //     ss << "  sample_count: " << m_sample_count << std::endl;
+    //     ss << "  samples (size): ";
+    //     auto seperator = "";
+    //     uint32_t max_print = 5;
+    //     for (uint32_t i = 0;
+    //          i < std::min((uint32_t)m_entry_sizes.size(), max_print); ++i)
+    //     {
+    //         ss << seperator;
+    //         ss << "(" << m_entry_sizes[i] << ")";
+    //         seperator =  ", ";
+    //     }
+    //     if (m_entry_sizes.size() > max_print)
+    //         ss << "...";
+    //     ss << std::endl;
+    //     return ss.str();
+    // }
 
 private:
     /// an integer specifying the size in bits of the entries in the

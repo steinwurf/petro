@@ -27,12 +27,6 @@ public:
     nmhd(const uint8_t* data, uint64_t size) :
         full_box(data, size)
     { }
-
-    void read(uint32_t size, byte_stream& bs)
-    {
-        full_box::read(size, bs);
-        bs.skip(m_remaining_bytes);
-    }
 };
 }
 }

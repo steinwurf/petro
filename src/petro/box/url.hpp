@@ -28,23 +28,23 @@ public:
         full_box(data, size)
     { }
 
-    void read(uint32_t size, byte_stream& bs)
-    {
-        full_box::read(size, bs);
-        while (m_remaining_bytes != 0)
-        {
-            m_location += bs.read_uint8_t();
-            m_remaining_bytes -= 1;
-        }
-    }
+    // void read(uint32_t size, byte_stream& bs)
+    // {
+    //     full_box::read(size, bs);
+    //     while (m_remaining_bytes != 0)
+    //     {
+    //         m_location += bs.read_uint8_t();
+    //         m_remaining_bytes -= 1;
+    //     }
+    // }
 
-    virtual std::string describe() const
-    {
-        std::stringstream ss;
-        ss << full_box::describe() << std::endl;
-        ss << "  location: " << m_location << std::endl;
-        return ss.str();
-    }
+    // virtual std::string describe() const
+    // {
+    //     std::stringstream ss;
+    //     ss << full_box::describe() << std::endl;
+    //     ss << "  location: " << m_location << std::endl;
+    //     return ss.str();
+    // }
 
 private:
 

@@ -32,62 +32,62 @@ public:
         full_box(data, size)
     { }
 
-    void read(uint32_t size, byte_stream& bs)
-    {
-        full_box::read(size, bs);
-        if (m_version == 1)
-        {
-            m_creation_time = helper::time64(bs.read_uint64_t());
-            m_modification_time = helper::time64(bs.read_uint64_t());
-            m_timescale = bs.read_uint32_t();
-            m_duration = bs.read_uint64_t();
-            m_remaining_bytes -= 28;
-        }
-        else
-        {
-            assert(m_version == 0);
-            m_creation_time = helper::time32(bs.read_uint32_t());
-            m_modification_time = helper::time32(bs.read_uint32_t());
-            m_timescale = bs.read_uint32_t();
-            m_duration = bs.read_uint32_t();
-            m_remaining_bytes -= 16;
-        }
+    // void read(uint32_t size, byte_stream& bs)
+    // {
+    //     full_box::read(size, bs);
+    //     if (m_version == 1)
+    //     {
+    //         m_creation_time = helper::time64(bs.read_uint64_t());
+    //         m_modification_time = helper::time64(bs.read_uint64_t());
+    //         m_timescale = bs.read_uint32_t();
+    //         m_duration = bs.read_uint64_t();
+    //         m_remaining_bytes -= 28;
+    //     }
+    //     else
+    //     {
+    //         assert(m_version == 0);
+    //         m_creation_time = helper::time32(bs.read_uint32_t());
+    //         m_modification_time = helper::time32(bs.read_uint32_t());
+    //         m_timescale = bs.read_uint32_t();
+    //         m_duration = bs.read_uint32_t();
+    //         m_remaining_bytes -= 16;
+    //     }
 
-        m_rate = helper::fixed_point_1616(bs.read_uint32_t());
-        m_remaining_bytes -= 4;
-        m_volume = helper::fixed_point_88(bs.read_uint16_t());
-        m_remaining_bytes -= 2;
+    //     m_rate = helper::fixed_point_1616(bs.read_uint32_t());
+    //     m_remaining_bytes -= 4;
+    //     m_volume = helper::fixed_point_88(bs.read_uint16_t());
+    //     m_remaining_bytes -= 2;
 
-        // reserved
-        bs.skip(2 + 4 + 4);
-        m_remaining_bytes -= 2 + 4 + 4;
+    //     // reserved
+    //     bs.skip(2 + 4 + 4);
+    //     m_remaining_bytes -= 2 + 4 + 4;
 
-        m_matrix.read(bs);
-        m_remaining_bytes -= 4 * 9;
+    //     m_matrix.read(bs);
+    //     m_remaining_bytes -= 4 * 9;
 
-        // pre_defined
-        bs.skip(6 * 4);
-        m_remaining_bytes -= 6 * 4;
+    //     // pre_defined
+    //     bs.skip(6 * 4);
+    //     m_remaining_bytes -= 6 * 4;
 
-        m_next_track_id = bs.read_uint32_t();
-        m_remaining_bytes -= 4;
-        assert(m_remaining_bytes == 0);
-    }
+    //     m_next_track_id = bs.read_uint32_t();
+    //     m_remaining_bytes -= 4;
+    //     assert(m_remaining_bytes == 0);
+    // }
 
-    virtual std::string describe() const
-    {
-        std::stringstream ss;
-        ss << full_box::describe() << std::endl;
-        ss << "  creation_time: " << m_creation_time << std::endl;
-        ss << "  modification_time: " << m_modification_time << std::endl;
-        ss << "  time_scale: " << m_timescale << std::endl;
-        ss << "  duration: " << m_duration << std::endl;
-        ss << "  rate: " << m_rate << std::endl;
-        ss << "  volume: " << m_volume << std::endl;
-        ss << "  matrix: " << std::endl << m_matrix.describe();
-        ss << "  next_track_id: " << m_next_track_id << std::endl;
-        return ss.str();
-    }
+    // virtual std::string describe() const
+    // {
+    //     std::stringstream ss;
+    //     ss << full_box::describe() << std::endl;
+    //     ss << "  creation_time: " << m_creation_time << std::endl;
+    //     ss << "  modification_time: " << m_modification_time << std::endl;
+    //     ss << "  time_scale: " << m_timescale << std::endl;
+    //     ss << "  duration: " << m_duration << std::endl;
+    //     ss << "  rate: " << m_rate << std::endl;
+    //     ss << "  volume: " << m_volume << std::endl;
+    //     ss << "  matrix: " << std::endl << m_matrix.describe();
+    //     ss << "  next_track_id: " << m_next_track_id << std::endl;
+    //     return ss.str();
+    // }
 
     std::string creation_time() const
     {

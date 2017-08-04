@@ -24,18 +24,6 @@ public:
         box(data, size)
     { }
 
-    void read(uint32_t size, byte_stream& bs)
-    {
-        box::read(size, bs);
-        m_version = bs.read_uint8_t();
-        m_remaining_bytes -= 1;
-        // read 24 bytes
-        m_flags.push_back(bs.read_uint8_t());
-        m_flags.push_back(bs.read_uint8_t());
-        m_flags.push_back(bs.read_uint8_t());
-        m_remaining_bytes -= 3;
-    }
-
     void parse_box_content(std::error_code& error) override final
     {
         assert(!error);

@@ -27,12 +27,6 @@ public:
         box(data, size)
     { }
 
-    void read(uint32_t size, byte_stream& bs)
-    {
-        box::read(size, bs);
-        bs.skip(m_remaining_bytes);
-    }
-
     virtual std::string type() const
     {
         return m_type + "?";

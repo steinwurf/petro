@@ -29,23 +29,23 @@ public:
         full_box(data, size)
     { }
 
-    void read(uint32_t size, byte_stream& bs)
-    {
-        full_box::read(size, bs);
-        m_balance = helper::fixed_point_88(bs.read_uint16_t());
-        m_remaining_bytes -= 2;
-        bs.skip(2);
-        m_remaining_bytes -= 2;
-        bs.skip(m_remaining_bytes);
-    }
+    // void read(uint32_t size, byte_stream& bs)
+    // {
+    //     full_box::read(size, bs);
+    //     m_balance = helper::fixed_point_88(bs.read_uint16_t());
+    //     m_remaining_bytes -= 2;
+    //     bs.skip(2);
+    //     m_remaining_bytes -= 2;
+    //     bs.skip(m_remaining_bytes);
+    // }
 
-    virtual std::string describe() const
-    {
-        std::stringstream ss;
-        ss << full_box::describe() << std::endl;
-        ss << "  balance: " << m_balance << std::endl;
-        return ss.str();
-    }
+    // virtual std::string describe() const
+    // {
+    //     std::stringstream ss;
+    //     ss << full_box::describe() << std::endl;
+    //     ss << "  balance: " << m_balance << std::endl;
+    //     return ss.str();
+    // }
 
 private:
 

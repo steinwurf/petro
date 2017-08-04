@@ -35,23 +35,25 @@ public:
         uint64_t position = 0;
         while (position != size)
         {
-            auto box_size = parse_box(data + position, size - position, parent, error);
-            std::cout << "box size: " << box_size << std::endl;
+            auto box = parse_box(data + position, size - position, error);
             if (error)
                 return nullptr;
-            position += box_size;
+            position += box->size();
             if (position > size)
             {
                 error = std::make_error_code(std::errc::value_too_large);
                 return nullptr;
             }
+            auto p = parent.lock();
+            assert(p);
+            p->add_child(box);
+            box->set_parent(p);
         }
         return parent.lock();
     }
 
-    uint64_t parse_box(const uint8_t* data, uint64_t size,
-                std::weak_ptr<box::base_box> parent,
-                std::error_code& error)
+    std::shared_ptr<box::box> parse_box(
+        const uint8_t* data, uint64_t size, std::error_code& error)
     {
         assert(!error);
 
@@ -78,11 +80,7 @@ public:
             return 0;
 
         assert(box);
-        auto p = parent.lock();
-        assert(p);
-        p->add_child(box);
-        box->set_parent(p);
-        return box->size();
+        return box;
     }
 
 private:

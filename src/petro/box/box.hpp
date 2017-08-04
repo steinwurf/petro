@@ -29,8 +29,6 @@ public:
 
     box(const uint8_t* data, uint64_t size);
 
-    virtual void read(uint32_t size, byte_stream& bs);
-
     void parse(std::error_code& error);
 
     virtual void parse_box_content(std::error_code& error);
@@ -48,8 +46,6 @@ public:
 protected:
 
     std::string m_type;
-
-    uint64_t m_size;
 
     uint64_t m_remaining_bytes;
 

@@ -30,47 +30,47 @@ public:
         full_box(data, size)
     { }
 
-    void read(uint32_t size, byte_stream& bs)
-    {
-        full_box::read(size, bs);
-        if (m_version == 1)
-        {
-            m_creation_time = helper::time64(bs.read_uint64_t());
-            m_modification_time = helper::time64(bs.read_uint64_t());
-            m_timescale = bs.read_uint32_t();
-            m_duration = bs.read_uint64_t();
-            m_remaining_bytes -= 28;
-        }
-        else // m_version == 0
-        {
-            m_creation_time = helper::time32(bs.read_uint32_t());
-            m_modification_time = helper::time32(bs.read_uint32_t());
-            m_timescale = bs.read_uint32_t();
-            m_duration = bs.read_uint32_t();
-            m_remaining_bytes -= 16;
-        }
+    // void read(uint32_t size, byte_stream& bs)
+    // {
+    //     full_box::read(size, bs);
+    //     if (m_version == 1)
+    //     {
+    //         m_creation_time = helper::time64(bs.read_uint64_t());
+    //         m_modification_time = helper::time64(bs.read_uint64_t());
+    //         m_timescale = bs.read_uint32_t();
+    //         m_duration = bs.read_uint64_t();
+    //         m_remaining_bytes -= 28;
+    //     }
+    //     else // m_version == 0
+    //     {
+    //         m_creation_time = helper::time32(bs.read_uint32_t());
+    //         m_modification_time = helper::time32(bs.read_uint32_t());
+    //         m_timescale = bs.read_uint32_t();
+    //         m_duration = bs.read_uint32_t();
+    //         m_remaining_bytes -= 16;
+    //     }
 
-        // ISO-639-2/T language code
-        m_language = helper::iso639(bs.read_uint16_t());
-        m_remaining_bytes -= 2;
+    //     // ISO-639-2/T language code
+    //     m_language = helper::iso639(bs.read_uint16_t());
+    //     m_remaining_bytes -= 2;
 
-        // pre_defined
-        bs.skip(2);
-        m_remaining_bytes -= 2;
-        bs.skip(m_remaining_bytes);
-    }
+    //     // pre_defined
+    //     bs.skip(2);
+    //     m_remaining_bytes -= 2;
+    //     bs.skip(m_remaining_bytes);
+    // }
 
-    virtual std::string describe() const
-    {
-        std::stringstream ss;
-        ss << full_box::describe() << std::endl;
-        ss << "  creation_time: " << m_creation_time << std::endl;
-        ss << "  modification_time: " << m_modification_time << std::endl;
-        ss << "  time_scale: " << m_timescale << std::endl;
-        ss << "  duration: " << m_duration << std::endl;
-        ss << "  language: " << m_language << std::endl;
-        return ss.str();
-    }
+    // virtual std::string describe() const
+    // {
+    //     std::stringstream ss;
+    //     ss << full_box::describe() << std::endl;
+    //     ss << "  creation_time: " << m_creation_time << std::endl;
+    //     ss << "  modification_time: " << m_modification_time << std::endl;
+    //     ss << "  time_scale: " << m_timescale << std::endl;
+    //     ss << "  duration: " << m_duration << std::endl;
+    //     ss << "  language: " << m_language << std::endl;
+    //     return ss.str();
+    // }
 
     std::string creation_time() const
     {

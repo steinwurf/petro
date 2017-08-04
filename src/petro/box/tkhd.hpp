@@ -29,85 +29,85 @@ public:
         full_box(data, size)
     { }
 
-    void read(uint32_t size, byte_stream& bs)
-    {
-        full_box::read(size, bs);
+    // void read(uint32_t size, byte_stream& bs)
+    // {
+    //     full_box::read(size, bs);
 
-        m_track_enabled = (m_flags[2] & 0x01) != 0;
-        m_track_in_movie = (m_flags[2] & 0x02) != 0;
-        m_track_in_preview = (m_flags[2] & 0x04) != 0;
+    //     m_track_enabled = (m_flags[2] & 0x01) != 0;
+    //     m_track_in_movie = (m_flags[2] & 0x02) != 0;
+    //     m_track_in_preview = (m_flags[2] & 0x04) != 0;
 
-        if (m_version == 1)
-        {
-            m_creation_time = helper::time64(bs.read_uint64_t());
-            m_modification_time = helper::time64(bs.read_uint64_t());
-            m_track_id = bs.read_uint32_t();
+    //     if (m_version == 1)
+    //     {
+    //         m_creation_time = helper::time64(bs.read_uint64_t());
+    //         m_modification_time = helper::time64(bs.read_uint64_t());
+    //         m_track_id = bs.read_uint32_t();
 
-            // reserved
-            bs.skip(4);
+    //         // reserved
+    //         bs.skip(4);
 
-            m_duration = bs.read_uint64_t();
-            m_remaining_bytes -= 32;
-        }
-        else  // m_version == 0
-        {
-            m_creation_time = helper::time32(bs.read_uint32_t());
-            m_modification_time = helper::time32(bs.read_uint32_t());
-            m_track_id = bs.read_uint32_t();
+    //         m_duration = bs.read_uint64_t();
+    //         m_remaining_bytes -= 32;
+    //     }
+    //     else  // m_version == 0
+    //     {
+    //         m_creation_time = helper::time32(bs.read_uint32_t());
+    //         m_modification_time = helper::time32(bs.read_uint32_t());
+    //         m_track_id = bs.read_uint32_t();
 
-            // reserved
-            bs.skip(4);
+    //         // reserved
+    //         bs.skip(4);
 
-            m_duration = bs.read_uint32_t();
-            m_remaining_bytes -= 20;
-        }
-        // reserved
-        bs.skip(8);
-        m_remaining_bytes -= 8;
+    //         m_duration = bs.read_uint32_t();
+    //         m_remaining_bytes -= 20;
+    //     }
+    //     // reserved
+    //     bs.skip(8);
+    //     m_remaining_bytes -= 8;
 
-        m_layer = bs.read_int16_t();
-        m_remaining_bytes -= 2;
+    //     m_layer = bs.read_int16_t();
+    //     m_remaining_bytes -= 2;
 
-        m_alternate_group = bs.read_int16_t();
-        m_remaining_bytes -= 2;
+    //     m_alternate_group = bs.read_int16_t();
+    //     m_remaining_bytes -= 2;
 
-        m_volume = helper::fixed_point_88(bs.read_uint16_t());
-        m_remaining_bytes -= 2;
+    //     m_volume = helper::fixed_point_88(bs.read_uint16_t());
+    //     m_remaining_bytes -= 2;
 
-        // reserved
-        bs.skip(2);
-        m_remaining_bytes -= 2;
+    //     // reserved
+    //     bs.skip(2);
+    //     m_remaining_bytes -= 2;
 
-        m_matrix.read(bs);
-        m_remaining_bytes -= 4 * 9;
+    //     m_matrix.read(bs);
+    //     m_remaining_bytes -= 4 * 9;
 
-        m_width = helper::fixed_point_1616(bs.read_uint32_t());
-        m_remaining_bytes -= 4;
+    //     m_width = helper::fixed_point_1616(bs.read_uint32_t());
+    //     m_remaining_bytes -= 4;
 
-        m_height = helper::fixed_point_1616(bs.read_uint32_t());
-        m_remaining_bytes -= 4;
-        bs.skip(m_remaining_bytes);
-    }
+    //     m_height = helper::fixed_point_1616(bs.read_uint32_t());
+    //     m_remaining_bytes -= 4;
+    //     bs.skip(m_remaining_bytes);
+    // }
 
-    virtual std::string describe() const
-    {
-        std::stringstream ss;
-        ss << full_box::describe() << std::endl;
-        ss << "  track_enabled: " << m_track_enabled << std::endl;
-        ss << "  track_in_movie: " << m_track_in_movie << std::endl;
-        ss << "  track_in_preview: " << m_track_in_preview << std::endl;
-        ss << "  creation_time: " << m_creation_time << std::endl;
-        ss << "  modification_time: " << m_modification_time << std::endl;
-        ss << "  track_id: " << m_track_id << std::endl;
-        ss << "  duration: " << m_duration << std::endl;
-        ss << "  layer: " << m_layer << std::endl;
-        ss << "  alternate_group: " << m_alternate_group << std::endl;
-        ss << "  volume: " << m_volume << std::endl;
-        ss << "  matrix: " << std::endl << m_matrix.describe();
-        ss << "  width: " << m_width << std::endl;
-        ss << "  height: " << m_height << std::endl;
-        return ss.str();
-    }
+    // virtual std::string describe() const
+    // {
+    //     std::stringstream ss;
+    //     ss << full_box::describe() << std::endl;
+    //     ss << "  track_enabled: " << m_track_enabled << std::endl;
+    //     ss << "  track_in_movie: " << m_track_in_movie << std::endl;
+    //     ss << "  track_in_preview: " << m_track_in_preview << std::endl;
+    //     ss << "  creation_time: " << m_creation_time << std::endl;
+    //     ss << "  modification_time: " << m_modification_time << std::endl;
+    //     ss << "  track_id: " << m_track_id << std::endl;
+    //     ss << "  duration: " << m_duration << std::endl;
+    //     ss << "  layer: " << m_layer << std::endl;
+    //     ss << "  alternate_group: " << m_alternate_group << std::endl;
+    //     ss << "  volume: " << m_volume << std::endl;
+    //     ss << "  matrix: " << std::endl << m_matrix.describe();
+    //     ss << "  width: " << m_width << std::endl;
+    //     ss << "  height: " << m_height << std::endl;
+    //     return ss.str();
+    // }
 
     bool track_enabled() const
     {
