@@ -87,11 +87,13 @@ void box::parse_box_content(std::error_code& error)
 
 std::string box::type() const
 {
+    assert(!m_type.empty() && "Run parse before getting type");
     return m_type;
 }
 
 std::string box::extended_type() const
 {
+    assert(!m_extended_type.empty() && "Run parse before getting extended_type");
     return m_extended_type;
 }
 

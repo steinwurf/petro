@@ -47,8 +47,6 @@ protected:
 
     std::string m_type;
 
-    uint64_t m_remaining_bytes;
-
     std::string m_extended_type;
 
     endian::stream_reader<endian::big_endian> m_bs;

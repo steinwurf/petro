@@ -34,18 +34,23 @@ public:
         full_box(data, size)
     { }
 
-    // void read(uint32_t size, byte_stream& bs)
-    // {
-    //     full_box::read(size, bs);
+    void parse_full_box_content(std::error_code& error) override
+    {
+        assert(!error);
+        uint8_t elemetary_stream_descriptor_tag;
+        m_bs.read(elemetary_stream_descriptor_tag, error);
+        if (error)
+            return;
 
-    //     auto elemetary_stream_descriptor_tag = bs.read_uint8_t();
-    //     m_remaining_bytes -= 1;
+        /// @todo
+        // m_descriptor =
+        //     std::make_shared<descriptor::elemetary_stream_descriptor>(
+        //         bs, elemetary_stream_descriptor_tag);
 
-    //     m_descriptor =
-    //         std::make_shared<descriptor::elemetary_stream_descriptor>(
-    //             bs, elemetary_stream_descriptor_tag);
-    //     m_remaining_bytes -= m_descriptor->size();
-    // }
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
+    }
 
     // std::string describe() const
     // {
