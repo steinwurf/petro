@@ -40,6 +40,7 @@ public:
         void parse_box_content(std::error_code& error) override final
         {
             assert(!error);
+            std::cout << "parse_box_content" << std::endl;
 
             // reserved
             m_bs.skip(6, error);
@@ -77,7 +78,7 @@ public:
         /// to retrieve data associated with samples that use this sample
         /// description. Data references are stored in dref boxes. The index
         /// ranges from 1 to the number of data references.
-        uint32_t m_data_reference_index;
+        uint16_t m_data_reference_index;
     };
 
     class visual_sample_entry : public sample_entry
@@ -131,14 +132,9 @@ public:
             if (error)
                 return;
 
-            for (uint8_t i = 0; i < 32; ++i)
-            {
-                uint8_t c;
-                m_bs.read(c, error);
-                if (error)
-                    return;
-                m_compressor_name += c;
-            }
+            m_bs.read(m_compressor_name, 32, error);
+            if (error)
+                return;
 
             m_bs.read(m_depth, error);
             if (error)
@@ -341,119 +337,57 @@ public:
             error = std::make_error_code(std::errc::not_supported);
             return;
         }
-        // auto hdlr = mdia->get_child<petro::box::hdlr>();
-        // if (hdlr == nullptr)
-        // {
-        //     error = std::make_error_code(std::errc::not_supported);
-        //     return;
-        // }
+        auto hdlr = mdia->get_child<petro::box::hdlr>();
+        if (hdlr == nullptr)
+        {
+            error = std::make_error_code(std::errc::not_supported);
+            return;
+        }
 
 
-        // for (uint32_t i = 0; i < m_entry_count; ++i)
-        // {
-        //     // Skip the size, we are only interested in the type
-        //     m_bs.skip(4);
-        //     if (error)
-        //         return;
+        for (uint32_t i = 0; i < m_entry_count; ++i)
+        {
+            std::shared_ptr<sample_entry> entry = nullptr;
+            if (hdlr->handler_type() == "vide") // for video tracks
+            {
+                entry = std::make_shared<visual_sample_entry>(
+                        m_bs.remaining_data(),
+                        m_bs.remaining_size());
+            }
+            else if (hdlr->handler_type() == "soun") // for audio tracks
+            {
+                entry = std::make_shared<audio_sample_entry>(
+                        m_bs.remaining_data(),
+                        m_bs.remaining_size());
+            }
+            else if (hdlr->handler_type() == "hint")
+            {
+                entry = std::make_shared<hint_sample_entry>(
+                        m_bs.remaining_data(),
+                        m_bs.remaining_size());
+            }
+            else
+            {
+                entry = std::make_shared<sample_entry>(
+                        m_bs.remaining_data(),
+                        m_bs.remaining_size());
+            }
 
-        //     uint32_t entry_type_value;
-        //     m_bs.read(entry_type_value, error);
-        //     if (error)
-        //         return;
+            entry->set_parent(shared_from_this());
+            entry->parse(error);
+            if (error)
+                return;
 
-        //     auto entry_type = helper::type(entry_type_value);
-
-        //     std::shared_ptr<sample_entry> entry = nullptr;
-        //     if (hdlr->handler_type() == "vide") // for video tracks
-        //     {
-        //         entry = std::make_shared<visual_sample_entry>(
-        //                 m_bs.remaining_data(),
-        //                 m_bs.remaining_size());
-        //         entry->parse(error);
-        //     }
-        //     else if (hdlr->handler_type() == "soun") // for audio tracks
-        //     {
-        //         entry = std::make_shared<audio_sample_entry>(
-        //                 m_bs.remaining_data(),
-        //                 m_bs.remaining_size());
-        //         entry->parse(error);
-        //     }
-        //     else if (hdlr->handler_type() == "hint")
-        //     {
-        //         entry = std::make_shared<hint_sample_entry>(
-        //                 m_bs.remaining_data(),
-        //                 m_bs.remaining_size());
-        //         entry->parse(error);
-        //     }
-        //     else
-        //     {
-        //         error = std::make_error_code(std::errc::not_supported);
-        //     }
-
-        //     if (error)
-        //         return;
-
-        //     entry->set_parent(shared_from_this());
-
-        //     m_bs.skip(entry->size());
-        //     if (error)
-        //         return;
-        //     m_children.push_back(entry);
-        // }
+            m_bs.skip(entry->size(), error);
+            if (error)
+                return;
+            m_children.push_back(entry);
+        }
 
         m_bs.skip(m_bs.remaining_size(), error);
         if (error)
             return;
     }
-
-    // void read(uint32_t size, byte_stream& bs)
-    // {
-        // full_box::read(size, bs);
-        // m_entry_count = bs.read_uint32_t();
-        // m_remaining_bytes -= 4;
-
-        // // get handler to know which kind of sample we are reading.
-        // auto mdia = get_parent("mdia");
-        // assert(mdia != nullptr);
-        // auto hdlr = std::dynamic_pointer_cast<const petro::box::hdlr>(
-        //     mdia->get_child("hdlr"));
-
-        // for (uint32_t i = 0; i < m_entry_count; ++i)
-        // {
-        //     uint32_t entry_size = bs.read_uint32_t();
-        //     std::string entry_type = helper::type(bs.read_uint32_t());
-
-        //     std::shared_ptr<sample_entry> entry = nullptr;
-        //     if (hdlr != nullptr)
-        //     {
-        //         std::string handler_type = hdlr->handler_type();
-        //         if (handler_type == "vide") // for video tracks
-        //         {
-        //             entry = std::make_shared<visual_sample_entry>(entry_type, shared_from_this());
-        //             entry->read(entry_size, bs);
-        //         }
-        //         else if (handler_type == "soun") // for audio tracks
-        //         {
-        //             entry = std::make_shared<audio_sample_entry>(entry_type, shared_from_this());
-        //             entry->read(entry_size, bs);
-        //         }
-        //         else if (handler_type == "hint")
-        //         {
-        //             entry = std::make_shared<hint_sample_entry>(entry_type, shared_from_this());
-        //             entry->read(entry_size, bs);
-        //         }
-        //     }
-        //     if (!entry)
-        //     {
-        //         entry = std::make_shared<unknown_sample_entry>(entry_type, shared_from_this());
-        //         entry->read(entry_size, bs);
-        //     }
-
-        //     m_remaining_bytes -= entry->size();
-        //     m_children.push_back(entry);
-        // }
-        // bs.skip(m_remaining_bytes);
-    // }
 
     virtual std::string describe() const
     {

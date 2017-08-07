@@ -53,13 +53,17 @@ public:
         if (error)
             return;
 
-        m_bs.read(m_length_size_minus_one, error);
+        uint8_t length_size_minus_one_value;
+        m_bs.read(length_size_minus_one_value, error);
         if (error)
             return;
+        m_length_size_minus_one = length_size_minus_one_value & 0x03;
 
-        m_bs.read(m_num_of_sequence_parameter_sets, error);
+        uint8_t num_of_sequence_parameter_sets_value;
+        m_bs.read(num_of_sequence_parameter_sets_value, error);
         if (error)
             return;
+        m_num_of_sequence_parameter_sets = num_of_sequence_parameter_sets_value & 0x1F;
 
         for (uint8_t i = 0; i < m_num_of_sequence_parameter_sets; ++i)
         {
@@ -129,6 +133,8 @@ public:
             ss << "    " << sps->describe();
         }
 
+        ss << "  num_of_picture_parameter_sets: "
+           << (uint32_t) m_num_of_picture_parameter_sets << std::endl;
         ss << "  picture_parameter_sets:" << std::endl;
         for (const auto& pps : m_picture_parameter_sets)
         {

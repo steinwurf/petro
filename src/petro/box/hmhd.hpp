@@ -28,38 +28,45 @@ public:
         full_box(data, size)
     { }
 
-    // void read(uint32_t size, byte_stream& bs)
-    // {
-    //     full_box::read(size, bs);
-    //     m_max_pdu_size = bs.read_uint16_t();
-    //     m_remaining_bytes -= 2;
+    void parse_full_box_content(std::error_code& error) override
+    {
 
-    //     m_average_pdu_size = bs.read_uint16_t();
-    //     m_remaining_bytes -= 2;
+        m_bs.read(m_max_pdu_size, error);
+        if (error)
+            return;
 
-    //     m_max_bit_rate = bs.read_uint32_t();
-    //     m_remaining_bytes -= 4;
+        m_bs.read(m_average_pdu_size, error);
+        if (error)
+            return;
 
-    //     m_average_bit_rate = bs.read_uint32_t();
-    //     m_remaining_bytes -= 4;
+        m_bs.read(m_max_bit_rate, error);
+        if (error)
+            return;
 
-    //     // reserved
-    //     bs.skip(4);
-    //     m_remaining_bytes -= 4;
+        m_bs.read(m_average_bit_rate, error);
+        if (error)
+            return;
 
-    //     bs.skip(m_remaining_bytes);
-    // }
+        // reserved
+        m_bs.skip(4, error);
+        if (error)
+            return;
 
-    // virtual std::string describe() const
-    // {
-    //     std::stringstream ss;
-    //     ss << full_box::describe() << std::endl;
-    //     ss << "  max_pdu_size: " << m_max_pdu_size << std::endl;
-    //     ss << "  average_pdu_size: " << m_average_pdu_size << std::endl;
-    //     ss << "  max_bit_rate: " << m_max_bit_rate << std::endl;
-    //     ss << "  average_bit_rate: " << m_average_bit_rate << std::endl;
-    //     return ss.str();
-    // }
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
+    }
+
+    virtual std::string describe() const
+    {
+        std::stringstream ss;
+        ss << full_box::describe() << std::endl;
+        ss << "  max_pdu_size: " << m_max_pdu_size << std::endl;
+        ss << "  average_pdu_size: " << m_average_pdu_size << std::endl;
+        ss << "  max_bit_rate: " << m_max_bit_rate << std::endl;
+        ss << "  average_bit_rate: " << m_average_bit_rate << std::endl;
+        return ss.str();
+    }
 
 private:
 

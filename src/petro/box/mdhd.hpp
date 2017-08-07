@@ -29,47 +29,78 @@ public:
         full_box(data, size)
     { }
 
-    // void read(uint32_t size, byte_stream& bs)
-    // {
-    //     full_box::read(size, bs);
-    //     if (m_version == 1)
-    //     {
-    //         m_creation_time = helper::time64(bs.read_uint64_t());
-    //         m_modification_time = helper::time64(bs.read_uint64_t());
-    //         m_timescale = bs.read_uint32_t();
-    //         m_duration = bs.read_uint64_t();
-    //         m_remaining_bytes -= 28;
-    //     }
-    //     else // m_version == 0
-    //     {
-    //         m_creation_time = helper::time32(bs.read_uint32_t());
-    //         m_modification_time = helper::time32(bs.read_uint32_t());
-    //         m_timescale = bs.read_uint32_t();
-    //         m_duration = bs.read_uint32_t();
-    //         m_remaining_bytes -= 16;
-    //     }
+    void parse_full_box_content(std::error_code& error) override
+    {
+        if (m_version == 1)
+        {
+            m_bs.read_time64(m_creation_time, error);
+            if (error)
+                return;
 
-    //     // ISO-639-2/T language code
-    //     m_language = helper::iso639(bs.read_uint16_t());
-    //     m_remaining_bytes -= 2;
+            m_bs.read_time64(m_modification_time, error);
+            if (error)
+                return;
 
-    //     // pre_defined
-    //     bs.skip(2);
-    //     m_remaining_bytes -= 2;
-    //     bs.skip(m_remaining_bytes);
-    // }
+            m_bs.read(m_timescale, error);
+            if (error)
+                return;
 
-    // virtual std::string describe() const
-    // {
-    //     std::stringstream ss;
-    //     ss << full_box::describe() << std::endl;
-    //     ss << "  creation_time: " << m_creation_time << std::endl;
-    //     ss << "  modification_time: " << m_modification_time << std::endl;
-    //     ss << "  time_scale: " << m_timescale << std::endl;
-    //     ss << "  duration: " << m_duration << std::endl;
-    //     ss << "  language: " << m_language << std::endl;
-    //     return ss.str();
-    // }
+            m_bs.read(m_duration, error);
+            if (error)
+                return;
+        }
+        else if (m_version == 0)
+        {
+            m_bs.read_time32(m_creation_time, error);
+            if (error)
+                return;
+
+            m_bs.read_time32(m_modification_time, error);
+            if (error)
+                return;
+
+            m_bs.read(m_timescale, error);
+            if (error)
+                return;
+
+            uint32_t duration = 0;
+            m_bs.read<uint32_t>(duration, error);
+            if (error)
+                return;
+            m_duration = duration;
+        }
+        else
+        {
+            error = std::make_error_code(std::errc::value_too_large);
+            return;
+        }
+
+        // ISO-639-2/T language code
+        m_bs.read_iso639(m_language, error);
+        if (error)
+            return;
+
+        // pre_defined
+        m_bs.skip(2, error);
+        if (error)
+            return;
+
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
+    }
+
+    virtual std::string describe() const
+    {
+        std::stringstream ss;
+        ss << full_box::describe() << std::endl;
+        ss << "  creation_time: " << m_creation_time << std::endl;
+        ss << "  modification_time: " << m_modification_time << std::endl;
+        ss << "  time_scale: " << m_timescale << std::endl;
+        ss << "  duration: " << m_duration << std::endl;
+        ss << "  language: " << m_language << std::endl;
+        return ss.str();
+    }
 
     std::string creation_time() const
     {

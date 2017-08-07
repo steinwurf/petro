@@ -52,12 +52,12 @@ public:
             return;
     }
 
-    // std::string describe() const
-    // {
-    //     std::stringstream ss;
-    //     std::string indent = "  ";
+    std::string describe() const
+    {
+        std::stringstream ss;
+        std::string indent = "  ";
 
-    //     ss << full_box::describe() << std::endl;
+        ss << full_box::describe() << std::endl;
     //     ss << indent << "descriptor:" << std::endl;
 
     //     indent = "    ";
@@ -114,8 +114,8 @@ public:
     //        << (uint32_t)decoder_config_descriptor->channel_configuration()
     //        << std::endl;
 
-    //     return ss.str();
-    // }
+        return ss.str();
+    }
 
     esds::descriptor_type descriptor() const
     {

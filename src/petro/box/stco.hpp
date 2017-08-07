@@ -31,40 +31,46 @@ public:
         full_box(data, size)
     { }
 
-    // void read(uint32_t size, byte_stream& bs)
-    // {
-    //     full_box::read(size, bs);
-    //     m_entry_count = bs.read_uint32_t();
-    //     m_remaining_bytes -= 4;
-    //     for (uint32_t i = 0; i < m_entry_count; ++i)
-    //     {
-    //         m_entries.push_back(bs.read_uint32_t());
-    //         m_remaining_bytes -= 4;
-    //     }
-    //     bs.skip(m_remaining_bytes);
-    // }
+    void parse_full_box_content(std::error_code& error) override
+    {
+        m_bs.read(m_entry_count, error);
+        if (error)
+            return;
+        for (uint32_t i = 0; i < m_entry_count; ++i)
+        {
+            uint32_t chunk_offset = 0;
+            m_bs.read(chunk_offset, error);
+            if (error)
+                return;
+            m_entries.push_back(chunk_offset);
+        }
 
-    // virtual std::string describe() const
-    // {
-    //     std::stringstream ss;
-    //     ss << full_box::describe() << std::endl;
-    //     ss << "  entry_count: " << m_entry_count << std::endl;
-    //     ss << "  entries (chunk_offset): ";
-    //     auto seperator = "";
-    //     uint32_t max_print = 5;
-    //     for (uint32_t i = 0;
-    //          i < std::min((uint32_t)m_entries.size(), max_print); ++i)
-    //     {
-    //         auto entry = m_entries[i];
-    //         ss << seperator;
-    //         ss << "(" << entry << ")";
-    //         seperator =  ", ";
-    //     }
-    //     if (m_entries.size() > max_print)
-    //         ss << "...";
-    //     ss << std::endl;
-    //     return ss.str();
-    // }
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
+    }
+
+    virtual std::string describe() const
+    {
+        std::stringstream ss;
+        ss << full_box::describe() << std::endl;
+        ss << "  entry_count: " << m_entry_count << std::endl;
+        ss << "  entries (chunk_offset): ";
+        auto seperator = "";
+        uint32_t max_print = 5;
+        for (uint32_t i = 0;
+             i < std::min((uint32_t)m_entries.size(), max_print); ++i)
+        {
+            auto entry = m_entries[i];
+            ss << seperator;
+            ss << "(" << entry << ")";
+            seperator =  ", ";
+        }
+        if (m_entries.size() > max_print)
+            ss << "...";
+        ss << std::endl;
+        return ss.str();
+    }
 
     const std::vector<uint64_t>& entries() const
     {
