@@ -32,46 +32,57 @@ public:
         full_box(data, size)
     { }
 
-    // void read(uint32_t size, byte_stream& bs)
-    // {
-    //     full_box::read(size, bs);
-    //     m_sample_size = bs.read_uint32_t();
-    //     m_sample_count = bs.read_uint32_t();
-    //     m_remaining_bytes -= 4 * 2;
+    void parse_full_box_content(std::error_code& error) override
+    {
+        m_bs.read(m_sample_size, error);
+        if (error)
+            return;
 
-    //     if (m_sample_size == 0)
-    //     {
-    //         for (uint32_t i = 0; i < m_sample_count; ++i)
-    //         {
-    //             m_entries.push_back(bs.read_uint32_t());
-    //             m_remaining_bytes -= 4;
-    //         }
-    //     }
+        m_bs.read(m_sample_count, error);
+        if (error)
+            return;
 
-    //     bs.skip(m_remaining_bytes);
-    // }
+        if (m_sample_size == 0)
+        {
+            for (uint32_t i = 0; i < m_sample_count; ++i)
+            {
+                uint32_t entry_value;
+                m_bs.read(entry_value, error);
+                if (error)
+                    return;
+                m_entries.push_back(entry_value);
+            }
+        }
 
-    // virtual std::string describe() const
-    // {
-    //     std::stringstream ss;
-    //     ss << full_box::describe() << std::endl;
-    //     ss << "  sample_size: " << m_sample_size << std::endl;
-    //     ss << "  sample_count: " << m_sample_count << std::endl;
-    //     ss << "  entities (size):";
-    //     auto seperator = "";
-    //     uint32_t max_print = 5;
-    //     for (uint32_t i = 0;
-    //          i < std::min((uint32_t)m_entries.size(), max_print); ++i)
-    //     {
-    //         ss << seperator;
-    //         ss << "(" << m_entries[i] << ")";
-    //         seperator =  ", ";
-    //     }
-    //     if (m_entries.size() > max_print)
-    //         ss << "...";
-    //     ss << std::endl;
-    //     return ss.str();
-    // }
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
+    }
+
+    virtual std::string describe() const
+    {
+        std::stringstream ss;
+        ss << full_box::describe() << std::endl;
+        ss << "  sample_size: " << m_sample_size << std::endl;
+        ss << "  sample_count: " << m_sample_count << std::endl;
+        if (m_sample_size == 0)
+        {
+            ss << "  entities (size):";
+            auto seperator = "";
+            uint32_t max_print = 5;
+            for (uint32_t i = 0;
+                 i < std::min((uint32_t)m_entries.size(), max_print); ++i)
+            {
+                ss << seperator;
+                ss << "(" << m_entries[i] << ")";
+                seperator =  ", ";
+            }
+            if (m_entries.size() > max_print)
+                ss << "...";
+            ss << std::endl;
+        }
+        return ss.str();
+    }
 
     uint32_t sample_size(uint32_t sample_index) const
     {

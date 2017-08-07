@@ -42,9 +42,9 @@ public:
             auto box = p.parse_box(
                 m_bs.remaining_data(),
                 m_bs.remaining_size(),
+                shared_from_this(),
                 error);
-            add_child(box);
-            box->set_parent(shared_from_this());
+
             if (error)
                 return;
 

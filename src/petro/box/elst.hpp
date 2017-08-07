@@ -63,19 +63,19 @@ public:
         {
             if (m_version == 1)
             {
-                uint64_t segment_duration;
+                uint64_t segment_duration = 0;
                 m_bs.read(segment_duration, error);
                 if (error)
                     return;
-                int64_t media_time;
+                int64_t media_time = 0;
                 m_bs.read(media_time, error);
                 if (error)
                     return;
-                uint16_t media_rate_integer;
+                uint16_t media_rate_integer = 0;
                 m_bs.read(media_rate_integer, error);
                 if (error)
                     return;
-                uint16_t media_rate_fraction;
+                uint16_t media_rate_fraction = 0;
                 m_bs.read(media_rate_fraction, error);
                 if (error)
                     return;
@@ -89,19 +89,19 @@ public:
             }
             else // m_version == 0
             {
-                uint32_t segment_duration;
+                uint32_t segment_duration = 0;
                 m_bs.read(segment_duration, error);
                 if (error)
                     return;
-                int32_t media_time;
+                int32_t media_time = 0;
                 m_bs.read(media_time, error);
                 if (error)
                     return;
-                uint16_t media_rate_integer;
+                uint16_t media_rate_integer = 0;
                 m_bs.read(media_rate_integer, error);
                 if (error)
                     return;
-                uint16_t media_rate_fraction;
+                uint16_t media_rate_fraction = 0;
                 m_bs.read(media_rate_fraction, error);
                 if (error)
                     return;
@@ -114,7 +114,9 @@ public:
                 });
             }
         }
-        m_bs.skip(m_bs.remaining_size());
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
     }
 
     virtual std::string describe() const

@@ -10,7 +10,6 @@
 
 #include "full_box.hpp"
 #include "../byte_stream.hpp"
-#include "../helper.hpp"
 
 namespace petro
 {

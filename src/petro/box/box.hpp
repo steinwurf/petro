@@ -12,12 +12,10 @@
 #include <sstream>
 #include <queue>
 
-#include <endian/big_endian.hpp>
-#include <endian/stream_reader.hpp>
-
 #include "base_box.hpp"
 
-#include "../byte_stream.hpp"
+#include "../error.hpp"
+#include "../stream_error_code_wrapper.hpp"
 
 namespace petro
 {
@@ -43,13 +41,15 @@ public:
 
     virtual std::string describe() const;
 
+    virtual error box_error_code() const;
+
 protected:
 
     std::string m_type;
 
     std::string m_extended_type;
 
-    endian::stream_reader<endian::big_endian> m_bs;
+    stream_error_code_wrapper m_bs;
 };
 }
 }

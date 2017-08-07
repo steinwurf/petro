@@ -28,259 +28,295 @@ public:
 
 
 
-    // class sample_entry : public box
-    // {
+    class sample_entry : public box
+    {
 
-    // public:
+    public:
 
-    //     sample_entry(const std::string& format, std::weak_ptr<box> parent) :
-    //         box(format, parent)
-    //     { }
+        sample_entry(const uint8_t* data, uint64_t size) :
+            box(data, size)
+        { }
 
-    //     void read(uint32_t size, byte_stream& bs)
-    //     {
-    //         box::read(size, bs);
-    //         // reserved
-    //         bs.skip(6);
-    //         m_remaining_bytes -= 6;
+        void parse_box_content(std::error_code& error) override final
+        {
+            assert(!error);
 
-    //         m_data_reference_index = bs.read_uint16_t();
-    //         m_remaining_bytes -= 2;
-    //     }
+            // reserved
+            m_bs.skip(6, error);
+            if (error)
+                return;
 
-    //     virtual std::string describe() const
-    //     {
-    //         std::stringstream ss;
-    //         ss << box::describe() << std::endl;
-    //         ss << "  data_reference_index: " << m_data_reference_index;
-    //         return ss.str();
-    //     }
+            m_bs.read(m_data_reference_index, error);
+            if (error)
+                return;
 
-    // private:
+            parse_sample_entry(error);
+            if (error)
+                return;
+        }
 
-    //     /// an integer that contains the index of the data reference to use
-    //     /// to retrieve data associated with samples that use this sample
-    //     /// description. Data references are stored in dref boxes. The index
-    //     /// ranges from 1 to the number of data references.
-    //     uint32_t m_data_reference_index;
-    // };
+        virtual void parse_sample_entry(std::error_code& error)
+        {
+            assert(!error);
+            m_bs.skip(m_bs.remaining_size(), error);
+            if (error)
+                return;
+        }
 
-    // class visual_sample_entry : public sample_entry
-    // {
+        virtual std::string describe() const
+        {
+            std::stringstream ss;
+            ss << box::describe() << std::endl;
+            ss << "  data_reference_index: " << m_data_reference_index;
+            return ss.str();
+        }
 
-    // public:
+    private:
 
-    //     visual_sample_entry(const std::string& coding_name,
-    //                         std::weak_ptr<box> parent) :
-    //         sample_entry(coding_name, parent)
-    //     { }
+        /// an integer that contains the index of the data reference to use
+        /// to retrieve data associated with samples that use this sample
+        /// description. Data references are stored in dref boxes. The index
+        /// ranges from 1 to the number of data references.
+        uint32_t m_data_reference_index;
+    };
 
-    //     void read(uint32_t size, byte_stream& bs)
-    //     {
-    //         sample_entry::read(size, bs);
-    //         // pre_defined
-    //         bs.skip(2);
-    //         m_remaining_bytes -= 2;
+    class visual_sample_entry : public sample_entry
+    {
 
-    //         // reserved
-    //         bs.skip(2);
-    //         m_remaining_bytes -= 2;
+    public:
 
-    //         // pre_defined
-    //         bs.skip(4 * 3);
-    //         m_remaining_bytes -= 4 * 3;
+        visual_sample_entry(const uint8_t* data, uint64_t size) :
+            sample_entry(data, size)
+        { }
 
-    //         m_width = bs.read_uint16_t();
-    //         m_remaining_bytes -= 2;
+        void parse_sample_entry(std::error_code& error) override
+        {
+            // pre_defined
+            m_bs.skip(2, error);
+            if (error)
+                return;
 
-    //         m_height = bs.read_uint16_t();
-    //         m_remaining_bytes -= 2;
+            // reserved
+            m_bs.skip(2, error);
+            if (error)
+                return;
 
-    //         m_horizontal_resolution = helper::fixed_point_1616(bs.read_uint32_t());
-    //         m_remaining_bytes -= 4;
+            // pre_defined
+            m_bs.skip(4 * 3, error);
+            if (error)
+                return;
 
-    //         m_vertical_resolution = helper::fixed_point_1616(bs.read_uint32_t());
-    //         m_remaining_bytes -= 4;
+            m_bs.read(m_width, error);
+            if (error)
+                return;
 
-    //         // reserved
-    //         bs.skip(4);
-    //         m_remaining_bytes -= 4;
+            m_bs.read(m_height, error);
+            if (error)
+                return;
 
-    //         m_frame_count = bs.read_uint16_t();
-    //         m_remaining_bytes -= 2;
-    //         for (uint8_t i = 0; i < 32; ++i)
-    //         {
-    //             m_compressor_name += bs.read_uint8_t();
-    //             m_remaining_bytes -= 1;
-    //         }
+            m_bs.read_fixed_point_1616(m_horizontal_resolution, error);
+            if (error)
+                return;
 
-    //         m_depth = bs.read_uint16_t();
-    //         m_remaining_bytes -= 2;
+            m_bs.read_fixed_point_1616(m_vertical_resolution, error);
+            if (error)
+                return;
 
-    //         // pre_defined
-    //         bs.skip(2);
-    //         m_remaining_bytes -= 2;
+            // reserved
+            m_bs.skip(4, error);
+            if (error)
+                return;
 
-    //         parser<avcc> p;
-    //         auto branched_bs = byte_stream(bs, m_remaining_bytes);
-    //         p.read(branched_bs, shared_from_this());
-    //         assert(branched_bs.remaining_bytes() == 0);
-    //     }
+            m_bs.read(m_frame_count, error);
+            if (error)
+                return;
 
-    //     std::string describe() const
-    //     {
-    //         std::stringstream ss;
-    //         ss << sample_entry::describe() << std::endl;
-    //         ss << "  width: " << m_width << std::endl;
-    //         ss << "  height: " << m_height << std::endl;
-    //         ss << "  horizontal_resolution: " << m_horizontal_resolution
-    //            << std::endl;
-    //         ss << "  vertical_resolution: " << m_vertical_resolution
-    //            << std::endl;
-    //         ss << "  frame_count: " << m_frame_count << std::endl;
-    //         ss << "  compressor_name: " << m_compressor_name << std::endl;
-    //         ss << "  depth: " << m_depth;
-    //         return ss.str();
-    //     }
+            for (uint8_t i = 0; i < 32; ++i)
+            {
+                uint8_t c;
+                m_bs.read(c, error);
+                if (error)
+                    return;
+                m_compressor_name += c;
+            }
 
-    // private:
+            m_bs.read(m_depth, error);
+            if (error)
+                return;
 
-    //     /// are the maximum visual width and height of the stream described
-    //     /// by this sample description, in pixels
-    //     uint16_t m_width;
-    //     uint16_t m_height;
+            // pre_defined
+            m_bs.skip(2, error);
+            if (error)
+                return;
 
-    //     /// fields give the resolution of the image in pixels-per-inch, as a
-    //     /// fixed 16.16 number
-    //     double m_horizontal_resolution;
-    //     double m_vertical_resolution;
+            parser<avcc> p;
+            p.parse(
+                m_bs.remaining_data(),
+                m_bs.remaining_size(),
+                shared_from_this(), error);
+            if (error)
+                return;
 
-    //     /// how many frames of compressed video are stored in each sample.
-    //     /// The default is 1, for one frame per sample; it may be more than
-    //     /// 1 for multiple frames per sample
-    //     uint16_t m_frame_count;
+            m_bs.skip(m_bs.remaining_size(), error);
+            if (error)
+                return;
+        }
 
-    //     /// a name, for informative purposes. It is formatted in a fixed
-    //     /// 32-byte field, with the first byte set to the number of bytes
-    //     /// to be displayed, followed by that number of bytes of displayable
-    //     /// data, and then padding to complete 32 bytes total (including
-    //     /// the size byte). The field may be set to 0.
-    //     std::string m_compressor_name;
+        std::string describe() const
+        {
+            std::stringstream ss;
+            ss << sample_entry::describe() << std::endl;
+            ss << "  width: " << m_width << std::endl;
+            ss << "  height: " << m_height << std::endl;
+            ss << "  horizontal_resolution: " << m_horizontal_resolution
+               << std::endl;
+            ss << "  vertical_resolution: " << m_vertical_resolution
+               << std::endl;
+            ss << "  frame_count: " << m_frame_count << std::endl;
+            ss << "  compressor_name: " << m_compressor_name << std::endl;
+            ss << "  depth: " << m_depth;
+            return ss.str();
+        }
 
-    //     /// takes one of the following values
-    //     ///     0x0018 – images are in colour with no alpha
-    //     uint16_t m_depth;
-    // };
+    private:
 
-    // class audio_sample_entry : public sample_entry
-    // {
+        /// are the maximum visual width and height of the stream described
+        /// by this sample description, in pixels
+        uint16_t m_width;
+        uint16_t m_height;
 
-    // public:
+        /// fields give the resolution of the image in pixels-per-inch, as a
+        /// fixed 16.16 number
+        double m_horizontal_resolution;
+        double m_vertical_resolution;
 
-    //     audio_sample_entry(const std::string& coding_name, std::weak_ptr<box> parent) :
-    //         sample_entry(coding_name, parent)
-    //     { }
+        /// how many frames of compressed video are stored in each sample.
+        /// The default is 1, for one frame per sample; it may be more than
+        /// 1 for multiple frames per sample
+        uint16_t m_frame_count;
 
-    //     void read(uint32_t size, byte_stream& bs)
-    //     {
-    //         sample_entry::read(size, bs);
-    //         // reserved
-    //         bs.skip(4 * 2);
-    //         m_remaining_bytes -= 4 * 2;
+        /// a name, for informative purposes. It is formatted in a fixed
+        /// 32-byte field, with the first byte set to the number of bytes
+        /// to be displayed, followed by that number of bytes of displayable
+        /// data, and then padding to complete 32 bytes total (including
+        /// the size byte). The field may be set to 0.
+        std::string m_compressor_name;
 
-    //         m_channel_count = bs.read_uint16_t();
-    //         m_sample_size = bs.read_uint16_t();
-    //         m_remaining_bytes -= 4;
+        /// takes one of the following values
+        ///     0x0018 – images are in colour with no alpha
+        uint16_t m_depth;
+    };
 
-    //         // pre_defined
-    //         bs.skip(2);
-    //         m_remaining_bytes -= 2;
+    class audio_sample_entry : public sample_entry
+    {
 
-    //         // reserved
-    //         bs.skip(2);
-    //         m_remaining_bytes -= 2;
+    public:
 
-    //         // {timescale of media}<<16;
-    //         m_sample_rate = helper::fixed_point_1616(bs.read_uint32_t());
-    //         m_remaining_bytes -= 4;
+        audio_sample_entry(const uint8_t* data, uint64_t size) :
+            sample_entry(data, size)
+        { }
 
-    //         parser<esds> p;
-    //         auto branched_bs = byte_stream(bs, m_remaining_bytes);
-    //         p.read(branched_bs, shared_from_this());
-    //         assert(branched_bs.remaining_bytes() == 0);
-    //     }
+        void parse_sample_entry(std::error_code& error) override
+        {
+            // reserved
+            m_bs.skip(4 * 2, error);
+            if (error)
+                return;
 
-    //     std::string describe() const
-    //     {
-    //         std::stringstream ss;
-    //         ss << sample_entry::describe() << std::endl;
-    //         ss << "  channel_count: " << m_channel_count << std::endl;
-    //         ss << "  sample_size: " << m_sample_size << std::endl;
-    //         ss << "  sample_rate: " << m_sample_rate;
-    //         return ss.str();
-    //     }
+            m_bs.read(m_channel_count, error);
+            if (error)
+                return;
 
-    //     double sample_rate() const
-    //     {
-    //         return m_sample_rate;
-    //     }
+            m_bs.read(m_sample_size, error);
+            if (error)
+                return;
 
-    // private:
+            // pre_defined
+            m_bs.skip(2, error);
+            if (error)
+                return;
 
-    //     /// either 1 (mono) or 2 (stereo)
-    //     uint16_t m_channel_count;
+            // reserved
+            m_bs.skip(2, error);
+            if (error)
+                return;
 
-    //     /// sample size in bits
-    //     uint16_t m_sample_size;
+            // {timescale of media}<<16;
+            m_bs.read_fixed_point_1616(m_sample_rate, error);
+            if (error)
+                return;
 
-    //     /// the sampling rate expressed as a 16.16 fixed-point number
-    //     /// (hi.lo)
-    //     double m_sample_rate;
-    // };
+            parser<esds> p;
+            p.parse(
+                m_bs.remaining_data(),
+                m_bs.remaining_size(),
+                shared_from_this(), error);
+            if (error)
+                return;
 
-    // class hint_sample_entry : public sample_entry
-    // {
+            m_bs.skip(m_bs.remaining_size(), error);
+            if (error)
+                return;
+        }
 
-    // public:
+        std::string describe() const
+        {
+            std::stringstream ss;
+            ss << sample_entry::describe() << std::endl;
+            ss << "  channel_count: " << m_channel_count << std::endl;
+            ss << "  sample_size: " << m_sample_size << std::endl;
+            ss << "  sample_rate: " << m_sample_rate;
+            return ss.str();
+        }
 
-    //     hint_sample_entry(const std::string& protocol, std::weak_ptr<box> parent) :
-    //         sample_entry(protocol, parent)
-    //     { }
+        double sample_rate() const
+        {
+            return m_sample_rate;
+        }
 
-    //     void read(uint32_t size, byte_stream& bs)
-    //     {
-    //         sample_entry::read(size, bs);
-    //         bs.skip(m_remaining_bytes);
-    //     }
+    private:
 
-    //     std::string describe() const
-    //     {
-    //         std::stringstream ss;
-    //         ss << sample_entry::describe() << std::endl;
-    //         ss << "    data: " << (uint64_t)m_data << std::endl;
-    //         return ss.str();
-    //     }
+        /// either 1 (mono) or 2 (stereo)
+        uint16_t m_channel_count;
 
-    // private:
+        /// sample size in bits
+        uint16_t m_sample_size;
 
-    //     uint8_t* m_data = nullptr;
-    // };
+        /// the sampling rate expressed as a 16.16 fixed-point number
+        /// (hi.lo)
+        double m_sample_rate;
+    };
 
-    // class unknown_sample_entry : public sample_entry
-    // {
+    class hint_sample_entry : public sample_entry
+    {
 
-    // public:
+    public:
 
-    //     unknown_sample_entry(const std::string& format, std::weak_ptr<box> parent) :
-    //         sample_entry(format, parent)
-    //     { }
+        hint_sample_entry(const uint8_t* data, uint64_t size) :
+            sample_entry(data, size)
+        { }
 
-    //     void read(uint32_t size, byte_stream& bs)
-    //     {
-    //         sample_entry::read(size, bs);
-    //         bs.skip(m_remaining_bytes);
-    //     }
-    // };
+        void parse_sample_entry(std::error_code& error) override
+        {
+            m_data.resize(m_bs.remaining_size());
+            m_bs.read(m_data.data(), m_data.size(), error);
+            if (error)
+                return;
+        }
+
+        std::string describe() const
+        {
+            std::stringstream ss;
+            ss << sample_entry::describe() << std::endl;
+            ss << "    data: " << (uint64_t)m_data.data() << std::endl;
+            ss << "    data.size: " << m_data.size() << std::endl;
+            return ss.str();
+        }
+
+    private:
+
+        std::vector<uint8_t> m_data;
+    };
 
 public:
 
@@ -291,6 +327,84 @@ public:
     stsd(const uint8_t* data, uint64_t size) :
         full_box(data, size)
     { }
+
+    void parse_full_box_content(std::error_code& error) override
+    {
+        m_bs.read(m_entry_count, error);
+        if (error)
+            return;
+
+        // get handler to know which kind of sample we are reading.
+        auto mdia = get_parent("mdia");
+        if (mdia == nullptr)
+        {
+            error = std::make_error_code(std::errc::not_supported);
+            return;
+        }
+        // auto hdlr = mdia->get_child<petro::box::hdlr>();
+        // if (hdlr == nullptr)
+        // {
+        //     error = std::make_error_code(std::errc::not_supported);
+        //     return;
+        // }
+
+
+        // for (uint32_t i = 0; i < m_entry_count; ++i)
+        // {
+        //     // Skip the size, we are only interested in the type
+        //     m_bs.skip(4);
+        //     if (error)
+        //         return;
+
+        //     uint32_t entry_type_value;
+        //     m_bs.read(entry_type_value, error);
+        //     if (error)
+        //         return;
+
+        //     auto entry_type = helper::type(entry_type_value);
+
+        //     std::shared_ptr<sample_entry> entry = nullptr;
+        //     if (hdlr->handler_type() == "vide") // for video tracks
+        //     {
+        //         entry = std::make_shared<visual_sample_entry>(
+        //                 m_bs.remaining_data(),
+        //                 m_bs.remaining_size());
+        //         entry->parse(error);
+        //     }
+        //     else if (hdlr->handler_type() == "soun") // for audio tracks
+        //     {
+        //         entry = std::make_shared<audio_sample_entry>(
+        //                 m_bs.remaining_data(),
+        //                 m_bs.remaining_size());
+        //         entry->parse(error);
+        //     }
+        //     else if (hdlr->handler_type() == "hint")
+        //     {
+        //         entry = std::make_shared<hint_sample_entry>(
+        //                 m_bs.remaining_data(),
+        //                 m_bs.remaining_size());
+        //         entry->parse(error);
+        //     }
+        //     else
+        //     {
+        //         error = std::make_error_code(std::errc::not_supported);
+        //     }
+
+        //     if (error)
+        //         return;
+
+        //     entry->set_parent(shared_from_this());
+
+        //     m_bs.skip(entry->size());
+        //     if (error)
+        //         return;
+        //     m_children.push_back(entry);
+        // }
+
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
+    }
 
     // void read(uint32_t size, byte_stream& bs)
     // {

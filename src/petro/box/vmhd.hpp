@@ -44,7 +44,9 @@ public:
         }
         m_op_color = op_color;
 
-        m_bs.skip(m_bs.remaining_size());
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
     }
 
     virtual std::string describe() const

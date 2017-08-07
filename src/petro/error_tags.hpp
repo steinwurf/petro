@@ -4,6 +4,9 @@
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
 PETRO_ERROR_TAG(unused, "reserved since errors should never be zero.")
+PETRO_ERROR_TAG(invalid_read, "Invalid read.")
+PETRO_ERROR_TAG(invalid_box, "Unable to parse box.")
+PETRO_ERROR_TAG(invalid_full_box, "Unable to parse full box.")
 PETRO_ERROR_TAG(invalid_avcc_box, "Unable to read AVCC box")
 PETRO_ERROR_TAG(invalid_bxml_box, "Unable to read BXML box")
 PETRO_ERROR_TAG(invalid_co64_box, "Unable to read CO64 box")

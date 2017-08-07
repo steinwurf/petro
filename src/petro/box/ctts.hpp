@@ -50,8 +50,8 @@ public:
 
         for (uint32_t i = 0; i < m_entry_count; ++i)
         {
-            uint32_t sample_count;
-            uint32_t sample_offset;
+            uint32_t sample_count = 0;
+            uint32_t sample_offset = 0;
             m_bs.read(sample_count, error);
             if (error)
                 return;

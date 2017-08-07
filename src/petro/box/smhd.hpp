@@ -9,7 +9,6 @@
 #include <string>
 
 #include "full_box.hpp"
-#include "../helper.hpp"
 #include "../byte_stream.hpp"
 
 namespace petro
@@ -29,23 +28,27 @@ public:
         full_box(data, size)
     { }
 
-    // void read(uint32_t size, byte_stream& bs)
-    // {
-    //     full_box::read(size, bs);
-    //     m_balance = helper::fixed_point_88(bs.read_uint16_t());
-    //     m_remaining_bytes -= 2;
-    //     bs.skip(2);
-    //     m_remaining_bytes -= 2;
-    //     bs.skip(m_remaining_bytes);
-    // }
+    void parse_full_box_content(std::error_code& error) override
+    {
+        m_bs.read_fixed_point_88(m_balance, error);
+        if (error)
+            return;
+        m_bs.skip(2, error);
+        if (error)
+            return;
 
-    // virtual std::string describe() const
-    // {
-    //     std::stringstream ss;
-    //     ss << full_box::describe() << std::endl;
-    //     ss << "  balance: " << m_balance << std::endl;
-    //     return ss.str();
-    // }
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
+    }
+
+    virtual std::string describe() const
+    {
+        std::stringstream ss;
+        ss << full_box::describe() << std::endl;
+        ss << "  balance: " << m_balance << std::endl;
+        return ss.str();
+    }
 
 private:
 

@@ -59,6 +59,11 @@ public:
         return ss.str();
     }
 
+    error box_error_code() const override
+    {
+        return error::invalid_full_box;
+    }
+
 protected:
 
     uint8_t m_version;

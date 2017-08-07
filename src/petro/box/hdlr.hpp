@@ -10,7 +10,6 @@
 
 #include "full_box.hpp"
 #include "../byte_stream.hpp"
-#include "../helper.hpp"
 
 namespace petro
 {
@@ -39,11 +38,9 @@ public:
         if (error)
             return;
 
-        uint32_t handler_type_value;
-        m_bs.read(handler_type_value, error);
+        m_bs.read_type(m_handler_type, error);
         if (error)
             return;
-        m_handler_type = helper::type(handler_type_value);
 
         // reserved
         m_bs.skip(4U * 3U, error);

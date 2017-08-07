@@ -4,7 +4,6 @@
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
 #include "base_box.hpp"
-#include "../helper.hpp"
 
 namespace petro
 {
@@ -28,11 +27,16 @@ std::shared_ptr<base_box> base_box::parent() const
 
 std::shared_ptr<base_box> base_box::get_parent(const std::string& type) const
 {
+    std::cout << "get_parent " << type << std::endl;
     auto parent = m_parent.lock();
     if (parent == nullptr || parent->type() == type)
     {
+        if (parent == nullptr)
+            std::cout << "nullptr parent" << std::endl;
         return parent;
     }
+
+    std::cout << "found " << parent->type() << std::endl;
     return parent->get_parent(type);
 }
 

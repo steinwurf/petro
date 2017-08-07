@@ -18,33 +18,35 @@ namespace box
 /// url
 class url : public full_box
 {
-
 public:
 
     static const std::string TYPE;
 
 public:
+
     url(const uint8_t* data, uint64_t size) :
         full_box(data, size)
     { }
 
-    // void read(uint32_t size, byte_stream& bs)
-    // {
-    //     full_box::read(size, bs);
-    //     while (m_remaining_bytes != 0)
-    //     {
-    //         m_location += bs.read_uint8_t();
-    //         m_remaining_bytes -= 1;
-    //     }
-    // }
+    void parse_full_box_content(std::error_code& error) override
+    {
+        while (m_bs.remaining_size() != 0)
+        {
+            uint8_t c;
+            m_bs.read(c, error);
+            if (error)
+                return;
+            m_location += c;
+        }
+    }
 
-    // virtual std::string describe() const
-    // {
-    //     std::stringstream ss;
-    //     ss << full_box::describe() << std::endl;
-    //     ss << "  location: " << m_location << std::endl;
-    //     return ss.str();
-    // }
+    virtual std::string describe() const
+    {
+        std::stringstream ss;
+        ss << full_box::describe() << std::endl;
+        ss << "  location: " << m_location << std::endl;
+        return ss.str();
+    }
 
 private:
 

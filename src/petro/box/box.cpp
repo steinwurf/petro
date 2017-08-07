@@ -4,7 +4,6 @@
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
 #include "box.hpp"
-#include "../helper.hpp"
 
 namespace petro
 {
@@ -12,7 +11,9 @@ namespace box
 {
 box::box(const uint8_t* data, uint64_t size) :
     m_bs(data, size)
-{ }
+{
+    m_bs.set_error_code(petro::error::invalid_box);
+}
 
 void box::parse(std::error_code& error)
 {
@@ -22,7 +23,7 @@ void box::parse(std::error_code& error)
 
     // size is an integer that specifies the number of bytes in this
     // box, including all its fields and contained boxes.
-    uint32_t first_size;
+    uint32_t first_size = 0;
     m_bs.read(first_size, error);
     if (error)
         return;
@@ -33,13 +34,12 @@ void box::parse(std::error_code& error)
     // and is shown so in the boxes below.
     // User extensions use an extended type; in this case,
     // the type field is set to "uuid".
-    uint32_t type_value;
-    m_bs.read(type_value, error);
+    m_bs.read_type(m_type, error);
     if (error)
         return;
-    m_type = helper::type(type_value);
 
     uint64_t size = first_size;
+
     if (first_size == 1)
     {
         // if size is 1 then the actual size is in the field
@@ -54,24 +54,26 @@ void box::parse(std::error_code& error)
         size = m_bs.size();
     }
 
-    m_bs.resize(size);
+    if (size > m_bs.size())
+    {
+        error = std::make_error_code(std::errc::value_too_large);
+        return;
+    }
+    // "Resize" stream_reader
+    auto position = m_bs.position();
+    m_bs = stream_error_code_wrapper(m_bs.data(), size);
+    m_bs.seek(position, error);
+    if (error)
+        return;
 
     if (m_type == "uuid")
     {
-        std::string extended_type = "";
-        for (uint32_t i = 0; i < 16; ++i)
-        {
-            uint8_t c;
-            m_bs.read(c, error);
-            if (error)
-                return;
-
-            extended_type += c;
-        }
-
-        m_extended_type = extended_type;
+        m_bs.read(m_extended_type, 16, error);
+        if (error)
+            return;
     }
 
+    m_bs.set_error_code(box_error_code());
     parse_box_content(error);
     if (error)
         return;
@@ -105,6 +107,7 @@ uint64_t box::size() const
 void box::set_parent(std::weak_ptr<base_box> parent)
 {
     m_parent = parent;
+    std::cout << box::parent()->type() << " is parent of " << m_type << std::endl;
 }
 
 std::string box::describe() const
@@ -113,6 +116,11 @@ std::string box::describe() const
     ss << type() << std::endl;
     ss << "  size: " << size();
     return ss.str();
+}
+
+error box::box_error_code() const
+{
+    return error::invalid_box;
 }
 }
 }

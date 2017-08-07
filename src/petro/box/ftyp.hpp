@@ -6,7 +6,6 @@
 #pragma once
 
 #include "../byte_stream.hpp"
-#include "../helper.hpp"
 #include "box.hpp"
 
 #include <cassert>
@@ -33,23 +32,21 @@ public:
 
     void parse_box_content(std::error_code& error) override
     {
-        uint32_t major_brand_value;
-        m_bs.read(major_brand_value, error);
+        m_bs.read(m_major_brand, 4, error);
         if (error)
             return;
-        m_major_brand = helper::type(major_brand_value);
-        m_bs.read(m_minor_version);
+        m_bs.read(m_minor_version, error);
         if (error)
             return;
 
         while (m_bs.remaining_size() != 0)
         {
-            uint32_t compatible_brand_value;
-            m_bs.read(compatible_brand_value, error);
+            std::string compatible_brand;
+            m_bs.read(compatible_brand, 4, error);
             if (error)
                 return;
 
-            m_compatible_brands.push_back(helper::type(compatible_brand_value));
+            m_compatible_brands.push_back(compatible_brand);
         }
     }
 

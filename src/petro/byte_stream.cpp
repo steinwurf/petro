@@ -4,7 +4,6 @@
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
 #include "byte_stream.hpp"
-#include "helper.hpp"
 
 #include <cassert>
 #include <iostream>

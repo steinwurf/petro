@@ -5,8 +5,7 @@
 
 #pragma once
 
-#include "byte_stream.hpp"
-#include "helper.hpp"
+#include "stream_error_code_wrapper.hpp"
 
 namespace petro
 {
@@ -19,18 +18,43 @@ namespace petro
 ///
 struct matrix
 {
-    void read(byte_stream& bs)
+    void read(stream_error_code_wrapper& bs, std::error_code& error)
     {
-        a = helper::fixed_point_1616(bs.read_uint32_t());
-        b = helper::fixed_point_1616(bs.read_uint32_t());
-        u = helper::fixed_point_0230(bs.read_uint32_t());
-        c = helper::fixed_point_1616(bs.read_uint32_t());
-        d = helper::fixed_point_1616(bs.read_uint32_t());
-        v = helper::fixed_point_0230(bs.read_uint32_t());
-        x = helper::fixed_point_1616(bs.read_uint32_t());
-        y = helper::fixed_point_1616(bs.read_uint32_t());
-        w = helper::fixed_point_0230(bs.read_uint32_t());
-        // read 9 * 4 (36) bytes
+        bs.read_fixed_point_1616(a, error);
+        if (error)
+            return;
+
+        bs.read_fixed_point_1616(b, error);
+        if (error)
+            return;
+
+        bs.read_fixed_point_0230(u, error);
+        if (error)
+            return;
+
+        bs.read_fixed_point_1616(c, error);
+        if (error)
+            return;
+
+        bs.read_fixed_point_1616(d, error);
+        if (error)
+            return;
+
+        bs.read_fixed_point_0230(v, error);
+        if (error)
+            return;
+
+        bs.read_fixed_point_1616(x, error);
+        if (error)
+            return;
+
+        bs.read_fixed_point_1616(y, error);
+        if (error)
+            return;
+
+        bs.read_fixed_point_0230(w, error);
+        if (error)
+            return;
     }
 
     std::string describe() const
