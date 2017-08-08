@@ -18,45 +18,6 @@ namespace petro
 ///
 struct matrix
 {
-    void read(stream_error_code_wrapper& bs, std::error_code& error)
-    {
-        bs.read_fixed_point_1616(a, error);
-        if (error)
-            return;
-
-        bs.read_fixed_point_1616(b, error);
-        if (error)
-            return;
-
-        bs.read_fixed_point_0230(u, error);
-        if (error)
-            return;
-
-        bs.read_fixed_point_1616(c, error);
-        if (error)
-            return;
-
-        bs.read_fixed_point_1616(d, error);
-        if (error)
-            return;
-
-        bs.read_fixed_point_0230(v, error);
-        if (error)
-            return;
-
-        bs.read_fixed_point_1616(x, error);
-        if (error)
-            return;
-
-        bs.read_fixed_point_1616(y, error);
-        if (error)
-            return;
-
-        bs.read_fixed_point_0230(w, error);
-        if (error)
-            return;
-    }
-
     std::string describe() const
     {
         std::stringstream ss;

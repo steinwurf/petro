@@ -375,7 +375,7 @@ TEST(test_bit_reader, read_bits_8)
 
     petro::bit_reader bits(data.data(), data.size());
 
-    EXPECT_EQ(0U, bits.read_bit());    // 0
+    EXPECT_EQ(0U, bits.read_bit());     // 0
     EXPECT_EQ(1U, bits.read_bits(8));   // 000 0000 1
     EXPECT_EQ(255U, bits.read_bits(8)); // 111 1111 1
     EXPECT_EQ(224U, bits.read_bits(8)); // 111 0000 0

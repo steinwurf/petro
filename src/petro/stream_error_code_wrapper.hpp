@@ -18,6 +18,8 @@
 #include <endian/stream_reader.hpp>
 
 #include "error.hpp"
+#include "matrix.hpp"
+#include "descriptor/tag.hpp"
 
 namespace petro
 {
@@ -156,6 +158,55 @@ public:
         if (error)
             return;
         value = time(data);
+    }
+
+    void read(matrix& matrix, std::error_code& error)
+    {
+        read_fixed_point_1616(matrix.a, error);
+        if (error)
+            return;
+
+        read_fixed_point_1616(matrix.b, error);
+        if (error)
+            return;
+
+        read_fixed_point_0230(matrix.u, error);
+        if (error)
+            return;
+
+        read_fixed_point_1616(matrix.c, error);
+        if (error)
+            return;
+
+        read_fixed_point_1616(matrix.d, error);
+        if (error)
+            return;
+
+        read_fixed_point_0230(matrix.v, error);
+        if (error)
+            return;
+
+        read_fixed_point_1616(matrix.x, error);
+        if (error)
+            return;
+
+        read_fixed_point_1616(matrix.y, error);
+        if (error)
+            return;
+
+        read_fixed_point_0230(matrix.w, error);
+        if (error)
+            return;
+    }
+
+    void read(descriptor::tag& tag, std::error_code& error)
+    {
+        uint8_t tag_value = 0;
+        read(tag_value, error);
+        if (error)
+            return;
+
+        tag = descriptor::tag(tag_value);
     }
 
 private:

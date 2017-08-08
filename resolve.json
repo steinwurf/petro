@@ -21,6 +21,13 @@
         "sources": ["github.com/steinwurf/endian.git"]
     },
     {
+        "name": "bitter",
+        "resolver": "git",
+        "method": "semver",
+        "major": 2,
+        "sources": ["github.com/steinwurf/bitter.git"]
+    },
+    {
         "name": "gtest",
         "internal": true,
         "resolver": "git",

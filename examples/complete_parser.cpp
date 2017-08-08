@@ -43,6 +43,7 @@ int main(int argc, char* argv[])
         return 0;
     }
     auto filename = std::string(argv[1]);
+
     boost::iostreams::mapped_file_source mp4_file(filename);
 
     if (!mp4_file.is_open())
@@ -151,7 +152,12 @@ int main(int argc, char* argv[])
 
     std::error_code error;
     auto root = parser.parse((uint8_t*)mp4_file.data(), mp4_file.size(), std::make_shared<petro::box::root>(), error);
-    assert(!error);
+
+    if (error)
+    {
+        std::cerr << error.message() << std::endl;
+        return 1;
+    }
 
     for (auto box : root->children())
     {

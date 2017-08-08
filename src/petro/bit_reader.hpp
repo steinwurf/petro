@@ -65,7 +65,7 @@ public:
     uint32_t read_bits(uint32_t bits)
     {
         assert(bits <= 32);
-        uint8_t result = 0;
+        uint32_t result = 0;
         for (uint32_t i = 0; i < bits; i++)
         {
             result |= (read_next_bit() << (bits - i - 1));

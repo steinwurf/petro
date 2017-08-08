@@ -23,10 +23,7 @@ namespace box
 /// sample descriptions (codec types, initialization etc.)
 class stsd : public full_box
 {
-
 public:
-
-
 
     class sample_entry : public box
     {
@@ -40,7 +37,6 @@ public:
         void parse_box_content(std::error_code& error) override final
         {
             assert(!error);
-            std::cout << "parse_box_content" << std::endl;
 
             // reserved
             m_bs.skip(6, error);

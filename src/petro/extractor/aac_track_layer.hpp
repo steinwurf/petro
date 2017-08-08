@@ -56,7 +56,14 @@ public:
 
         m_trak = trak;
 
-        auto descriptor = esds->descriptor()->decoder_config_descriptor();
+        auto descriptor =
+            esds->descriptor()->
+                decoder_config_descriptor()->
+                    decoder_specific_info_descriptor();
+
+        if (descriptor == nullptr)
+            return false;
+
         m_mpeg_audio_object_type = descriptor->mpeg_audio_object_type();
         m_frequency_index = descriptor->frequency_index();
         m_channel_configuration = descriptor->channel_configuration();

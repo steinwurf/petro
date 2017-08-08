@@ -107,7 +107,6 @@ uint64_t box::size() const
 void box::set_parent(std::weak_ptr<base_box> parent)
 {
     m_parent = parent;
-    std::cout << box::parent()->type() << " is parent of " << m_type << std::endl;
 }
 
 std::string box::describe() const

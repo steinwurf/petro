@@ -105,7 +105,7 @@ public:
         if (error)
             return;
 
-        m_matrix.read(m_bs, error);
+        m_bs.read(m_matrix, error);
         if (error)
             return;
 

@@ -154,7 +154,6 @@ private:
     /// confined to being three lower-case letters, these values are
     /// strictly positive.
     std::string m_language;
-
 };
 }
 }
