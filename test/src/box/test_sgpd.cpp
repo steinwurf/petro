@@ -18,7 +18,7 @@ TEST(box_test_sgpd, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         's',  'g',  'p',  'd'
+        's', 'g', 'p', 'd'
     };
     auto sgpd_box = std::make_shared<petro::box::sgpd>(
         buffer.data(), buffer.size());

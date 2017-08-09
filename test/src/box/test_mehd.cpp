@@ -18,7 +18,7 @@ TEST(box_test_mehd, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         'm',  'e',  'h',  'd'
+        'm', 'e', 'h', 'd'
     };
     auto mehd_box = std::make_shared<petro::box::mehd>(
         buffer.data(), buffer.size());

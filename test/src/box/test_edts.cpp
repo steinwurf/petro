@@ -19,7 +19,7 @@ TEST(box_test_edts, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x10,
-         'e',  'd',  't',  's',
+        'e', 'd', 't', 's',
         0x00, 0x00, 0x00, 0x08,
         0x00, 0x00, 0x00, 0x00,
     };

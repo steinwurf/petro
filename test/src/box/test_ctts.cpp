@@ -18,7 +18,7 @@ TEST(box_test_ctts, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         'c',  't',  't',  's',
+        'c', 't', 't', 's',
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
     };

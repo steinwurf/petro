@@ -19,7 +19,7 @@ TEST(box_test_sinf, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x10,
-         's',  'i',  'n',  'f',
+        's', 'i', 'n', 'f',
         0x00, 0x00, 0x00, 0x08,
         0x00, 0x00, 0x00, 0x00,
     };

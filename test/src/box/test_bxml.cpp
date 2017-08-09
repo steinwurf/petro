@@ -18,7 +18,7 @@ TEST(box_test_bxml, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         'b',  'x',  'm',  'l'
+        'b', 'x', 'm', 'l'
     };
     auto bxml_box = std::make_shared<petro::box::bxml>(
         buffer.data(), buffer.size());

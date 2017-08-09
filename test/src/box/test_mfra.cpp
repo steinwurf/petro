@@ -19,7 +19,7 @@ TEST(box_test_mfra, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x10,
-         'm',  'f',  'r',  'a',
+        'm', 'f', 'r', 'a',
         0x00, 0x00, 0x00, 0x08,
         0x00, 0x00, 0x00, 0x00,
     };

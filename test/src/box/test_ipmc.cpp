@@ -18,7 +18,7 @@ TEST(box_test_ipmc, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         'i',  'p',  'm',  'c'
+        'i', 'p', 'm', 'c'
     };
     auto ipmc_box = std::make_shared<petro::box::ipmc>(
         buffer.data(), buffer.size());

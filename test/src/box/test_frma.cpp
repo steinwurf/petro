@@ -18,7 +18,7 @@ TEST(box_test_frma, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         'f',  'r',  'm',  'a'
+        'f', 'r', 'm', 'a'
     };
     auto frma_box = std::make_shared<petro::box::frma>(
         buffer.data(), buffer.size());

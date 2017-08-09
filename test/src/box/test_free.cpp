@@ -18,7 +18,7 @@ TEST(box_test_free, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         'f',  'r',  'e',  'e'
+        'f', 'r', 'e', 'e'
     };
     auto free_box = std::make_shared<petro::box::free>(
         buffer.data(), buffer.size());

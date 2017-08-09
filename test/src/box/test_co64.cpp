@@ -18,7 +18,7 @@ TEST(box_test_co64, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         'c',  'o',  '6',  '4',
+        'c', 'o', '6', '4',
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00
     };

@@ -33,7 +33,7 @@ TEST(box_test_fbtest, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         'f',  'b',  'o',  'x',
+        'f', 'b', 'o', 'x',
         0x00,
         0x00, 0x00, 0x00
     };

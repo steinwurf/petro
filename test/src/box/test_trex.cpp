@@ -18,7 +18,7 @@ TEST(box_test_trex, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         't',  'r',  'e',  'x'
+        't', 'r', 'e', 'x'
     };
     auto trex_box = std::make_shared<petro::box::trex>(
         buffer.data(), buffer.size());

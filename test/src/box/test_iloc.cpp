@@ -18,7 +18,7 @@ TEST(box_test_iloc, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         'i',  'l',  'o',  'c'
+        'i', 'l', 'o', 'c'
     };
     auto iloc_box = std::make_shared<petro::box::iloc>(
         buffer.data(), buffer.size());

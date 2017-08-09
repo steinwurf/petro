@@ -18,7 +18,7 @@ TEST(box_test_stsh, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         's',  't',  's',  'h'
+        's', 't', 's', 'h'
     };
     auto stsh_box = std::make_shared<petro::box::stsh>(
         buffer.data(), buffer.size());

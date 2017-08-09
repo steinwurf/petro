@@ -18,7 +18,7 @@ TEST(box_test_url, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         'u',  'r',  'l',  ' ',
+        'u', 'r', 'l', ' ',
         0x00, 0x00, 0x00, 0x00
     };
     auto url_box = std::make_shared<petro::box::url>(

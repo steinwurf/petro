@@ -18,7 +18,7 @@ TEST(box_test_stco, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         's',  't',  'c',  'o',
+        's', 't', 'c', 'o',
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00
     };

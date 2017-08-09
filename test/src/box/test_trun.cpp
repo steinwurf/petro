@@ -18,7 +18,7 @@ TEST(box_test_trun, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         't',  'r',  'u',  'n'
+        't', 'r', 'u', 'n'
     };
     auto trun_box = std::make_shared<petro::box::trun>(
         buffer.data(), buffer.size());

@@ -19,7 +19,7 @@ TEST(box_test_mdia, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x10,
-         'm',  'd',  'i',  'a',
+        'm', 'd', 'i', 'a',
         0x00, 0x00, 0x00, 0x08,
         0x00, 0x00, 0x00, 0x00,
     };

@@ -18,7 +18,7 @@ TEST(box_test_nmhd, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         'n',  'm',  'h',  'd',
+        'n', 'm', 'h', 'd',
         0x00, 0x00, 0x00, 0x00
     };
     auto nmhd_box = std::make_shared<petro::box::nmhd>(

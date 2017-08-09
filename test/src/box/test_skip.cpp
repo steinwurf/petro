@@ -18,7 +18,7 @@ TEST(box_test_skip, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         's',  'k',  'i',  'p'
+        's', 'k', 'i', 'p'
     };
     auto skip_box = std::make_shared<petro::box::skip>(
         buffer.data(), buffer.size());

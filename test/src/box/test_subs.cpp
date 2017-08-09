@@ -18,7 +18,7 @@ TEST(box_test_subs, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         's',  'u',  'b',  's'
+        's', 'u', 'b', 's'
     };
     auto subs_box = std::make_shared<petro::box::subs>(
         buffer.data(), buffer.size());

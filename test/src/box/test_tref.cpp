@@ -18,7 +18,7 @@ TEST(box_test_tref, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         't',  'r',  'e',  'f'
+        't', 'r', 'e', 'f'
     };
     auto tref_box = std::make_shared<petro::box::tref>(
         buffer.data(), buffer.size());

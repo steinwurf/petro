@@ -18,7 +18,7 @@ TEST(box_test_mfro, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         'm',  'f',  'r',  'o'
+        'm', 'f', 'r', 'o'
     };
     auto mfro_box = std::make_shared<petro::box::mfro>(
         buffer.data(), buffer.size());

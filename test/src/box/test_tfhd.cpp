@@ -18,7 +18,7 @@ TEST(box_test_tfhd, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         't',  'f',  'h',  'd'
+        't', 'f', 'h', 'd'
     };
     auto tfhd_box = std::make_shared<petro::box::tfhd>(
         buffer.data(), buffer.size());

@@ -18,7 +18,7 @@ TEST(box_test_stz2, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         's',  't',  'z',  '2',
+        's', 't', 'z', '2',
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00,
         0x00,

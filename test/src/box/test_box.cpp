@@ -44,7 +44,7 @@ TEST(box_test_box, create)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         'b',  'o',  'x',  ' '
+        'b', 'o', 'x', ' '
     };
     auto box = std::make_shared<dummy_box1>(buffer.data(), buffer.size());
 }
@@ -55,7 +55,7 @@ TEST(box_test_box, type)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-        'b',  'o',  'x',  ' '
+        'b', 'o', 'x', ' '
     };
     auto box = std::make_shared<dummy_box1>(buffer.data(), buffer.size());
 
@@ -73,7 +73,7 @@ TEST(box_test_box, extended_type)
         std::vector<uint8_t> buffer =
         {
             0x00, 0x00, 0x00, 0x00,
-            'b',  'o',  'x',  ' '
+            'b', 'o', 'x', ' '
         };
         auto box = std::make_shared<dummy_box1>(buffer.data(), buffer.size());
 
@@ -90,7 +90,7 @@ TEST(box_test_box, extended_type)
         std::vector<uint8_t> buffer =
         {
             0x00, 0x00, 0x00, 0x00,
-            'u',  'u',  'i',  'd',
+            'u', 'u', 'i', 'd',
             0x61, 0x62, 0x63, 0x64,
             0x65, 0x66, 0x67, 0x68,
             0x69, 0x6a, 0x6b, 0x6c,
@@ -115,7 +115,7 @@ TEST(box_test_box, size)
         std::vector<uint8_t> buffer =
         {
             0x00, 0x00, 0x00, 0x00,
-            'b',  'o',  'x',  ' '
+            'b', 'o', 'x', ' '
         };
         auto box = std::make_shared<dummy_box1>(buffer.data(), buffer.size());
 
@@ -131,7 +131,7 @@ TEST(box_test_box, size)
         std::vector<uint8_t> buffer =
         {
             0x00, 0x00, 0x00, 0x0A,
-            'b',  'o',  'x',   ' ',
+            'b', 'o', 'x', ' ',
             0x00, 0x00,  // box ends here
             0x00, 0x00, 0x00, 0x00, // excessive data
             0x00, 0x00, 0x00, 0x00,
@@ -154,7 +154,7 @@ TEST(box_test_box, size)
         std::vector<uint8_t> buffer =
         {
             0x00, 0x00, 0x00, 0x01,
-            'b',  'o',  'x',   ' ',
+            'b', 'o', 'x', ' ',
             0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x10,
             0x00, 0x00, 0x00, 0x00,

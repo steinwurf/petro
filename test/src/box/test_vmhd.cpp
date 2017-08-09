@@ -18,7 +18,7 @@ TEST(box_test_vmhd, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         'v',  'm',  'h',  'd',
+        'v', 'm', 'h', 'd',
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00,
         0x00, 0x00,

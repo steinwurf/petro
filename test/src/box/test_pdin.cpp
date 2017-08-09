@@ -18,7 +18,7 @@ TEST(box_test_pdin, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x00,
-         'p',  'd',  'i',  'n'
+        'p', 'd', 'i', 'n'
     };
     auto pdin_box = std::make_shared<petro::box::pdin>(
         buffer.data(), buffer.size());

@@ -19,7 +19,7 @@ TEST(box_test_stbl, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x10,
-         's',  't',  'b',  'l',
+        's', 't', 'b', 'l',
         0x00, 0x00, 0x00, 0x08,
         0x00, 0x00, 0x00, 0x00,
     };

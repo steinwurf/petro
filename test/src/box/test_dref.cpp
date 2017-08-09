@@ -19,7 +19,7 @@ TEST(box_test_dref, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x18,
-         'd',  'r',  'e',  'f',
+        'd', 'r', 'e', 'f',
         0x00,
         0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x01,

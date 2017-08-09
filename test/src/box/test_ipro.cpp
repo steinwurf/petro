@@ -19,7 +19,7 @@ TEST(box_test_ipro, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x10,
-         'i',  'p',  'r',  'o',
+        'i', 'p', 'r', 'o',
         0x00, 0x00, 0x00, 0x08,
         0x00, 0x00, 0x00, 0x00,
     };

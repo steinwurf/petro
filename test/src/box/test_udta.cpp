@@ -19,7 +19,7 @@ TEST(box_test_udta, construct)
     std::vector<uint8_t> buffer =
     {
         0x00, 0x00, 0x00, 0x10,
-         'u',  'd',  't',  'a',
+        'u', 'd', 't', 'a',
         0x00, 0x00, 0x00, 0x08,
         0x00, 0x00, 0x00, 0x00,
     };
