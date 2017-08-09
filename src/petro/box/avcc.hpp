@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "box.hpp"
-#include "../byte_stream.hpp"
 #include "../sequence_parameter_set.hpp"
 #include "../picture_parameter_set.hpp"
 
@@ -53,13 +52,13 @@ public:
         if (error)
             return;
 
-        uint8_t length_size_minus_one_value;
+        uint8_t length_size_minus_one_value = 0;
         m_bs.read(length_size_minus_one_value, error);
         if (error)
             return;
         m_length_size_minus_one = length_size_minus_one_value & 0x03;
 
-        uint8_t num_of_sequence_parameter_sets_value;
+        uint8_t num_of_sequence_parameter_sets_value = 0;
         m_bs.read(num_of_sequence_parameter_sets_value, error);
         if (error)
             return;
@@ -110,10 +109,14 @@ public:
             return;
     }
 
-    std::string describe() const
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string box_describe() const override
     {
         std::stringstream ss;
-        ss << box::describe() << std::endl;
         ss << "  configuration_version: " << (uint32_t)m_configuration_version
            << std::endl;
         ss << "  avc_profile_indication: " << (uint32_t)m_avc_profile_indication

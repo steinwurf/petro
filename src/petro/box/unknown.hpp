@@ -12,7 +12,6 @@
 #include <cassert>
 
 #include "box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -27,9 +26,16 @@ public:
         box(data, size)
     { }
 
-    virtual std::string type() const
+    std::string type() const override
     {
-        return m_type + "?";
+        return m_type;
+    }
+
+    std::string box_describe() const override
+    {
+        std::stringstream ss;
+        ss << "  unknown" << std::endl;
+        return ss.str();
     }
 };
 }

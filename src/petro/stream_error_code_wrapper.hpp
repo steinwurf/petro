@@ -23,8 +23,16 @@
 
 namespace petro
 {
-class stream_error_code_wrapper : endian::stream_reader<endian::big_endian>
+class stream_error_code_wrapper :
+    private endian::stream_reader<endian::big_endian>
 {
+public:
+    // Expose some of the
+    using endian::stream_reader<endian::big_endian>::position;
+    using endian::stream_reader<endian::big_endian>::data;
+    using endian::stream_reader<endian::big_endian>::size;
+    using endian::stream_reader<endian::big_endian>::remaining_size;
+    using endian::stream_reader<endian::big_endian>::remaining_data;
 
 public:
 
@@ -85,12 +93,6 @@ public:
         endian::stream_reader<endian::big_endian>::skip(bytes_to_skip);
     }
 
-    using endian::stream_reader<endian::big_endian>::position;
-    using endian::stream_reader<endian::big_endian>::data;
-    using endian::stream_reader<endian::big_endian>::size;
-    using endian::stream_reader<endian::big_endian>::remaining_size;
-    using endian::stream_reader<endian::big_endian>::remaining_data;
-
     void set_error_code(petro::error error)
     {
         m_error = error;
@@ -105,7 +107,7 @@ public:
 
     void read_fixed_point_1616(double& value, std::error_code& error)
     {
-        uint32_t data;
+        uint32_t data = 0;
         read(data, error);
         if (error)
             return;
@@ -113,7 +115,7 @@ public:
     }
     void read_fixed_point_0230(double& value, std::error_code& error)
     {
-        uint32_t data;
+        uint32_t data = 0;
         read(data, error);
         if (error)
             return;
@@ -122,7 +124,7 @@ public:
 
     void read_fixed_point_88(float& value, std::error_code& error)
     {
-        uint16_t data;
+        uint16_t data = 0;
         read(data, error);
         if (error)
             return;
@@ -131,7 +133,7 @@ public:
 
     void read_iso639(std::string& value, std::error_code& error)
     {
-        uint16_t data;
+        uint16_t data = 0;
         read(data, error);
         if (error)
             return;

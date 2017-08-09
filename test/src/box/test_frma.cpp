@@ -8,11 +8,24 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <memory>
+#include <system_error>
+#include <vector>
 
 TEST(box_test_frma, construct)
 {
-    std::weak_ptr<petro::box::box> parent;
-    petro::box::frma b(parent);
-    EXPECT_EQ("frma", b.type());
+    std::vector<uint8_t> buffer =
+    {
+        0x00, 0x00, 0x00, 0x00,
+         'f',  'r',  'm',  'a'
+    };
+    auto frma_box = std::make_shared<petro::box::frma>(
+        buffer.data(), buffer.size());
+
+    std::error_code error;
+    frma_box->parse(error);
+    ASSERT_FALSE(bool(error));
+
+    EXPECT_EQ("frma", frma_box->type());
 }

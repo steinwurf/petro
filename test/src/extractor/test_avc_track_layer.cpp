@@ -62,11 +62,17 @@ struct dummy_avcc
     dummy_parameter_set m_sequence_parameter_set;
 };
 
-struct dummy_trak : public petro::box::box
+struct dummy_trak : public petro::box::base_box
 {
-    dummy_trak() :
-        petro::box::box("dummy_trak", std::weak_ptr<petro::box::box>())
-    { }
+    std::string type() const override
+    {
+        return "trak";
+    }
+
+    std::string describe() const override
+    {
+        return "";
+    }
 };
 
 struct dummy_avc1
@@ -81,7 +87,7 @@ struct dummy_avc1
         return &m_dummy_avcc;
     }
 
-    std::shared_ptr<const petro::box::box> get_parent(
+    std::shared_ptr<const petro::box::base_box> get_parent(
         const std::string& type) const
     {
         (void) type;

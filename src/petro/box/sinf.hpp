@@ -10,7 +10,6 @@
 #include <cassert>
 
 #include "box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -29,6 +28,11 @@ public:
     sinf(const uint8_t* data, uint64_t size) :
         box(data, size)
     { }
+
+    std::string type() const override
+    {
+        return TYPE;
+    }
 
     void parse_box_content(std::error_code& error) override
     {

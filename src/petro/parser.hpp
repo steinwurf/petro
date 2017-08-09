@@ -10,13 +10,10 @@
 #include <memory>
 #include <cstring>
 
-#include <endian/stream_reader.hpp>
-#include <endian/big_endian.hpp>
-
-#include "byte_stream.hpp"
 #include "box/unknown.hpp"
 #include "box/box.hpp"
 #include "box/root.hpp"
+#include "stream_error_code_wrapper.hpp"
 
 namespace petro
 {
@@ -31,7 +28,11 @@ public:
         std::weak_ptr<box::base_box> parent,
         std::error_code& error)
     {
+        assert(data != nullptr);
+        assert(size != 0);
+        assert(parent.lock() != nullptr);
         assert(!error);
+
         uint64_t position = 0;
         while (position != size)
         {
@@ -54,6 +55,9 @@ public:
         std::weak_ptr<box::base_box> parent,
         std::error_code& error)
     {
+        assert(data != nullptr);
+        assert(size != 0);
+        assert(parent.lock() != nullptr);
         assert(!error);
 
         stream_error_code_wrapper bs(data, size);

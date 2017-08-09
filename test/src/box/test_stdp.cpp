@@ -8,11 +8,24 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <memory>
+#include <system_error>
+#include <vector>
 
 TEST(box_test_stdp, construct)
 {
-    std::weak_ptr<petro::box::box> parent;
-    petro::box::stdp b(parent);
-    EXPECT_EQ("stdp", b.type());
+    std::vector<uint8_t> buffer =
+    {
+        0x00, 0x00, 0x00, 0x00,
+         's',  't',  'd',  'p'
+    };
+    auto stdp_box = std::make_shared<petro::box::stdp>(
+        buffer.data(), buffer.size());
+
+    std::error_code error;
+    stdp_box->parse(error);
+    ASSERT_FALSE(bool(error));
+
+    EXPECT_EQ("stdp", stdp_box->type());
 }

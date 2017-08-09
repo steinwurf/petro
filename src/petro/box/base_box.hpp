@@ -15,8 +15,6 @@
 #include <endian/big_endian.hpp>
 #include <endian/stream_reader.hpp>
 
-#include "../byte_stream.hpp"
-
 namespace petro
 {
 namespace box

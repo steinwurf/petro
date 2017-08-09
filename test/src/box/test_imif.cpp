@@ -8,11 +8,24 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <memory>
+#include <system_error>
+#include <vector>
 
 TEST(box_test_imif, construct)
 {
-    std::weak_ptr<petro::box::box> parent;
-    petro::box::imif b(parent);
-    EXPECT_EQ("imif", b.type());
+    std::vector<uint8_t> buffer =
+    {
+        0x00, 0x00, 0x00, 0x00,
+         'i',  'm',  'i',  'f'
+    };
+    auto imif_box = std::make_shared<petro::box::imif>(
+        buffer.data(), buffer.size());
+
+    std::error_code error;
+    imif_box->parse(error);
+    ASSERT_FALSE(bool(error));
+
+    EXPECT_EQ("imif", imif_box->type());
 }

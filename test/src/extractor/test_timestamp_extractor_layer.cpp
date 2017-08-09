@@ -59,10 +59,12 @@ TEST(extractor_test_timestamp_extractor_layer, api)
     dummy_stack stack;
     dummy_layer& layer = stack;
 
-    layer.open.set_return(false, true);
+    layer.open.set_return(false);
 
     EXPECT_FALSE(stack.open());
     EXPECT_EQ(1U, layer.close.calls());
+
+    layer.open.set_return(true);
 
     dummy_trak trak;
 
@@ -74,22 +76,21 @@ TEST(extractor_test_timestamp_extractor_layer, api)
     // stts.hpp for information related to this.
     std::vector<uint8_t> stts_buffer =
         {
-            // These values have already been read by the parser:
-            // 0x00, 0x00, 0x00, 0xXX, // box size
-            // 's', 't', 't', 's', // box type
+            0x00, 0x00, 0x00, 0x18, // box size
+            's', 't', 't', 's', // box type
             0x00, // full_box version
             0x00, 0x00, 0x00, // full_box flag
             0x00, 0x00, 0x00, 0x01, // stts entry count 1
             0x00, 0x00, 0x00, 0x03, // stts entry sample_count
             0x00, 0x00, 0x00, 0x06, // stts entry sample_delta
         };
-    // size including attributes read by parser:
-    auto stts_size = stts_buffer.size() + 8;
 
-    petro::byte_stream stts_byte_stream(stts_buffer.data(), stts_buffer.size());
-    auto stts =
-        std::make_shared<petro::box::stts>(std::weak_ptr<petro::box::box>());
-    stts->read(stts_size, stts_byte_stream);
+    auto stts = std::make_shared<petro::box::stts>(
+        stts_buffer.data(), stts_buffer.size());
+
+    std::error_code error;
+    stts->parse(error);
+    ASSERT_FALSE(bool(error));
 
     trak.m_stts = stts;
 
@@ -101,9 +102,8 @@ TEST(extractor_test_timestamp_extractor_layer, api)
     // mdhd.hpp for information related to this.
     std::vector<uint8_t> mdhd_buffer =
         {
-            // These values have already been read by the parser:
-            // 0x00, 0x00, 0x00, 0xXX, // box size
-            // 'm', 'd', 'h', 'd', // box type
+            0x00, 0x00, 0x00, 0x20, // box size
+            'm', 'd', 'h', 'd', // box type
             0x00, // full_box version
             0x00, 0x00, 0x00, // full_box flag
             0x00, 0x00, 0x00, 0x00, // mdhd m_creation_time
@@ -113,13 +113,12 @@ TEST(extractor_test_timestamp_extractor_layer, api)
             0x00, 0x00, // mdhd langauge code
             0x00, 0x00  // mdhd predefined
         };
-    // size including attributes read by parser:
-    auto mdhd_size = mdhd_buffer.size() + 8;
 
-    petro::byte_stream mdhd_byte_stream(mdhd_buffer.data(), mdhd_buffer.size());
-    auto mdhd =
-        std::make_shared<petro::box::mdhd>(std::weak_ptr<petro::box::box>());
-    mdhd->read(mdhd_size, mdhd_byte_stream);
+    auto mdhd = std::make_shared<petro::box::mdhd>(
+        mdhd_buffer.data(), mdhd_buffer.size());
+
+    mdhd->parse(error);
+    ASSERT_FALSE(bool(error));
 
     trak.m_mdhd = mdhd;
 
@@ -133,9 +132,8 @@ TEST(extractor_test_timestamp_extractor_layer, api)
     // mvhd.hpp for information related to this.
     std::vector<uint8_t> mvhd_buffer =
         {
-            // These values have already been read by the parser:
-            // 0x00, 0x00, 0x00, 0xXX, // box size
-            // 'm', 'v', 'h', 'd', // box type
+            0x00, 0x00, 0x00, 0x6C, // box size
+            'm', 'v', 'h', 'd', // box type
             0x00, // full_box version
             0x00, 0x00, 0x00, // full_box flag
             0x00, 0x00, 0x00, 0x00, // mvhd m_creation_time
@@ -143,17 +141,22 @@ TEST(extractor_test_timestamp_extractor_layer, api)
             0x00, 0x00, 0x00, 0x02, // mvhd m_timescale
             0x00, 0x00, 0x00, 0x06, // mvhd m_duration
             0x00, 0x00, 0x00, 0x00, // mvhd m_rate
-            0x00, 0x00  // mvhd m_volume
+            0x00, 0x00,  // mvhd m_volume
+            /// remaining unused data
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
         };
-    // Extend the buffer with zeroes to reach the full size of the mvhd box
-    mvhd_buffer.resize(mvhd_buffer.size() + 10 + 4 * 9 + 6 * 4 + 4);
-    // size including attributes read by parser:
-    auto mvhd_size = mvhd_buffer.size() + 8;
 
-    petro::byte_stream mvhd_byte_stream(mvhd_buffer.data(), mvhd_buffer.size());
-    auto mvhd =
-        std::make_shared<petro::box::mvhd>(std::weak_ptr<petro::box::box>());
-    mvhd->read(mvhd_size, mvhd_byte_stream);
+    auto mvhd = std::make_shared<petro::box::mvhd>(
+        mvhd_buffer.data(), mvhd_buffer.size());
+
+    mvhd->parse(error);
+    ASSERT_FALSE(bool(error));
 
     root.m_mvhd = mvhd;
 
@@ -162,7 +165,6 @@ TEST(extractor_test_timestamp_extractor_layer, api)
     layer.sample_index.set_return(0);
 
     // test stack
-
     EXPECT_TRUE(stack.open());
 
     // The value is not verified. This is merely a test that checks for

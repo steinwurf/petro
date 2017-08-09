@@ -16,18 +16,24 @@
 
 namespace
 {
-struct dummy_trak : public petro::box::box
+struct dummy_trak : public petro::box::base_box
 {
-    dummy_trak() :
-        petro::box::box("dummy_trak", std::weak_ptr<box>())
-    { }
+    std::string type() const override
+    {
+        return "trak";
+    }
+
+    std::string describe() const override
+    {
+        return "";
+    }
 };
 
 struct dummy_layer
 {
     stub::function<bool()> open;
     stub::function<void()> close;
-    stub::function<std::shared_ptr<const petro::box::box>()> trak;
+    stub::function<std::shared_ptr<const petro::box::base_box>()> trak;
     stub::function<const uint8_t* ()> data;
 };
 
@@ -39,10 +45,12 @@ TEST(extractor_test_sample_extractor_layer, init)
     dummy_stack stack;
     dummy_layer& layer = stack;
 
-    layer.open.set_return(false, true);
+    layer.open.set_return(false);
 
     EXPECT_FALSE(stack.open());
     EXPECT_EQ(1U, layer.close.calls());
+
+    layer.open.set_return(true);
 
     auto trak = std::make_shared<dummy_trak>();
 
@@ -54,9 +62,8 @@ TEST(extractor_test_sample_extractor_layer, init)
     // stsc.hpp for information related to this.
     std::vector<uint8_t> stsc_buffer =
         {
-            // These values have already been read by the parser:
-            // 0x00, 0x00, 0x00, 0xXX, // box size
-            // 's', 't', 's', 'c', // box type
+            0x00, 0x00, 0x00, 0x1C, // box size
+            's', 't', 's', 'c', // box type
             0x00, // full_box version
             0x00, 0x00, 0x00, // full_box flag
             0x00, 0x00, 0x00, 0x01, // stsc entry count 1
@@ -64,13 +71,13 @@ TEST(extractor_test_sample_extractor_layer, init)
             0x00, 0x00, 0x00, 0x01, // stsc entry samples_per_chunk
             0x00, 0x00, 0x00, 0x01, // stsc entry sample_description_index
         };
-    // size including attributes read by parser:
-    auto stsc_size = stsc_buffer.size() + 8;
 
-    petro::byte_stream stsc_byte_stream(stsc_buffer.data(), stsc_buffer.size());
-    auto stsc =
-        std::make_shared<petro::box::stsc>(std::weak_ptr<petro::box::box>());
-    stsc->read(stsc_size, stsc_byte_stream);
+    auto stsc = std::make_shared<petro::box::stsc>(
+        stsc_buffer.data(), stsc_buffer.size());
+
+    std::error_code error;
+    stsc->parse(error);
+    ASSERT_FALSE(bool(error));
 
     trak->add_child(stsc);
 
@@ -83,21 +90,19 @@ TEST(extractor_test_sample_extractor_layer, init)
     // stsz.hpp for information related to this.
     std::vector<uint8_t> stsz_buffer =
         {
-            // These values have already been read by the parser:
-            // 0x00, 0x00, 0x00, 0xXX, // box size
-            // 's', 't', 's', 'z', // box type
+            0x00, 0x00, 0x00, 0x14, // box size
+            's', 't', 's', 'z', // box type
             0x00, // full_box version
             0x00, 0x00, 0x00, // full_box flag
             0x00, 0x00, 0x00, sample_size, // stsz sample size
             0x00, 0x00, 0x00, 0x02, // stsz sample count
         };
-    // size including attributes read by parser:
-    auto stsz_size = stsz_buffer.size() + 8;
 
-    petro::byte_stream stsz_byte_stream(stsz_buffer.data(), stsz_buffer.size());
-    auto stsz =
-        std::make_shared<petro::box::stsz>(std::weak_ptr<petro::box::box>());
-    stsz->read(stsz_size, stsz_byte_stream);
+    auto stsz = std::make_shared<petro::box::stsz>(
+        stsz_buffer.data(), stsz_buffer.size());
+
+    stsz->parse(error);
+    ASSERT_FALSE(error);
 
     trak->add_child(stsz);
 
@@ -111,22 +116,19 @@ TEST(extractor_test_sample_extractor_layer, init)
     uint8_t chunk_offset2 = 2U;
     std::vector<uint8_t> co64_buffer =
         {
-            // These values have already been read by the parser:
-            // 0x00, 0x00, 0x00, 0xXX, // box size
-            // 'c', 'o', '6', '4', // box type
+            0x00, 0x00, 0x00, 0x20, // box size
+            'c', 'o', '6', '4', // box type
             0x00, // full_box version
             0x00, 0x00, 0x00, // full_box flag
             0x00, 0x00, 0x00, 0x02, // co64 entry count
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, chunk_offset1, // entry 1
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, chunk_offset2  // entry 2
         };
-    // size including attributes read by parser:
-    auto co64_size = co64_buffer.size() + 8;
 
-    petro::byte_stream co64_byte_stream(co64_buffer.data(), co64_buffer.size());
-    auto co64 =
-        std::make_shared<petro::box::co64>(std::weak_ptr<petro::box::box>());
-    co64->read(co64_size, co64_byte_stream);
+    auto co64 = std::make_shared<petro::box::co64>(
+        co64_buffer.data(), co64_buffer.size());
+    co64->parse(error);
+    ASSERT_FALSE(bool(error));
 
     trak->add_child(co64);
 

@@ -8,11 +8,24 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <memory>
+#include <system_error>
+#include <vector>
 
 TEST(box_test_free, construct)
 {
-    std::weak_ptr<petro::box::box> parent;
-    petro::box::free b(parent);
-    EXPECT_EQ("free", b.type());
+    std::vector<uint8_t> buffer =
+    {
+        0x00, 0x00, 0x00, 0x00,
+         'f',  'r',  'e',  'e'
+    };
+    auto free_box = std::make_shared<petro::box::free>(
+        buffer.data(), buffer.size());
+
+    std::error_code error;
+    free_box->parse(error);
+    ASSERT_FALSE(bool(error));
+
+    EXPECT_EQ("free", free_box->type());
 }

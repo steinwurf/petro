@@ -10,7 +10,6 @@
 #include <cassert>
 
 #include "box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -20,12 +19,12 @@ namespace box
 template<class Parser>
 class dinf : public box
 {
-
 public:
 
     static const std::string TYPE;
 
 public:
+
     dinf(const uint8_t* data, uint64_t size) :
         box(data, size)
     { }
@@ -44,6 +43,11 @@ public:
         m_bs.skip(m_bs.remaining_size(), error);
         if (error)
             return;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
     }
 };
 

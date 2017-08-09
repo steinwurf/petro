@@ -31,15 +31,17 @@ public:
 
     virtual void parse_box_content(std::error_code& error);
 
-    std::string type() const;
-
     std::string extended_type() const;
 
     uint64_t size() const;
 
     void set_parent(std::weak_ptr<base_box> parent);
 
-    virtual std::string describe() const;
+    std::string describe() const override final;
+
+protected:
+
+    virtual std::string box_describe() const;
 
     virtual error box_error_code() const;
 

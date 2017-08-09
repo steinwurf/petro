@@ -8,11 +8,24 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <memory>
+#include <system_error>
+#include <vector>
 
 TEST(box_test_padb, construct)
 {
-    std::weak_ptr<petro::box::box> parent;
-    petro::box::padb b(parent);
-    EXPECT_EQ("padb", b.type());
+    std::vector<uint8_t> buffer =
+    {
+        0x00, 0x00, 0x00, 0x00,
+         'p',  'a',  'd',  'b'
+    };
+    auto padb_box = std::make_shared<petro::box::padb>(
+        buffer.data(), buffer.size());
+
+    std::error_code error;
+    padb_box->parse(error);
+    ASSERT_FALSE(bool(error));
+
+    EXPECT_EQ("padb", padb_box->type());
 }

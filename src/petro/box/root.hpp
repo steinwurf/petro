@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base_box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -21,12 +20,12 @@ class root : public base_box
 {
 public:
 
-    std::string type() const
+    std::string type() const override
     {
         return "root";
     }
 
-    std::string describe() const
+    std::string describe() const override
     {
         std::stringstream ss;
         ss << type() << std::endl;

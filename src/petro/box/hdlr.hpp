@@ -9,7 +9,6 @@
 #include <string>
 
 #include "full_box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -60,10 +59,14 @@ public:
         m_name = name;
     }
 
-    virtual std::string describe() const
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  handler_type: " << m_handler_type << std::endl;
         ss << "  name: " << m_name << std::endl;
         return ss.str();

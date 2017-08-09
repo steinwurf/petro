@@ -8,11 +8,24 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <memory>
+#include <system_error>
+#include <vector>
 
 TEST(box_test_bxml, construct)
 {
-    std::weak_ptr<petro::box::box> parent;
-    petro::box::bxml b(parent);
-    EXPECT_EQ("bxml", b.type());
+    std::vector<uint8_t> buffer =
+    {
+        0x00, 0x00, 0x00, 0x00,
+         'b',  'x',  'm',  'l'
+    };
+    auto bxml_box = std::make_shared<petro::box::bxml>(
+        buffer.data(), buffer.size());
+
+    std::error_code error;
+    bxml_box->parse(error);
+    ASSERT_FALSE(bool(error));
+
+    EXPECT_EQ("bxml", bxml_box->type());
 }

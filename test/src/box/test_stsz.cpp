@@ -8,11 +8,27 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <memory>
+#include <system_error>
+#include <vector>
 
 TEST(box_test_stsz, construct)
 {
-    std::weak_ptr<petro::box::box> parent;
-    petro::box::stsz b(parent);
-    EXPECT_EQ("stsz", b.type());
+    std::vector<uint8_t> buffer =
+    {
+        0x00, 0x00, 0x00, 0x00,
+         's',  't',  's',  'z',
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00
+    };
+    auto stsz_box = std::make_shared<petro::box::stsz>(
+        buffer.data(), buffer.size());
+
+    std::error_code error;
+    stsz_box->parse(error);
+    ASSERT_FALSE(bool(error));
+
+    EXPECT_EQ("stsz", stsz_box->type());
 }

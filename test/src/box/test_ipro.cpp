@@ -9,11 +9,28 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <memory>
+#include <system_error>
+#include <vector>
 
 TEST(box_test_ipro, construct)
 {
-    std::weak_ptr<petro::box::box> parent;
-    petro::box::ipro<petro::parser<>> b(parent);
-    EXPECT_EQ("ipro", b.type());
+    std::vector<uint8_t> buffer =
+    {
+        0x00, 0x00, 0x00, 0x10,
+         'i',  'p',  'r',  'o',
+        0x00, 0x00, 0x00, 0x08,
+        0x00, 0x00, 0x00, 0x00,
+    };
+    auto ipro_box = std::make_shared<petro::box::ipro<petro::parser<>>>(
+        buffer.data(), buffer.size());
+
+    std::error_code error;
+    ipro_box->parse(error);
+    ASSERT_FALSE(bool(error));
+
+    EXPECT_EQ("ipro", ipro_box->type());
+    EXPECT_EQ(buffer.size(), ipro_box->size());
+    EXPECT_EQ(1U, ipro_box->children().size());
 }

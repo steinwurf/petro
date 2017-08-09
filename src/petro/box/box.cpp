@@ -17,6 +17,8 @@ box::box(const uint8_t* data, uint64_t size) :
 
 void box::parse(std::error_code& error)
 {
+    assert(!error);
+
     m_bs.seek(0, error);
     if (error)
         return;
@@ -38,6 +40,12 @@ void box::parse(std::error_code& error)
     if (error)
         return;
 
+    if (m_type != type())
+    {
+        error = box_error_code();
+        return;
+    }
+
     uint64_t size = first_size;
 
     if (first_size == 1)
@@ -56,7 +64,7 @@ void box::parse(std::error_code& error)
 
     if (size > m_bs.size())
     {
-        error = std::make_error_code(std::errc::value_too_large);
+        error = box_error_code();
         return;
     }
     // "Resize" stream_reader
@@ -87,15 +95,9 @@ void box::parse_box_content(std::error_code& error)
         return;
 }
 
-std::string box::type() const
-{
-    assert(!m_type.empty() && "Run parse before getting type");
-    return m_type;
-}
-
 std::string box::extended_type() const
 {
-    assert(!m_extended_type.empty() && "Run parse before getting extended_type");
+    assert(!m_type.empty() && "Run parse before getting extended_type");
     return m_extended_type;
 }
 
@@ -113,8 +115,14 @@ std::string box::describe() const
 {
     std::stringstream ss;
     ss << type() << std::endl;
-    ss << "  size: " << size();
+    ss << "  size: " << size() << std::endl;
+    ss << box_describe();
     return ss.str();
+}
+
+std::string box::box_describe() const
+{
+    return "";
 }
 
 error box::box_error_code() const

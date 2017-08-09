@@ -8,36 +8,28 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <memory>
+#include <system_error>
+#include <vector>
 
 TEST(box_test_unknown, construct)
 {
-    std::string type = "unknown";
-    petro::box::unknown b(type, std::weak_ptr<petro::box::box>());
-    EXPECT_EQ(type + "?", b.type());
-}
+    std::vector<uint8_t> buffer =
+    {
+        0x00, 0x00, 0x00, 0x00,
+         'b',  'o',  'x',  'y'
+    };
+    auto unknown_box = std::make_shared<petro::box::unknown>(
+        buffer.data(), buffer.size());
 
-TEST(box_test_unknown, describe)
-{
-    auto type = "test";
-    petro::box::unknown b(type, std::weak_ptr<petro::box::box>());
+    std::error_code error;
+    unknown_box->parse(error);
+    ASSERT_FALSE(bool(error));
 
-    auto description = b.describe();
+    EXPECT_EQ("boxy", unknown_box->type());
 
-    auto found_type = description.find(type);
-    EXPECT_NE(std::string::npos, found_type);
-    auto found_question_mark = description.find("?");
+    auto description = unknown_box->describe();
+    auto found_question_mark = description.find("unknown");
     EXPECT_NE(std::string::npos, found_question_mark);
-}
-
-TEST(box_test_unknown, get_child)
-{
-    auto parent = std::make_shared<petro::box::box>(
-        "parent", std::weak_ptr<petro::box::box>());
-
-    auto child_type = "child";
-    auto child = std::make_shared<petro::box::unknown>(child_type, parent);
-    parent->add_child(child);
-
-    EXPECT_NE(nullptr, parent->get_child(child_type));
 }

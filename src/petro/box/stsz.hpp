@@ -12,7 +12,6 @@
 #include <algorithm>
 
 #include "full_box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -59,10 +58,14 @@ public:
             return;
     }
 
-    virtual std::string describe() const
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  sample_size: " << m_sample_size << std::endl;
         ss << "  sample_count: " << m_sample_count << std::endl;
         if (m_sample_size == 0)

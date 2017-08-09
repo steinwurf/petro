@@ -13,7 +13,6 @@
 #include "esds.hpp"
 #include "full_box.hpp"
 #include "hdlr.hpp"
-#include "../byte_stream.hpp"
 #include "../parser.hpp"
 
 namespace petro
@@ -60,13 +59,25 @@ public:
                 return;
         }
 
-        virtual std::string describe() const
+        std::string type() const override
+        {
+            return m_type;
+        }
+
+        std::string box_describe() const override final
         {
             std::stringstream ss;
-            ss << box::describe() << std::endl;
             ss << "  data_reference_index: " << m_data_reference_index;
+            ss << sample_entry_describe() << std::endl;
             return ss.str();
         }
+
+        virtual std::string sample_entry_describe() const
+        {
+            return "";
+        }
+
+
 
     private:
 
@@ -141,6 +152,12 @@ public:
             if (error)
                 return;
 
+            if (m_bs.remaining_size() == 0)
+            {
+                error = box_error_code();
+                return;
+            }
+
             parser<avcc> p;
             p.parse(
                 m_bs.remaining_data(),
@@ -154,10 +171,9 @@ public:
                 return;
         }
 
-        std::string describe() const
+        std::string sample_entry_describe() const override
         {
             std::stringstream ss;
-            ss << sample_entry::describe() << std::endl;
             ss << "  width: " << m_width << std::endl;
             ss << "  height: " << m_height << std::endl;
             ss << "  horizontal_resolution: " << m_horizontal_resolution
@@ -238,6 +254,12 @@ public:
             if (error)
                 return;
 
+            if (m_bs.remaining_size() == 0)
+            {
+                error = box_error_code();
+                return;
+            }
+
             parser<esds> p;
             p.parse(
                 m_bs.remaining_data(),
@@ -251,10 +273,9 @@ public:
                 return;
         }
 
-        std::string describe() const
+        std::string sample_entry_describe() const override
         {
             std::stringstream ss;
-            ss << sample_entry::describe() << std::endl;
             ss << "  channel_count: " << m_channel_count << std::endl;
             ss << "  sample_size: " << m_sample_size << std::endl;
             ss << "  sample_rate: " << m_sample_rate;
@@ -296,10 +317,9 @@ public:
                 return;
         }
 
-        std::string describe() const
+        std::string sample_entry_describe() const override
         {
             std::stringstream ss;
-            ss << sample_entry::describe() << std::endl;
             ss << "    data: " << (uint64_t)m_data.data() << std::endl;
             ss << "    data.size: " << m_data.size() << std::endl;
             return ss.str();
@@ -327,36 +347,38 @@ public:
             return;
 
         // get handler to know which kind of sample we are reading.
+        std::string handler_type = "none";
         auto mdia = get_parent("mdia");
-        if (mdia == nullptr)
+        if (mdia != nullptr)
         {
-            error = std::make_error_code(std::errc::not_supported);
-            return;
+            auto hdlr = mdia->get_child<petro::box::hdlr>();
+            if (hdlr != nullptr)
+            {
+                handler_type = hdlr->handler_type();
+            }
         }
-        auto hdlr = mdia->get_child<petro::box::hdlr>();
-        if (hdlr == nullptr)
-        {
-            error = std::make_error_code(std::errc::not_supported);
-            return;
-        }
-
 
         for (uint32_t i = 0; i < m_entry_count; ++i)
         {
+            if (m_bs.remaining_size() == 0)
+            {
+                error = box_error_code();
+                return;
+            }
             std::shared_ptr<sample_entry> entry = nullptr;
-            if (hdlr->handler_type() == "vide") // for video tracks
+            if (handler_type == "vide") // for video tracks
             {
                 entry = std::make_shared<visual_sample_entry>(
                         m_bs.remaining_data(),
                         m_bs.remaining_size());
             }
-            else if (hdlr->handler_type() == "soun") // for audio tracks
+            else if (handler_type == "soun") // for audio tracks
             {
                 entry = std::make_shared<audio_sample_entry>(
                         m_bs.remaining_data(),
                         m_bs.remaining_size());
             }
-            else if (hdlr->handler_type() == "hint")
+            else if (handler_type == "hint")
             {
                 entry = std::make_shared<hint_sample_entry>(
                         m_bs.remaining_data(),
@@ -385,10 +407,14 @@ public:
             return;
     }
 
-    virtual std::string describe() const
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  entry_count: " << m_entry_count << std::endl;
         return ss.str();
     }

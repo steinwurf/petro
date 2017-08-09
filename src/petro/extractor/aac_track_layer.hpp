@@ -43,6 +43,7 @@ public:
         auto trak = mp4a->get_parent("trak");
         if (trak == nullptr)
         {
+            std::cout << "trak == nullptr" << std::endl;
             Super::close();
             return false;
         }
@@ -50,6 +51,7 @@ public:
         auto esds = mp4a->template get_child<box::esds>();
         if (esds == nullptr)
         {
+            std::cout << "esds == nullptr" << std::endl;
             Super::close();
             return false;
         }
@@ -62,7 +64,10 @@ public:
                     decoder_specific_info_descriptor();
 
         if (descriptor == nullptr)
+        {
+            std::cout << "descriptor == nullptr" << std::endl;
             return false;
+        }
 
         m_mpeg_audio_object_type = descriptor->mpeg_audio_object_type();
         m_frequency_index = descriptor->frequency_index();

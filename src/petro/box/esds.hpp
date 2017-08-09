@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "full_box.hpp"
-#include "../byte_stream.hpp"
 #include "../descriptor/elemetary_stream_descriptor.hpp"
 namespace petro
 {
@@ -52,12 +51,15 @@ public:
             return;
     }
 
-    std::string describe() const
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
         std::string indent = "  ";
-
-        ss << full_box::describe() << std::endl;
         ss << indent << "descriptor:" << std::endl;
 
         indent = "    ";

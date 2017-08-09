@@ -8,11 +8,24 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <memory>
+#include <system_error>
+#include <vector>
 
 TEST(box_test_iloc, construct)
 {
-    std::weak_ptr<petro::box::box> parent;
-    petro::box::iloc b(parent);
-    EXPECT_EQ("iloc", b.type());
+    std::vector<uint8_t> buffer =
+    {
+        0x00, 0x00, 0x00, 0x00,
+         'i',  'l',  'o',  'c'
+    };
+    auto iloc_box = std::make_shared<petro::box::iloc>(
+        buffer.data(), buffer.size());
+
+    std::error_code error;
+    iloc_box->parse(error);
+    ASSERT_FALSE(bool(error));
+
+    EXPECT_EQ("iloc", iloc_box->type());
 }

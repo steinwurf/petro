@@ -9,7 +9,6 @@
 #include <string>
 
 #include "box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -27,6 +26,11 @@ public:
     tfra(const uint8_t* data, uint64_t size) :
         box(data, size)
     { }
+
+    std::string type() const override
+    {
+        return TYPE;
+    }
 };
 }
 }

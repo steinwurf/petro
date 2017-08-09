@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include "../byte_stream.hpp"
 #include "box.hpp"
 
 #include <string>
@@ -27,6 +26,11 @@ public:
     mdat(const uint8_t* data, uint64_t size) :
         box(data, size)
     { }
+
+    std::string type() const override
+    {
+        return TYPE;
+    }
 };
 }
 }

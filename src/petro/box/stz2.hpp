@@ -10,7 +10,6 @@
 #include <string>
 
 #include "full_box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -48,7 +47,7 @@ public:
         {
             if (m_field_size == 4)
             {
-                uint8_t data_value;
+                uint8_t data_value = 0;
                 m_bs.read(data_value, error);
                 if (error)
                     return;
@@ -59,7 +58,7 @@ public:
             }
             else if (m_field_size == 8)
             {
-                uint8_t data_value;
+                uint8_t data_value = 0;
                 m_bs.read(data_value, error);
                 if (error)
                     return;
@@ -76,7 +75,7 @@ public:
             else
             {
                 // illegal field size
-                error = std::make_error_code(std::errc::value_too_large);
+                error = box_error_code();
                 return;
             }
         }
@@ -86,10 +85,14 @@ public:
             return;
     }
 
-    virtual std::string describe() const
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  field_size: " << m_field_size << std::endl;
         ss << "  sample_count: " << m_sample_count << std::endl;
         ss << "  samples (size): ";

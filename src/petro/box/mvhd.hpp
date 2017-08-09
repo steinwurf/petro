@@ -12,7 +12,6 @@
 
 #include "full_box.hpp"
 #include "../matrix.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -51,8 +50,6 @@ public:
         }
         else if (m_version == 0)
         {
-
-
             m_bs.read_time32(m_creation_time, error);
             if (error)
                 return;
@@ -70,7 +67,7 @@ public:
         }
         else
         {
-            error = std::make_error_code(std::errc::value_too_large);
+            error = box_error_code();
             return;
         }
 
@@ -105,10 +102,14 @@ public:
             return;
     }
 
-    virtual std::string describe() const
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  creation_time: " << m_creation_time << std::endl;
         ss << "  modification_time: " << m_modification_time << std::endl;
         ss << "  time_scale: " << m_timescale << std::endl;

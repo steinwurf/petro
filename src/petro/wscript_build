@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 use_flags = [
-    'boost_includes', 'boost_iostreams', 'endian_includes', 'bitter_includes']
+    'boost_includes', 'boost_iostreams', 'endian_includes']
 
 bld.stlib(
     features='cxx',

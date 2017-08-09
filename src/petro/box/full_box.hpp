@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -50,13 +49,18 @@ public:
             return;
     }
 
-    virtual std::string describe() const
+    std::string box_describe() const override final
     {
         std::stringstream ss;
-        ss << box::describe() << std::endl;
-        ss << "  version: " << (uint32_t)m_version;
-
+        ss << "  version: " << (uint32_t)m_version << std::endl;
+        ss << full_box_describe();
         return ss.str();
+    }
+
+
+    virtual std::string full_box_describe() const
+    {
+        return "";
     }
 
     error box_error_code() const override

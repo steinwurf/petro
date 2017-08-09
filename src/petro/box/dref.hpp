@@ -11,7 +11,6 @@
 #include "full_box.hpp"
 #include "url.hpp"
 #include "urn.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -39,6 +38,11 @@ public:
         Parser p;
         for (uint32_t i = 0; i < m_entry_count; ++i)
         {
+            if (m_bs.remaining_size() == 0)
+            {
+                error = box_error_code();
+                return;
+            }
             auto box = p.parse_box(
                 m_bs.remaining_data(),
                 m_bs.remaining_size(),
@@ -54,10 +58,14 @@ public:
         }
     }
 
-    virtual std::string describe() const
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  entry_count: " << m_entry_count << std::endl;
         return ss.str();
     }

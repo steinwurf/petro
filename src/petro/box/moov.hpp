@@ -5,14 +5,11 @@
 
 #pragma once
 
-#include "../byte_stream.hpp"
 #include "box.hpp"
 
 #include <cassert>
 #include <string>
 #include <vector>
-
-#include <iostream>
 
 namespace petro
 {
@@ -47,6 +44,11 @@ public:
         m_bs.skip(m_bs.remaining_size(), error);
         if (error)
             return;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
     }
 };
 

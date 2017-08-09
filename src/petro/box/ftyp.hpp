@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include "../byte_stream.hpp"
 #include "box.hpp"
 
 #include <cassert>
@@ -50,10 +49,14 @@ public:
         }
     }
 
-    virtual std::string describe() const
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string box_describe() const override
     {
         std::stringstream ss;
-        ss << box::describe() << std::endl;
         ss << "  major_brand: " << m_major_brand << std::endl;
         ss << "  minor_version: " << m_minor_version << std::endl;
 

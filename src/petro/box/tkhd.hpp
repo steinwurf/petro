@@ -9,7 +9,6 @@
 #include <string>
 
 #include "full_box.hpp"
-#include "../byte_stream.hpp"
 #include "../matrix.hpp"
 
 namespace petro
@@ -77,7 +76,7 @@ public:
             if (error)
                 return;
 
-            uint32_t duration_value;
+            uint32_t duration_value = 0;
             m_bs.read<uint32_t>(duration_value, error);
             if (error)
                 return;
@@ -122,10 +121,14 @@ public:
             return;
     }
 
-    virtual std::string describe() const
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  track_enabled: " << m_track_enabled << std::endl;
         ss << "  track_in_movie: " << m_track_in_movie << std::endl;
         ss << "  track_in_preview: " << m_track_in_preview << std::endl;

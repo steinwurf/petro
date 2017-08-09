@@ -8,11 +8,26 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <memory>
+#include <system_error>
+#include <vector>
 
 TEST(box_test_elst, construct)
 {
-    std::weak_ptr<petro::box::box> parent;
-    petro::box::elst b(parent);
-    EXPECT_EQ("elst", b.type());
+    std::vector<uint8_t> buffer =
+    {
+        0x00, 0x00, 0x00, 0x00,
+         'e',  'l',  's',  't',
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00
+    };
+    auto elst_box = std::make_shared<petro::box::elst>(
+        buffer.data(), buffer.size());
+
+    std::error_code error;
+    elst_box->parse(error);
+    ASSERT_FALSE(bool(error));
+
+    EXPECT_EQ("elst", elst_box->type());
 }

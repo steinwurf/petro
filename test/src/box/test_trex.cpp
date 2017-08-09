@@ -8,11 +8,24 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <memory>
+#include <system_error>
+#include <vector>
 
 TEST(box_test_trex, construct)
 {
-    std::weak_ptr<petro::box::box> parent;
-    petro::box::trex b(parent);
-    EXPECT_EQ("trex", b.type());
+    std::vector<uint8_t> buffer =
+    {
+        0x00, 0x00, 0x00, 0x00,
+         't',  'r',  'e',  'x'
+    };
+    auto trex_box = std::make_shared<petro::box::trex>(
+        buffer.data(), buffer.size());
+
+    std::error_code error;
+    trex_box->parse(error);
+    ASSERT_FALSE(bool(error));
+
+    EXPECT_EQ("trex", trex_box->type());
 }

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "full_box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -57,10 +56,14 @@ public:
             return;
     }
 
-    virtual std::string describe() const
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  max_pdu_size: " << m_max_pdu_size << std::endl;
         ss << "  average_pdu_size: " << m_average_pdu_size << std::endl;
         ss << "  max_bit_rate: " << m_max_bit_rate << std::endl;

@@ -7,75 +7,184 @@
 
 #include <gtest/gtest.h>
 
+namespace
+{
+struct dummy_box1 : petro::box::box
+{
+    dummy_box1(const uint8_t* data, uint64_t size) :
+        box(data, size)
+    { }
+
+    std::string type() const override
+    {
+        return m_type;
+    }
+};
+struct dummy_box2 : petro::box::box
+{
+    dummy_box2(const std::string& type) :
+        box((uint8_t*)0x12345678, 1U)
+    {
+        m_type = type;
+    }
+
+    std::string type() const override
+    {
+        return m_type;
+    }
+
+private:
+
+    using box::parse;
+};
+}
+
 TEST(box_test_box, create)
 {
-    petro::box::box b("test", std::weak_ptr<petro::box::box>());
+    std::vector<uint8_t> buffer =
+    {
+        0x00, 0x00, 0x00, 0x00,
+         'b',  'o',  'x',  ' '
+    };
+    auto box = std::make_shared<dummy_box1>(buffer.data(), buffer.size());
 }
 
 TEST(box_test_box, type)
 {
-    auto type = "test";
-    petro::box::box b(type, std::weak_ptr<petro::box::box>());
-    EXPECT_EQ(type, b.type());
+    auto type = "box ";
+    std::vector<uint8_t> buffer =
+    {
+        0x00, 0x00, 0x00, 0x00,
+        'b',  'o',  'x',  ' '
+    };
+    auto box = std::make_shared<dummy_box1>(buffer.data(), buffer.size());
+
+    std::error_code error;
+    box->parse(error);
+    ASSERT_FALSE(bool(error));
+
+    EXPECT_EQ(type, box->type());
 }
 
 TEST(box_test_box, extended_type)
 {
-    petro::box::box btest("test", std::weak_ptr<petro::box::box>());
-    EXPECT_TRUE(btest.extended_type().empty());
-
-    auto extended_type = "abcdefghijklmnop";
-    // extended type in big endian hex codes.
-    std::vector<uint8_t> data
     {
-        0x61,
-        0x62,
-        0x63,
-        0x64,
-        0x65,
-        0x66,
-        0x67,
-        0x68,
-        0x69,
-        0x6a,
-        0x6b,
-        0x6c,
-        0x6d,
-        0x6e,
-        0x6f,
-        0x70
-    };
-    petro::byte_stream bs(data.data(), data.size());
+        SCOPED_TRACE("no extended type");
+        std::vector<uint8_t> buffer =
+        {
+            0x00, 0x00, 0x00, 0x00,
+            'b',  'o',  'x',  ' '
+        };
+        auto box = std::make_shared<dummy_box1>(buffer.data(), buffer.size());
 
-    petro::box::box buuid("uuid", std::weak_ptr<petro::box::box>());
-    buuid.read(24, bs);
-    EXPECT_EQ(extended_type, buuid.extended_type());
+        std::error_code error;
+        box->parse(error);
+        ASSERT_FALSE(bool(error));
+
+        EXPECT_TRUE(box->extended_type().empty());
+    }
+    {
+        SCOPED_TRACE("with extended type");
+
+        auto extended_type = "abcdefghijklmnop";
+        std::vector<uint8_t> buffer =
+        {
+            0x00, 0x00, 0x00, 0x00,
+            'u',  'u',  'i',  'd',
+            0x61, 0x62, 0x63, 0x64,
+            0x65, 0x66, 0x67, 0x68,
+            0x69, 0x6a, 0x6b, 0x6c,
+            0x6d, 0x6e, 0x6f, 0x70
+        };
+        auto box = std::make_shared<dummy_box1>(buffer.data(), buffer.size());
+
+        std::error_code error;
+        box->parse(error);
+        ASSERT_FALSE(bool(error));
+
+        EXPECT_EQ("uuid", box->type());
+        EXPECT_EQ(extended_type, box->extended_type());
+    }
 }
 
 TEST(box_test_box, size)
 {
-    petro::box::box b("test", std::weak_ptr<petro::box::box>());
-    EXPECT_EQ(0U, b.size());
+    {
+        SCOPED_TRACE("size zero = whole buffer");
 
+        std::vector<uint8_t> buffer =
+        {
+            0x00, 0x00, 0x00, 0x00,
+            'b',  'o',  'x',  ' '
+        };
+        auto box = std::make_shared<dummy_box1>(buffer.data(), buffer.size());
 
-    auto size = 42;
-    std::vector<uint8_t> data;
-    petro::byte_stream bs(data.data(), size);
-    b.read(size, bs);
+        std::error_code error;
+        box->parse(error);
+        ASSERT_FALSE(bool(error));
+
+        EXPECT_EQ(buffer.size(), box->size());
+    }
+    {
+        SCOPED_TRACE("size non-zero and not 1 = first 4 bytes");
+
+        std::vector<uint8_t> buffer =
+        {
+            0x00, 0x00, 0x00, 0x0A,
+            'b',  'o',  'x',   ' ',
+            0x00, 0x00,  // box ends here
+            0x00, 0x00, 0x00, 0x00, // excessive data
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00
+        };
+        auto box = std::make_shared<dummy_box1>(buffer.data(), buffer.size());
+
+        std::error_code error;
+        box->parse(error);
+        ASSERT_FALSE(bool(error));
+
+        EXPECT_NE(buffer.size(), box->size());
+        EXPECT_EQ(10U, box->size());
+    }
+    {
+        SCOPED_TRACE("size 1 = extended_size");
+
+        std::vector<uint8_t> buffer =
+        {
+            0x00, 0x00, 0x00, 0x01,
+            'b',  'o',  'x',   ' ',
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x10,
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00
+        };
+        auto box = std::make_shared<dummy_box1>(buffer.data(), buffer.size());
+
+        std::error_code error;
+        box->parse(error);
+        assert(!error);
+        ASSERT_FALSE(bool(error));
+
+        EXPECT_NE(buffer.size(), box->size());
+        EXPECT_EQ(16U, box->size());
+    }
 }
 
 TEST(box_test_box, children)
 {
-    auto parent_type = "parent";
-    auto parent = std::make_shared<petro::box::box>(
-        parent_type, std::weak_ptr<petro::box::box>());
+    auto parent = std::make_shared<dummy_box2>("parent");
     EXPECT_EQ(0U, parent->children().size());
 
     auto child_type = "child";
-    auto child = std::make_shared<petro::box::box>(
-        child_type, parent);
-
+    auto child = std::make_shared<dummy_box2>(child_type);
+    child->set_parent(parent);
     parent->add_child(child);
+
     EXPECT_EQ(1U, parent->children().size());
 
     EXPECT_EQ(parent->type(), child->parent()->type());
@@ -89,44 +198,10 @@ TEST(box_test_box, children)
 TEST(box_test_box, describe)
 {
     auto type = "test";
-    petro::box::box b(type, std::weak_ptr<petro::box::box>());
+    auto box = std::make_shared<dummy_box2>(type);
 
-    auto description = b.describe();
+    auto description = box->describe();
 
     auto found = description.find(type);
     EXPECT_NE(std::string::npos, found);
-}
-
-TEST(box_test_box, read)
-{
-    {
-        SCOPED_TRACE("default size");
-        petro::box::box b("test", std::weak_ptr<petro::box::box>());
-        auto box_size = 42U;
-        std::vector<uint8_t> data(box_size + 10, 1);
-        petro::byte_stream bs(data.data(), data.size());
-        b.read(box_size, bs);
-        EXPECT_EQ(box_size, b.size());
-    }
-    {
-        SCOPED_TRACE("extended size");
-        petro::box::box b("test", std::weak_ptr<petro::box::box>());
-        std::vector<uint8_t> data
-        {
-            // 1337 in big endian hex code.
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x39
-        };
-        petro::byte_stream bs(data.data(), data.size());
-        b.read(1, bs);
-        EXPECT_EQ(1337U, b.size());
-    }
-    {
-        SCOPED_TRACE("eof size");
-        petro::box::box b("test", std::weak_ptr<petro::box::box>());
-        auto byte_stream_size = 42U;
-        std::vector<uint8_t> data(byte_stream_size, 1);
-        petro::byte_stream bs(data.data(), data.size());
-        b.read(0, bs);
-        EXPECT_EQ(byte_stream_size, b.size());
-    }
 }

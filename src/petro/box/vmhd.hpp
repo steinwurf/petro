@@ -9,7 +9,6 @@
 #include <string>
 
 #include "full_box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -36,7 +35,7 @@ public:
         std::vector<uint16_t> op_color(3);
         for (uint32_t i = 0; i < op_color.size(); ++i)
         {
-            uint16_t value;
+            uint16_t value = 0;
             m_bs.read(value, error);
             if (error)
                 return;
@@ -49,11 +48,15 @@ public:
             return;
     }
 
-    virtual std::string describe() const
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         assert(m_op_color.size() != 0);
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  graphics_mode: " << m_graphics_mode << std::endl;
         ss << "  op_color: #" <<
            (uint32_t)m_op_color[0] <<

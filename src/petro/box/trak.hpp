@@ -9,7 +9,6 @@
 #include <string>
 
 #include "box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -44,6 +43,11 @@ public:
         m_bs.skip(m_bs.remaining_size(), error);
         if (error)
             return;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
     }
 };
 

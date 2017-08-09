@@ -8,11 +8,24 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <memory>
+#include <system_error>
+#include <vector>
 
 TEST(box_test_trun, construct)
 {
-    std::weak_ptr<petro::box::box> parent;
-    petro::box::trun b(parent);
-    EXPECT_EQ("trun", b.type());
+    std::vector<uint8_t> buffer =
+    {
+        0x00, 0x00, 0x00, 0x00,
+         't',  'r',  'u',  'n'
+    };
+    auto trun_box = std::make_shared<petro::box::trun>(
+        buffer.data(), buffer.size());
+
+    std::error_code error;
+    trun_box->parse(error);
+    ASSERT_FALSE(bool(error));
+
+    EXPECT_EQ("trun", trun_box->type());
 }

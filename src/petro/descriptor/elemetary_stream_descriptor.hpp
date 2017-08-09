@@ -44,7 +44,7 @@ public:
         if (error)
             return;
 
-        uint8_t flags;
+        uint8_t flags = 0;
         m_bs.read(flags, error);
         if (error)
             return;
@@ -64,7 +64,7 @@ public:
 
         if (url_flag)
         {
-            uint8_t url_length;
+            uint8_t url_length = 0;
             m_bs.read(url_length, error);
             if (error)
                 return;
