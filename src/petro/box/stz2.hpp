@@ -66,7 +66,7 @@ public:
             }
             else if (m_field_size == 16)
             {
-                uint16_t data_value;
+                uint16_t data_value = 0;
                 m_bs.read(data_value, error);
                 if (error)
                     return;

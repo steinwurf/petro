@@ -37,7 +37,7 @@ public:
 
         for (uint32_t i = 0; i < m_entry_count; ++i)
         {
-            uint64_t entry;
+            uint64_t entry = 0;
             m_bs.read(entry, error);
             if (error)
                 return;
