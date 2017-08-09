@@ -66,7 +66,7 @@ public:
 
         for (uint8_t i = 0; i < m_num_of_sequence_parameter_sets; ++i)
         {
-            uint16_t sequence_parameter_set_length;
+            uint16_t sequence_parameter_set_length = 0;
             m_bs.read(sequence_parameter_set_length, error);
             if (error)
                 return;

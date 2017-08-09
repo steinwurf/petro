@@ -49,7 +49,7 @@ public:
         std::string name = "";
         while (m_bs.remaining_size() != 0)
         {
-            uint8_t c;
+            uint8_t c = 0;
             m_bs.read(c, error);
             if (error)
                 return;
