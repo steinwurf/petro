@@ -16,10 +16,10 @@
 TEST(box_test_sbgp, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x00,
-        's', 'b', 'g', 'p'
-    };
+        {
+            0x00, 0x00, 0x00, 0x00,
+            's', 'b', 'g', 'p'
+        };
     auto sbgp_box = std::make_shared<petro::box::sbgp>(
         buffer.data(), buffer.size());
 

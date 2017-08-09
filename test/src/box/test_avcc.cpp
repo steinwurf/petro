@@ -16,12 +16,12 @@
 TEST(box_test_avcc, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x00,
-        'a', 'v', 'c', 'C',
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00
-    };
+        {
+            0x00, 0x00, 0x00, 0x00,
+            'a', 'v', 'c', 'C',
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00
+        };
     auto avcc_box = std::make_shared<petro::box::avcc>(
         buffer.data(), buffer.size());
 

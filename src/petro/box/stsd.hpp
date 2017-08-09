@@ -369,26 +369,26 @@ public:
             if (handler_type == "vide") // for video tracks
             {
                 entry = std::make_shared<visual_sample_entry>(
-                        m_bs.remaining_data(),
-                        m_bs.remaining_size());
+                    m_bs.remaining_data(),
+                    m_bs.remaining_size());
             }
             else if (handler_type == "soun") // for audio tracks
             {
                 entry = std::make_shared<audio_sample_entry>(
-                        m_bs.remaining_data(),
-                        m_bs.remaining_size());
+                    m_bs.remaining_data(),
+                    m_bs.remaining_size());
             }
             else if (handler_type == "hint")
             {
                 entry = std::make_shared<hint_sample_entry>(
-                        m_bs.remaining_data(),
-                        m_bs.remaining_size());
+                    m_bs.remaining_data(),
+                    m_bs.remaining_size());
             }
             else
             {
                 entry = std::make_shared<sample_entry>(
-                        m_bs.remaining_data(),
-                        m_bs.remaining_size());
+                    m_bs.remaining_data(),
+                    m_bs.remaining_size());
             }
 
             entry->set_parent(shared_from_this());

@@ -16,10 +16,10 @@
 TEST(box_test_sdtp, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x00,
-        's', 'd', 't', 'p'
-    };
+        {
+            0x00, 0x00, 0x00, 0x00,
+            's', 'd', 't', 'p'
+        };
     auto sdtp_box = std::make_shared<petro::box::sdtp>(
         buffer.data(), buffer.size());
 

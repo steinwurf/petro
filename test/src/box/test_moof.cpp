@@ -17,12 +17,12 @@
 TEST(box_test_moof, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x10,
-        'm', 'o', 'o', 'f',
-        0x00, 0x00, 0x00, 0x08,
-        0x00, 0x00, 0x00, 0x00,
-    };
+        {
+            0x00, 0x00, 0x00, 0x10,
+            'm', 'o', 'o', 'f',
+            0x00, 0x00, 0x00, 0x08,
+            0x00, 0x00, 0x00, 0x00,
+        };
     auto moof_box = std::make_shared<petro::box::moof<petro::parser<>>>(
         buffer.data(), buffer.size());
 

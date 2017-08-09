@@ -16,12 +16,12 @@
 TEST(box_test_stts, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x00,
-        's', 't', 't', 's',
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00
-    };
+        {
+            0x00, 0x00, 0x00, 0x00,
+            's', 't', 't', 's',
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00
+        };
     auto stts_box = std::make_shared<petro::box::stts>(
         buffer.data(), buffer.size());
 

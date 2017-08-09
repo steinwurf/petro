@@ -17,12 +17,12 @@
 TEST(box_test_ipro, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x10,
-        'i', 'p', 'r', 'o',
-        0x00, 0x00, 0x00, 0x08,
-        0x00, 0x00, 0x00, 0x00,
-    };
+        {
+            0x00, 0x00, 0x00, 0x10,
+            'i', 'p', 'r', 'o',
+            0x00, 0x00, 0x00, 0x08,
+            0x00, 0x00, 0x00, 0x00,
+        };
     auto ipro_box = std::make_shared<petro::box::ipro<petro::parser<>>>(
         buffer.data(), buffer.size());
 

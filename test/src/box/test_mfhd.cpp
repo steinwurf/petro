@@ -16,10 +16,10 @@
 TEST(box_test_mfhd, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x00,
-        'm', 'f', 'h', 'd'
-    };
+        {
+            0x00, 0x00, 0x00, 0x00,
+            'm', 'f', 'h', 'd'
+        };
     auto mfhd_box = std::make_shared<petro::box::mfhd>(
         buffer.data(), buffer.size());
 

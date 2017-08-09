@@ -17,12 +17,12 @@
 TEST(box_test_sinf, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x10,
-        's', 'i', 'n', 'f',
-        0x00, 0x00, 0x00, 0x08,
-        0x00, 0x00, 0x00, 0x00,
-    };
+        {
+            0x00, 0x00, 0x00, 0x10,
+            's', 'i', 'n', 'f',
+            0x00, 0x00, 0x00, 0x08,
+            0x00, 0x00, 0x00, 0x00,
+        };
     auto sinf_box = std::make_shared<petro::box::sinf<petro::parser<>>>(
         buffer.data(), buffer.size());
 

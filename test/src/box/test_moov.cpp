@@ -17,12 +17,12 @@
 TEST(box_test_moov, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x10,
-        'm', 'o', 'o', 'v',
-        0x00, 0x00, 0x00, 0x08,
-        0x00, 0x00, 0x00, 0x00,
-    };
+        {
+            0x00, 0x00, 0x00, 0x10,
+            'm', 'o', 'o', 'v',
+            0x00, 0x00, 0x00, 0x08,
+            0x00, 0x00, 0x00, 0x00,
+        };
     auto moov_box = std::make_shared<petro::box::moov<petro::parser<>>>(
         buffer.data(), buffer.size());
 

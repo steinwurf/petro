@@ -36,7 +36,8 @@ std::shared_ptr<base_box> base_box::get_parent(const std::string& type) const
     return parent->get_parent(type);
 }
 
-std::shared_ptr<const base_box> base_box::get_child(const std::string& type) const
+std::shared_ptr<const base_box> base_box::get_child(const std::string& type)
+const
 {
     std::queue<std::shared_ptr<const base_box>> queue;
     auto child = shared_from_this();

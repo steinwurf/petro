@@ -31,12 +31,12 @@ struct dummy_full_box : petro::box::full_box
 TEST(box_test_fbtest, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x00,
-        'f', 'b', 'o', 'x',
-        0x00,
-        0x00, 0x00, 0x00
-    };
+        {
+            0x00, 0x00, 0x00, 0x00,
+            'f', 'b', 'o', 'x',
+            0x00,
+            0x00, 0x00, 0x00
+        };
 
     auto full_box = std::make_shared<dummy_full_box>(
         buffer.data(), buffer.size());

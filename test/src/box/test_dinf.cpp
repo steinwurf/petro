@@ -17,12 +17,12 @@
 TEST(box_test_dinf, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x10,
-        'd', 'i', 'n', 'f',
-        0x00, 0x00, 0x00, 0x08,
-        0x00, 0x00, 0x00, 0x00,
-    };
+        {
+            0x00, 0x00, 0x00, 0x10,
+            'd', 'i', 'n', 'f',
+            0x00, 0x00, 0x00, 0x08,
+            0x00, 0x00, 0x00, 0x00,
+        };
     auto dinf_box = std::make_shared<petro::box::dinf<petro::parser<>>>(
         buffer.data(), buffer.size());
 

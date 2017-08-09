@@ -77,7 +77,8 @@ public:
             m_bs.read(sample_description_index, error);
             if (error)
                 return;
-            m_entries.push_back(entry_type{
+            m_entries.push_back(entry_type
+            {
                 first_chunk,
                 samples_per_chunk,
                 sample_description_index

@@ -79,12 +79,12 @@ public:
                 if (error)
                     return;
                 m_entries.push_back(
-                {
-                    segment_duration,
-                    media_time,
-                    media_rate_integer,
-                    media_rate_fraction
-                });
+                    {
+                        segment_duration,
+                        media_time,
+                        media_rate_integer,
+                        media_rate_fraction
+                    });
             }
             else // m_version == 0
             {
@@ -105,12 +105,12 @@ public:
                 if (error)
                     return;
                 m_entries.push_back(
-                {
-                    segment_duration,
-                    media_time,
-                    media_rate_integer,
-                    media_rate_fraction
-                });
+                    {
+                        segment_duration,
+                        media_time,
+                        media_rate_integer,
+                        media_rate_fraction
+                    });
             }
         }
         m_bs.skip(m_bs.remaining_size(), error);

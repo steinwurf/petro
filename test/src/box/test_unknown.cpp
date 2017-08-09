@@ -16,10 +16,10 @@
 TEST(box_test_unknown, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x00,
-        'b', 'o', 'x', 'y'
-    };
+        {
+            0x00, 0x00, 0x00, 0x00,
+            'b', 'o', 'x', 'y'
+        };
     auto unknown_box = std::make_shared<petro::box::unknown>(
         buffer.data(), buffer.size());
 

@@ -126,7 +126,7 @@ private:
     uint32_t m_average_bitrate = 0;
     decoder_specific_info_descriptor_type m_decoder_specific_info_descriptor;
     std::vector<std::shared_ptr<descriptor>>
-        m_profile_level_indication_index_descriptors;
+    m_profile_level_indication_index_descriptors;
 };
 }
 }

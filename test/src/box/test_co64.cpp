@@ -16,12 +16,12 @@
 TEST(box_test_co64, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x00,
-        'c', 'o', '6', '4',
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00
-    };
+        {
+            0x00, 0x00, 0x00, 0x00,
+            'c', 'o', '6', '4',
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00
+        };
     auto co64_box = std::make_shared<petro::box::co64>(
         buffer.data(), buffer.size());
 

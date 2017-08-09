@@ -17,12 +17,12 @@
 TEST(box_test_mvex, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x10,
-        'm', 'v', 'e', 'x',
-        0x00, 0x00, 0x00, 0x08,
-        0x00, 0x00, 0x00, 0x00,
-    };
+        {
+            0x00, 0x00, 0x00, 0x10,
+            'm', 'v', 'e', 'x',
+            0x00, 0x00, 0x00, 0x08,
+            0x00, 0x00, 0x00, 0x00,
+        };
     auto mvex_box = std::make_shared<petro::box::mvex<petro::parser<>>>(
         buffer.data(), buffer.size());
 

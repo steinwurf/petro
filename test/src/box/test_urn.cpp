@@ -16,10 +16,10 @@
 TEST(box_test_urn, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x00,
-        'u', 'r', 'n', ' '
-    };
+        {
+            0x00, 0x00, 0x00, 0x00,
+            'u', 'r', 'n', ' '
+        };
     auto urn_box = std::make_shared<petro::box::urn>(
         buffer.data(), buffer.size());
 

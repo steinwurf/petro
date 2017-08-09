@@ -16,10 +16,10 @@
 TEST(box_test_imif, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x00,
-        'i', 'm', 'i', 'f'
-    };
+        {
+            0x00, 0x00, 0x00, 0x00,
+            'i', 'm', 'i', 'f'
+        };
     auto imif_box = std::make_shared<petro::box::imif>(
         buffer.data(), buffer.size());
 

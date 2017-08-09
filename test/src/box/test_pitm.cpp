@@ -16,10 +16,10 @@
 TEST(box_test_pitm, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x00,
-        'p', 'i', 't', 'm'
-    };
+        {
+            0x00, 0x00, 0x00, 0x00,
+            'p', 'i', 't', 'm'
+        };
     auto pitm_box = std::make_shared<petro::box::pitm>(
         buffer.data(), buffer.size());
 

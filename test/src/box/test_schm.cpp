@@ -16,10 +16,10 @@
 TEST(box_test_schm, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x00,
-        's', 'c', 'h', 'm'
-    };
+        {
+            0x00, 0x00, 0x00, 0x00,
+            's', 'c', 'h', 'm'
+        };
     auto schm_box = std::make_shared<petro::box::schm>(
         buffer.data(), buffer.size());
 

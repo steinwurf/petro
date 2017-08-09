@@ -17,12 +17,12 @@
 TEST(box_test_traf, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x10,
-        't', 'r', 'a', 'f',
-        0x00, 0x00, 0x00, 0x08,
-        0x00, 0x00, 0x00, 0x00,
-    };
+        {
+            0x00, 0x00, 0x00, 0x10,
+            't', 'r', 'a', 'f',
+            0x00, 0x00, 0x00, 0x08,
+            0x00, 0x00, 0x00, 0x00,
+        };
     auto traf_box = std::make_shared<petro::box::traf<petro::parser<>>>(
         buffer.data(), buffer.size());
 

@@ -16,12 +16,12 @@
 TEST(box_test_elst, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x00,
-        'e', 'l', 's', 't',
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00
-    };
+        {
+            0x00, 0x00, 0x00, 0x00,
+            'e', 'l', 's', 't',
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00
+        };
     auto elst_box = std::make_shared<petro::box::elst>(
         buffer.data(), buffer.size());
 

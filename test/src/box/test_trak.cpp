@@ -17,12 +17,12 @@
 TEST(box_test_trak, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x10,
-        't', 'r', 'a', 'k',
-        0x00, 0x00, 0x00, 0x08,
-        0x00, 0x00, 0x00, 0x00,
-    };
+        {
+            0x00, 0x00, 0x00, 0x10,
+            't', 'r', 'a', 'k',
+            0x00, 0x00, 0x00, 0x08,
+            0x00, 0x00, 0x00, 0x00,
+        };
     auto trak_box = std::make_shared<petro::box::trak<petro::parser<>>>(
         buffer.data(), buffer.size());
 

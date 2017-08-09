@@ -16,10 +16,10 @@
 TEST(box_test_schi, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x00,
-        's', 'c', 'h', 'i'
-    };
+        {
+            0x00, 0x00, 0x00, 0x00,
+            's', 'c', 'h', 'i'
+        };
     auto schi_box = std::make_shared<petro::box::schi>(
         buffer.data(), buffer.size());
 

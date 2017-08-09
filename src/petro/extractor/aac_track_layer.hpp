@@ -60,8 +60,8 @@ public:
 
         auto descriptor =
             esds->descriptor()->
-                decoder_config_descriptor()->
-                    decoder_specific_info_descriptor();
+            decoder_config_descriptor()->
+            decoder_specific_info_descriptor();
 
         if (descriptor == nullptr)
         {

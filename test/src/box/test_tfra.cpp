@@ -16,10 +16,10 @@
 TEST(box_test_tfra, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x00,
-        't', 'f', 'r', 'a'
-    };
+        {
+            0x00, 0x00, 0x00, 0x00,
+            't', 'f', 'r', 'a'
+        };
     auto tfra_box = std::make_shared<petro::box::tfra>(
         buffer.data(), buffer.size());
 

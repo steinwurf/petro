@@ -17,12 +17,12 @@
 TEST(box_test_edts, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x10,
-        'e', 'd', 't', 's',
-        0x00, 0x00, 0x00, 0x08,
-        0x00, 0x00, 0x00, 0x00,
-    };
+        {
+            0x00, 0x00, 0x00, 0x10,
+            'e', 'd', 't', 's',
+            0x00, 0x00, 0x00, 0x08,
+            0x00, 0x00, 0x00, 0x00,
+        };
     auto edts_box = std::make_shared<petro::box::edts<petro::parser<>>>(
         buffer.data(), buffer.size());
 

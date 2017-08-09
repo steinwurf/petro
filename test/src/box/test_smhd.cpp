@@ -16,13 +16,13 @@
 TEST(box_test_smhd, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x00,
-        's', 'm', 'h', 'd',
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00,
-        0x00, 0x00,
-    };
+        {
+            0x00, 0x00, 0x00, 0x00,
+            's', 'm', 'h', 'd',
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00,
+            0x00, 0x00,
+        };
     auto smhd_box = std::make_shared<petro::box::smhd>(
         buffer.data(), buffer.size());
 

@@ -16,10 +16,10 @@
 TEST(box_test_iinf, construct)
 {
     std::vector<uint8_t> buffer =
-    {
-        0x00, 0x00, 0x00, 0x00,
-        'i', 'i', 'n', 'f'
-    };
+        {
+            0x00, 0x00, 0x00, 0x00,
+            'i', 'i', 'n', 'f'
+        };
     auto iinf_box = std::make_shared<petro::box::iinf>(
         buffer.data(), buffer.size());
 
