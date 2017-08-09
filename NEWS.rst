@@ -6,7 +6,9 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Major: Changed constructor parameters of ``box``.
+* Major: Renamed ``box::read`` to ``box::parse``.
+* Major: Split ``box`` into two classes; ``box::base_box`` and ``box::box``.
 
 7.2.0
 -----

@@ -43,7 +43,6 @@ int main(int argc, char* argv[])
         return 0;
     }
     auto filename = std::string(argv[1]);
-
     boost::iostreams::mapped_file_source mp4_file(filename);
 
     if (!mp4_file.is_open())

@@ -5,9 +5,9 @@
 
 #pragma once
 
-#include "box.hpp"
 
 #include "avcc.hpp"
+#include "box.hpp"
 #include "bxml.hpp"
 #include "co64.hpp"
 #include "cprt.hpp"
