@@ -75,7 +75,7 @@ public:
             for (uint32_t i = 0; i < sample_count; ++i)
             {
                 decoding_time += sample_delta;
-                m_samples.push_back(
+                m_samples.push_back(sample
                 {
                     decoding_time,
                     sample_delta

@@ -92,7 +92,8 @@ public:
         if (error)
             return;
 
-        m_bs.read_unsigned_exponential_golomb_code(m_seq_parameter_set_id, error);
+        m_bs.read_unsigned_exponential_golomb_code(
+            m_seq_parameter_set_id, error);
         if (error)
             return;
 
@@ -104,7 +105,8 @@ public:
             m_profile_idc == 134 || m_profile_idc == 138 ||
             m_profile_idc == 139 || m_profile_idc == 244)
         {
-            m_bs.read_unsigned_exponential_golomb_code(m_chroma_format_idc, error);
+            m_bs.read_unsigned_exponential_golomb_code(
+                m_chroma_format_idc, error);
             if (error)
                 return;
 
@@ -121,7 +123,8 @@ public:
                 return;
 
             m_bit_depth_luma += 8;
-            m_bs.read_unsigned_exponential_golomb_code(m_bit_depth_chroma, error);
+            m_bs.read_unsigned_exponential_golomb_code(
+                m_bit_depth_chroma, error);
             if (error)
                 return;
 
@@ -156,7 +159,8 @@ public:
                             if (next_scale != 0)
                             {
                                 int32_t delta_scale = 0;
-                                m_bs.read_signed_exponential_golomb_code(delta_scale, error);
+                                m_bs.read_signed_exponential_golomb_code(
+                                    delta_scale, error);
                                 if (error)
                                     return;
 
@@ -191,7 +195,8 @@ public:
 
         if (m_pic_order_cnt_type == 0)
         {
-            m_bs.read_unsigned_exponential_golomb_code(m_log2_max_pic_order_cnt_lsb, error);
+            m_bs.read_unsigned_exponential_golomb_code(
+                m_log2_max_pic_order_cnt_lsb, error);
             if (error)
                 return;
 
@@ -211,7 +216,8 @@ public:
             if (error)
                 return;
 
-            m_bs.read_unsigned_exponential_golomb_code(m_num_ref_frames_in_pic_order_cnt_cycle, error);
+            m_bs.read_unsigned_exponential_golomb_code(
+                m_num_ref_frames_in_pic_order_cnt_cycle, error);
             if (error)
                 return;
 
@@ -219,7 +225,8 @@ public:
                  i < m_num_ref_frames_in_pic_order_cnt_cycle; i++)
             {
                 int32_t offset_for_ref_frame = 0;
-                m_bs.read_signed_exponential_golomb_code(offset_for_ref_frame, error);
+                m_bs.read_signed_exponential_golomb_code(
+                    offset_for_ref_frame, error);
                 if (error)
                     return;
 
@@ -241,7 +248,8 @@ public:
 
         m_pic_width_in_mbs += 1;
 
-        m_bs.read_unsigned_exponential_golomb_code(m_pic_height_in_map_units, error);
+        m_bs.read_unsigned_exponential_golomb_code(
+            m_pic_height_in_map_units, error);
         if (error)
             return;
 
@@ -269,19 +277,23 @@ public:
 
         if (m_frame_cropping_flag)
         {
-            m_bs.read_unsigned_exponential_golomb_code(m_frame_crop_left_offset, error);
+            m_bs.read_unsigned_exponential_golomb_code(
+                m_frame_crop_left_offset, error);
             if (error)
                 return;
 
-            m_bs.read_unsigned_exponential_golomb_code(m_frame_crop_right_offset, error);
+            m_bs.read_unsigned_exponential_golomb_code(
+                m_frame_crop_right_offset, error);
             if (error)
                 return;
 
-            m_bs.read_unsigned_exponential_golomb_code(m_frame_crop_top_offset, error);
+            m_bs.read_unsigned_exponential_golomb_code(
+                m_frame_crop_top_offset, error);
             if (error)
                 return;
 
-            m_bs.read_unsigned_exponential_golomb_code(m_frame_crop_bottom_offset, error);
+            m_bs.read_unsigned_exponential_golomb_code(
+                m_frame_crop_bottom_offset, error);
             if (error)
                 return;
 
