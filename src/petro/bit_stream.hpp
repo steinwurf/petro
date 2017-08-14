@@ -9,6 +9,9 @@
 #include <cassert>
 #include <vector>
 #include <limits>
+#include <system_error>
+
+#include "error.hpp"
 
 namespace petro
 {
@@ -16,16 +19,16 @@ namespace petro
 /// The reading is done in most significant byte first, most significant
 /// bit first order. Example:
 ///
-/// 5 bits: 2 (00010)
-/// 4 bits: 4 (0100)
+/// 5 bits: 4 (00100)
+/// 4 bits: 8 (1000)
 /// 4 bits: 2 (0010)
 /// 3 bits: 0 (000)
 ///
 /// Byte 1: 00100100
 /// Byte 2: 00010000
 ///
-/// 00100100 00100000
-/// [ 2][ 4] [ 2][ 0]
+/// 00100100 00010000
+/// [ 2 ][ 4 ][ 2][0]
 ///
 class bit_stream
 {
@@ -44,66 +47,106 @@ public:
         bit_stream(data.data(), data.size())
     { }
 
-    uint8_t read_next_bit()
+    void skip(uint64_t bits, std::error_code& error)
     {
-        assert(m_bit_offset < bits());
-        auto byte = m_bit_offset / 8;
-        auto position = 7 - (m_bit_offset % 8);
-        m_bit_offset += 1;
-        return (m_data[byte] >> position) & 0x1;
-    }
-
-    void skip(uint64_t bits)
-    {
+        assert(!error);
+        if ((m_bit_offset + bits) > bit_stream::bits())
+        {
+            error = petro::error::invalid_bit_stream_read;
+            return;
+        }
         m_bit_offset += bits;
-        assert(m_bit_offset < bit_stream::bits());
     }
 
-    void seek(uint64_t offset)
+    void seek(uint64_t offset, std::error_code& error)
     {
-        assert(offset < bits());
+        assert(!error);
+        if (offset > bits())
+        {
+            error = petro::error::invalid_bit_stream_read;
+            return;
+        }
         m_bit_offset = offset;
     }
 
-    uint8_t read_bit()
+    template<class ValueType>
+    void read_bit(ValueType& out, std::error_code& error)
     {
-        return read_bits(1);
+        assert(!error);
+        read_bits(out, 1, error);
     }
 
-    uint32_t read_bits(uint32_t bits)
+    template<class ValueType>
+    void read_bits(ValueType& out, uint32_t bits, std::error_code& error)
     {
-        assert(bits <= 32);
-        uint32_t result = 0;
+        assert(sizeof(ValueType) * 8 <= 32);
+        assert(!error);
+        ValueType result = 0;
         for (uint32_t i = 0; i < bits; i++)
         {
-            result |= (read_next_bit() << (bits - i - 1));
+            uint8_t v = 0;
+            read_next_bit(v, error);
+            if (error)
+                return;
+
+            result |= (v << (bits - i - 1));
         }
-        return result;
+        out = result;
     }
 
-    uint32_t read_unsigned_exponential_golomb_code()
+    void read_unsigned_exponential_golomb_code(
+        uint32_t& out, std::error_code& error)
     {
+        assert(!error);
+        auto offset_before = m_bit_offset;
         uint32_t i = 0;
-        while ((read_bit() == 0) && (i < 32U))
+        for (; i < 32U; ++i)
         {
-            i++;
+            bool value = false;
+            read_bit(value, error);
+            if (error)
+            {
+                m_bit_offset = offset_before;
+                return;
+            }
+
+            if (value)
+                break;
         }
-        uint32_t result = read_bits(i);
+
+        uint32_t result = 0;
+        read_bits(result, i, error);
+        if (error)
+        {
+            m_bit_offset = offset_before;
+            return;
+        }
         result += (1 << i) - 1;
-        return result;
+        out = result;
     }
 
-    int32_t read_signed_exponential_golomb_code()
+    void read_signed_exponential_golomb_code(
+        int32_t& out, std::error_code& error)
     {
-        int64_t result = read_unsigned_exponential_golomb_code();
-        if (result & 0x01)
+        assert(!error);
+        uint32_t v = 0;
+        read_unsigned_exponential_golomb_code(v, error);
+        if (error)
+            return;
+
+        if (v & 0x01)
         {
-            return (result + 1) / 2;
+            out = (v + 1) / 2;
         }
         else
         {
-            return -(result / 2);
+            out = -(v / 2);
         }
+    }
+
+    const uint8_t* data() const
+    {
+        return m_data;
     }
 
     uint64_t size() const
@@ -118,8 +161,25 @@ public:
 
 private:
 
+    void read_next_bit(uint8_t& value, std::error_code& error)
+    {
+        assert(!error);
+        if (m_bit_offset >= bits())
+        {
+            error = petro::error::invalid_bit_stream_read;
+            return;
+        }
+
+        auto byte = m_bit_offset / 8;
+        auto position = 7 - (m_bit_offset % 8);
+        m_bit_offset += 1;
+        value = (m_data[byte] >> position) & 0x1;
+    }
+
+private:
+
     const uint8_t* m_data;
-    uint64_t m_size;
+    const uint64_t m_size;
     uint64_t m_bit_offset;
 };
 }

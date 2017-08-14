@@ -4,7 +4,8 @@
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
 PETRO_ERROR_TAG(unused, "reserved since errors should never be zero.")
-PETRO_ERROR_TAG(invalid_read, "Invalid read.")
+PETRO_ERROR_TAG(invalid_stream_read, "Invalid stream read.")
+PETRO_ERROR_TAG(invalid_bit_stream_read, "Invalid bit stream read.")
 PETRO_ERROR_TAG(invalid_box, "Unable to parse box.")
 PETRO_ERROR_TAG(invalid_full_box, "Unable to parse full box.")
 PETRO_ERROR_TAG(invalid_avcc_box, "Unable to read AVCC box")
@@ -78,6 +79,7 @@ PETRO_ERROR_TAG(invalid_urn_box, "Unable to read URN box")
 PETRO_ERROR_TAG(invalid_vmhd_box, "Unable to read VMHD box")
 PETRO_ERROR_TAG(invalid_xml_box, "Unable to read XML box")
 PETRO_ERROR_TAG(invalid_sample_entry, "Unable to read sample entry")
+PETRO_ERROR_TAG(invalid_sps, "Unable to read sequence parameter set")
 PETRO_ERROR_TAG(mp4a_box_missing, "Unable to find mp4a box")
 PETRO_ERROR_TAG(trak_box_missing, "Unable to find trak box")
 PETRO_ERROR_TAG(esds_box_missing, "Unable to find esds box")

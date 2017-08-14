@@ -235,6 +235,6 @@ private:
 
 private:
 
-    petro::error m_error = petro::error::invalid_read;
+    petro::error m_error = petro::error::invalid_stream_read;
 };
 }

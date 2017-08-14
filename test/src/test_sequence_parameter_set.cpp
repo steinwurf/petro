@@ -17,6 +17,10 @@ TEST(test_sequence_parameter_set, check_variables)
         };
 
     petro::sequence_parameter_set sps(data.data(), data.size());
+    std::error_code error;
+    sps.parse(error);
+    ASSERT_FALSE(bool(error));
+
     EXPECT_EQ(66U, sps.profile_idc());
     EXPECT_EQ(0U, sps.constraint_set0_flag());
     EXPECT_EQ(0U, sps.constraint_set1_flag());
@@ -49,6 +53,10 @@ TEST(test_sequence_parameter_set, width512_height288)
             0x80
         };
     petro::sequence_parameter_set sps(data.data(), data.size());
+    std::error_code error;
+    sps.parse(error);
+    ASSERT_FALSE(bool(error));
+
     EXPECT_EQ(100U, sps.profile_idc());
     EXPECT_EQ(0U, sps.constraint_set0_flag());
     EXPECT_EQ(0U, sps.constraint_set1_flag());
@@ -78,9 +86,11 @@ TEST(test_sequence_parameter_set, width1280_height800)
         };
 
     petro::sequence_parameter_set sps(data.data(), data.size());
+    std::error_code error;
+    sps.parse(error);
+    ASSERT_FALSE(bool(error));
     EXPECT_EQ(1280U, sps.width());
     EXPECT_EQ(800U, sps.height());
-
 }
 
 TEST(test_sequence_parameter_set, width1920_height1080)
@@ -95,6 +105,9 @@ TEST(test_sequence_parameter_set, width1920_height1080)
         };
 
     petro::sequence_parameter_set sps(data.data(), data.size());
+    std::error_code error;
+    sps.parse(error);
+    ASSERT_FALSE(bool(error));
     EXPECT_EQ(1920U, sps.width());
     EXPECT_EQ(1080U, sps.height());
 }
@@ -112,6 +125,9 @@ TEST(test_sequence_parameter_set, width3840_height2160)
         };
 
     petro::sequence_parameter_set sps(data.data(), data.size());
+    std::error_code error;
+    sps.parse(error);
+    ASSERT_FALSE(bool(error));
     EXPECT_EQ(3840U, sps.width());
     EXPECT_EQ(2160U, sps.height());
 }
@@ -127,6 +143,9 @@ TEST(test_sequence_parameter_set, width560_height320)
         };
 
     petro::sequence_parameter_set sps(data.data(), data.size());
+    std::error_code error;
+    sps.parse(error);
+    ASSERT_FALSE(bool(error));
     EXPECT_EQ(560U, sps.width());
     EXPECT_EQ(320U, sps.height());
 }

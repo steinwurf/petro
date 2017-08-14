@@ -39,17 +39,32 @@ public:
         if (error)
             return;
 
-        m_mpeg_audio_object_type = bit_stream.read_bits(5);
+        bit_stream.read_bits(m_mpeg_audio_object_type, 5, error);
+        if (error)
+            return;
 
         if (m_mpeg_audio_object_type == 0x1F)
-            m_mpeg_audio_object_type = 32 + bit_stream.read_bits(6);
+        {
+            bit_stream.read_bits(m_mpeg_audio_object_type, 6, error);
+            if (error)
+                return;
+            m_mpeg_audio_object_type += 32;
+        }
 
-        m_frequency_index = bit_stream.read_bits(4);
+        bit_stream.read_bits(m_frequency_index, 4, error);
+        if (error)
+            return;
 
         if (m_frequency_index == 0x0F)
-            m_frequency_index = bit_stream.read_bits(24);
+        {
+            bit_stream.read_bits(m_frequency_index, 24, error);
+            if (error)
+                return;
+        }
 
-        m_channel_configuration = bit_stream.read_bits(4);
+        bit_stream.read_bits(m_channel_configuration, 4, error);
+        if (error)
+            return;
     }
 
     uint8_t mpeg_audio_object_type() const
