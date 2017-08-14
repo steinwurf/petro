@@ -72,6 +72,8 @@ public:
     template<class ValueType>
     void read_bit(ValueType& out, std::error_code& error)
     {
+        static_assert(std::is_integral<ValueType>::value, "integer required");
+        static_assert(!std::is_same<ValueType, bool>::value, "bool disallowed");
         assert(!error);
         read_bits(out, 1, error);
     }
@@ -79,6 +81,8 @@ public:
     template<class ValueType>
     void read_bits(ValueType& out, uint32_t bits, std::error_code& error)
     {
+        static_assert(std::is_integral<ValueType>::value, "integer required");
+        static_assert(!std::is_same<ValueType, bool>::value, "bool disallowed");
         assert(sizeof(ValueType) * 8 <= 32);
         assert(!error);
         ValueType result = 0;
@@ -102,7 +106,7 @@ public:
         uint32_t i = 0;
         for (; i < 32U; ++i)
         {
-            bool value = false;
+            uint8_t value = 0;
             read_bit(value, error);
             if (error)
             {
