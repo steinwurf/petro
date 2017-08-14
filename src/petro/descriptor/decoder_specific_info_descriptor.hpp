@@ -9,7 +9,7 @@
 
 #include "descriptor.hpp"
 
-#include "../bit_reader.hpp"
+#include "../bit_stream.hpp"
 
 namespace petro
 {
@@ -32,24 +32,24 @@ public:
             return;
         }
 
-        auto bit_reader =
-            petro::bit_reader(m_bs.remaining_data(), m_bs.remaining_size());
+        auto bit_stream =
+            petro::bit_stream(m_bs.remaining_data(), m_bs.remaining_size());
 
         m_bs.skip(m_bs.remaining_size(), error);
         if (error)
             return;
 
-        m_mpeg_audio_object_type = bit_reader.read_bits(5);
+        m_mpeg_audio_object_type = bit_stream.read_bits(5);
 
         if (m_mpeg_audio_object_type == 0x1F)
-            m_mpeg_audio_object_type = 32 + bit_reader.read_bits(6);
+            m_mpeg_audio_object_type = 32 + bit_stream.read_bits(6);
 
-        m_frequency_index = bit_reader.read_bits(4);
+        m_frequency_index = bit_stream.read_bits(4);
 
         if (m_frequency_index == 0x0F)
-            m_frequency_index = bit_reader.read_bits(24);
+            m_frequency_index = bit_stream.read_bits(24);
 
-        m_channel_configuration = bit_reader.read_bits(4);
+        m_channel_configuration = bit_stream.read_bits(4);
     }
 
     uint8_t mpeg_audio_object_type() const

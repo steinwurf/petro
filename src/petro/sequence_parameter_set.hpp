@@ -9,7 +9,7 @@
 #include <sstream>
 #include <vector>
 
-#include "bit_reader.hpp"
+#include "bit_stream.hpp"
 
 namespace petro
 {
@@ -393,7 +393,7 @@ private:
 
     const uint8_t* m_data;
     uint32_t m_size;
-    bit_reader m_bs;
+    bit_stream m_bs;
 
     uint32_t m_height;
     uint32_t m_width;

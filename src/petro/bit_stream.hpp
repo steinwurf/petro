@@ -27,11 +27,11 @@ namespace petro
 /// 00100100 00100000
 /// [ 2][ 4] [ 2][ 0]
 ///
-class bit_reader
+class bit_stream
 {
 public:
 
-    bit_reader(const uint8_t* data, uint32_t size) :
+    bit_stream(const uint8_t* data, uint32_t size) :
         m_data(data),
         m_size(size),
         m_bit_offset(0)
@@ -40,8 +40,8 @@ public:
         assert(m_size < std::numeric_limits<uint64_t>::max() / 8);
     }
 
-    bit_reader(const std::vector<uint8_t>& data) :
-        bit_reader(data.data(), data.size())
+    bit_stream(const std::vector<uint8_t>& data) :
+        bit_stream(data.data(), data.size())
     { }
 
     uint8_t read_next_bit()
@@ -56,7 +56,7 @@ public:
     void skip(uint64_t bits)
     {
         m_bit_offset += bits;
-        assert(m_bit_offset < bit_reader::bits());
+        assert(m_bit_offset < bit_stream::bits());
     }
 
     void seek(uint64_t offset)
