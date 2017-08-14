@@ -69,7 +69,7 @@ void box::parse(std::error_code& error)
     }
     // "Resize" stream_reader
     auto position = m_bs.position();
-    m_bs = stream_error_code_wrapper(m_bs.data(), size);
+    m_bs = stream(m_bs.data(), size);
     m_bs.seek(position, error);
     if (error)
         return;

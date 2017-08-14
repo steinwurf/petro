@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "stream_error_code_wrapper.hpp"
+#include "stream.hpp"
 
 namespace petro
 {

@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-#include "../stream_error_code_wrapper.hpp"
+#include "../stream.hpp"
 #include "tag.hpp"
 
 namespace petro
@@ -60,7 +60,7 @@ public:
         // hence the total size is how much we've read already, plus the legnth.
         auto position = m_bs.position();
         auto total_size = position + length;
-        m_bs = stream_error_code_wrapper(m_bs.data(), total_size);
+        m_bs = stream(m_bs.data(), total_size);
         m_bs.seek(position, error);
         if (error)
             return;
@@ -83,7 +83,7 @@ public:
 
 protected:
 
-    stream_error_code_wrapper m_bs;
+    stream m_bs;
     tag m_tag = tag(0U);
 };
 }

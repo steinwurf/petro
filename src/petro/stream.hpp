@@ -23,8 +23,7 @@
 
 namespace petro
 {
-class stream_error_code_wrapper :
-    private endian::stream_reader<endian::big_endian>
+class stream : private endian::stream_reader<endian::big_endian>
 {
 public:
     // Expose some of the
@@ -36,7 +35,7 @@ public:
 
 public:
 
-    stream_error_code_wrapper(const uint8_t* data, uint64_t size) :
+    stream(const uint8_t* data, uint64_t size) :
         endian::stream_reader<endian::big_endian>(data, size)
     { }
 

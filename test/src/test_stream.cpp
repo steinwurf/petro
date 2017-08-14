@@ -3,7 +3,7 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/stream_error_code_wrapper.hpp>
+#include <petro/stream.hpp>
 
 #include <cstdint>
 #include <vector>
@@ -20,7 +20,7 @@ namespace
 {
 template<class ValueType>
 void test_read(
-    petro::stream_error_code_wrapper& bs,
+    petro::stream& bs,
     const std::vector<ValueType>& expected_values)
 {
     // check vitals
@@ -39,12 +39,12 @@ void test_read(
 }
 }
 
-TEST(test_stream_error_code_wrapper, create)
+TEST(test_stream, create)
 {
     uint32_t size = 42;
     uint8_t content = 8;
     std::vector<uint8_t> data(size, content);
-    auto bs = petro::stream_error_code_wrapper(data.data(), size);
+    auto bs = petro::stream(data.data(), size);
 
     // check vitals
     EXPECT_EQ(size, bs.remaining_size());
@@ -64,13 +64,13 @@ TEST(test_stream_error_code_wrapper, create)
     }
 }
 
-TEST(test_stream_error_code_wrapper, skip)
+TEST(test_stream, skip)
 {
     uint32_t remaining_size = 5;
     uint32_t size = 42;
     uint8_t content = 8;
     std::vector<uint8_t> data(size, content);
-    auto bs = petro::stream_error_code_wrapper(data.data(), size);
+    auto bs = petro::stream(data.data(), size);
 
     // check vitals
     EXPECT_EQ(size, bs.remaining_size());
@@ -83,7 +83,7 @@ TEST(test_stream_error_code_wrapper, skip)
     EXPECT_EQ(remaining_size, bs.remaining_size());
 }
 
-TEST(test_stream_error_code_wrapper, read_uint8_t)
+TEST(test_stream, read_uint8_t)
 {
     std::vector<uint8_t> data =
         {
@@ -95,11 +95,11 @@ TEST(test_stream_error_code_wrapper, read_uint8_t)
         };
     auto expected = data;
 
-    auto bs = petro::stream_error_code_wrapper(data.data(), data.size());
+    auto bs = petro::stream(data.data(), data.size());
     test_read(bs, expected);
 }
 
-TEST(test_stream_error_code_wrapper, read_int16_t)
+TEST(test_stream, read_int16_t)
 {
     std::vector<uint8_t> data =
         {
@@ -119,11 +119,11 @@ TEST(test_stream_error_code_wrapper, read_int16_t)
             -15105  // hex = 0xC4FF
         };
 
-    auto bs = petro::stream_error_code_wrapper(data.data(), data.size());
+    auto bs = petro::stream(data.data(), data.size());
     test_read(bs, expected);
 }
 
-TEST(test_stream_error_code_wrapper, read_uint16_t)
+TEST(test_stream, read_uint16_t)
 {
     std::vector<uint8_t> data =
         {
@@ -143,11 +143,11 @@ TEST(test_stream_error_code_wrapper, read_uint16_t)
             0xC4FF
         };
 
-    auto bs = petro::stream_error_code_wrapper(data.data(), data.size());
+    auto bs = petro::stream(data.data(), data.size());
     test_read(bs, expected);
 }
 
-TEST(test_stream_error_code_wrapper, read_int32_t)
+TEST(test_stream, read_int32_t)
 {
     std::vector<uint8_t> data =
         {
@@ -173,11 +173,11 @@ TEST(test_stream_error_code_wrapper, read_int32_t)
             -60          // hex = 0xFFFFFFC4
         };
 
-    auto bs = petro::stream_error_code_wrapper(data.data(), data.size());
+    auto bs = petro::stream(data.data(), data.size());
     test_read(bs, expected);
 }
 
-TEST(test_stream_error_code_wrapper, read_uint32_t)
+TEST(test_stream, read_uint32_t)
 {
     std::vector<uint8_t> data =
         {
@@ -201,11 +201,11 @@ TEST(test_stream_error_code_wrapper, read_uint32_t)
             0xC4FFFFFF
         };
 
-    auto bs = petro::stream_error_code_wrapper(data.data(), data.size());
+    auto bs = petro::stream(data.data(), data.size());
     test_read(bs, expected);
 }
 
-TEST(test_stream_error_code_wrapper, read_int64_t)
+TEST(test_stream, read_int64_t)
 {
     std::vector<uint8_t> data =
         {
@@ -231,11 +231,11 @@ TEST(test_stream_error_code_wrapper, read_int64_t)
             -4251398051666067404, // hex = 0xC4FFFFFF33A80034
         };
 
-    auto bs = petro::stream_error_code_wrapper(data.data(), data.size());
+    auto bs = petro::stream(data.data(), data.size());
     test_read(bs, expected);
 }
 
-TEST(test_stream_error_code_wrapper, read_uint64_t)
+TEST(test_stream, read_uint64_t)
 {
     std::vector<uint8_t> data =
         {
@@ -261,15 +261,15 @@ TEST(test_stream_error_code_wrapper, read_uint64_t)
             0xC4FFFFFF33A80034
         };
 
-    auto bs = petro::stream_error_code_wrapper(data.data(), data.size());
+    auto bs = petro::stream(data.data(), data.size());
     test_read(bs, expected);
 }
 
-TEST(test_stream_error_code_wrapper, remaining_size)
+TEST(test_stream, remaining_size)
 {
     uint32_t size = 100;
     std::vector<uint8_t> data(size);
-    auto bs = petro::stream_error_code_wrapper(data.data(), size);
+    auto bs = petro::stream(data.data(), size);
     EXPECT_EQ(size, bs.remaining_size());
     for (uint32_t i = 0; i < size; ++i)
     {
@@ -283,7 +283,7 @@ TEST(test_stream_error_code_wrapper, remaining_size)
 }
 
 
-TEST(test_stream_error_code_wrapper, read_type)
+TEST(test_stream, read_type)
 {
     std::vector<char> data =
         {
@@ -303,7 +303,7 @@ TEST(test_stream_error_code_wrapper, read_type)
             "abcd",
         };
 
-    petro::stream_error_code_wrapper bs((uint8_t*)data.data(), data.size());
+    petro::stream bs((uint8_t*)data.data(), data.size());
 
     for (uint32_t i = 0; i < data.size() / 4; ++i)
     {
@@ -317,7 +317,7 @@ TEST(test_stream_error_code_wrapper, read_type)
     EXPECT_EQ(0U, bs.remaining_size());
 }
 
-TEST(test_stream_error_code_wrapper, read_fixed_point_1616)
+TEST(test_stream, read_fixed_point_1616)
 {
     // the test data for this test is created based on an implementation which
     // is thought to be correct.
@@ -334,7 +334,7 @@ TEST(test_stream_error_code_wrapper, read_fixed_point_1616)
             1 << 16
         };
 
-    petro::stream_error_code_wrapper bs(data.data(), data.size());
+    petro::stream bs(data.data(), data.size());
 
     for (uint32_t i = 0; i < data.size() / 4; ++i)
     {
@@ -349,7 +349,7 @@ TEST(test_stream_error_code_wrapper, read_fixed_point_1616)
     EXPECT_EQ(0U, bs.remaining_size());
 }
 
-TEST(test_stream_error_code_wrapper, read_fixed_point_0230)
+TEST(test_stream, read_fixed_point_0230)
 {
     // the test data for this test is created based on an implementation which
     // is thought to be correct.
@@ -366,7 +366,7 @@ TEST(test_stream_error_code_wrapper, read_fixed_point_0230)
             4.0 // ?
         };
 
-    petro::stream_error_code_wrapper bs(data.data(), data.size());
+    petro::stream bs(data.data(), data.size());
 
     for (uint32_t i = 0; i < data.size() / 4; ++i)
     {
@@ -381,7 +381,7 @@ TEST(test_stream_error_code_wrapper, read_fixed_point_0230)
     EXPECT_EQ(0U, bs.remaining_size());
 }
 
-TEST(test_stream_error_code_wrapper, read_fixed_point_88)
+TEST(test_stream, read_fixed_point_88)
 {
     // the test data for this test is created based on an implementation which
     // is thought to be correct.
@@ -398,7 +398,7 @@ TEST(test_stream_error_code_wrapper, read_fixed_point_88)
             255.99609f // ~(1 << 8)
         };
 
-    petro::stream_error_code_wrapper bs(data.data(), data.size());
+    petro::stream bs(data.data(), data.size());
 
     for (uint32_t i = 0; i < data.size() / 2; ++i)
     {
@@ -413,7 +413,7 @@ TEST(test_stream_error_code_wrapper, read_fixed_point_88)
     EXPECT_EQ(0U, bs.remaining_size());
 }
 
-TEST(test_stream_error_code_wrapper, read_iso639)
+TEST(test_stream, read_iso639)
 {
     std::vector<uint8_t> data =
         {
@@ -427,7 +427,7 @@ TEST(test_stream_error_code_wrapper, read_iso639)
             "ger"
         };
 
-    petro::stream_error_code_wrapper bs(data.data(), data.size());
+    petro::stream bs(data.data(), data.size());
 
     for (uint32_t i = 0; i < data.size() / 2; ++i)
     {
@@ -441,7 +441,7 @@ TEST(test_stream_error_code_wrapper, read_iso639)
     EXPECT_EQ(0U, bs.remaining_size());
 }
 
-TEST(test_stream_error_code_wrapper, read_time32)
+TEST(test_stream, read_time32)
 {
     std::vector<uint8_t> data =
         {
@@ -459,7 +459,7 @@ TEST(test_stream_error_code_wrapper, read_time32)
             "2011-09-07 06:06:39"
         };
 
-    petro::stream_error_code_wrapper bs(data.data(), data.size());
+    petro::stream bs(data.data(), data.size());
 
     for (uint32_t i = 0; i < data.size() / 4; ++i)
     {
@@ -473,7 +473,7 @@ TEST(test_stream_error_code_wrapper, read_time32)
     EXPECT_EQ(0U, bs.remaining_size());
 }
 
-TEST(test_stream_error_code_wrapper, read_time64)
+TEST(test_stream, read_time64)
 {
     std::vector<uint8_t> data =
         {
@@ -491,7 +491,7 @@ TEST(test_stream_error_code_wrapper, read_time64)
             "2011-09-07 06:06:39",
         };
 
-    petro::stream_error_code_wrapper bs(data.data(), data.size());
+    petro::stream bs(data.data(), data.size());
 
     for (uint32_t i = 0; i < data.size() / 8; ++i)
     {

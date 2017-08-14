@@ -15,7 +15,7 @@
 #include "base_box.hpp"
 
 #include "../error.hpp"
-#include "../stream_error_code_wrapper.hpp"
+#include "../stream.hpp"
 
 namespace petro
 {
@@ -51,7 +51,7 @@ protected:
 
     std::string m_extended_type;
 
-    stream_error_code_wrapper m_bs;
+    stream m_bs;
 };
 }
 }

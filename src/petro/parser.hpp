@@ -13,7 +13,7 @@
 #include "box/unknown.hpp"
 #include "box/box.hpp"
 #include "box/root.hpp"
-#include "stream_error_code_wrapper.hpp"
+#include "stream.hpp"
 
 namespace petro
 {
@@ -60,7 +60,7 @@ public:
         assert(parent.lock() != nullptr);
         assert(!error);
 
-        stream_error_code_wrapper bs(data, size);
+        stream bs(data, size);
         // Skip the size, we are only interested in the type
         bs.skip(4, error);
         if (error)
