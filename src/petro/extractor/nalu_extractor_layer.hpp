@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <cassert>
+#include <system_error>
 
 #include "read_bytes.hpp"
 
@@ -30,15 +31,16 @@ class nalu_extractor_layer : public Super
 public:
 
     /// Open this and the underlying layer, returns false upon failure.
-    bool open()
+    void open(std::error_code& error)
     {
-        if (!Super::open())
+        assert(!error);
+        Super::open(error);
+        if (error)
         {
             Super::close();
-            return false;
+            return;
         }
         reset();
-        return true;
     }
 
     /// Advances the extractor to the next sample.

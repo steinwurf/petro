@@ -46,7 +46,10 @@ void test_h264_file(const std::string& h264_file, const std::string& mp4_file)
     petro::extractor::avc_sample_extractor extractor;
     extractor.set_file_path(mp4_file);
     EXPECT_EQ(mp4_file, extractor.file_path());
-    EXPECT_TRUE(extractor.open());
+
+    std::error_code error;
+    extractor.open(error);
+    ASSERT_FALSE(bool(error));
 
     check_sample(test_h264, extractor.sps_data(), extractor.sps_size());
     check_sample(test_h264, extractor.pps_data(), extractor.pps_size());

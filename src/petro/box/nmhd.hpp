@@ -27,6 +27,11 @@ public:
         full_box(data, size)
     { }
 
+    error box_error_code() const override
+    {
+        return error::invalid_nmhd_box;
+    }
+
     std::string type() const override
     {
         return TYPE;

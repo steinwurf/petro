@@ -36,7 +36,10 @@ void test_h264_file(
     petro::extractor::nalu_extractor extractor;
     extractor.set_file_path(mp4_file);
     EXPECT_EQ(mp4_file, extractor.file_path());
-    EXPECT_TRUE(extractor.open());
+
+    std::error_code error;
+    extractor.open(error);
+    ASSERT_FALSE(bool(error));
 
     std::vector<uint8_t> nalu_header(extractor.nalu_header_size());
     extractor.write_nalu_header(nalu_header.data());

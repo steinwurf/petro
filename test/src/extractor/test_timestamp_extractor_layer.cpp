@@ -42,7 +42,7 @@ struct dummy_trak
 
 struct dummy_layer
 {
-    stub::function<bool()> open;
+    stub::function<void(std::error_code)> open;
     stub::function<void()> close;
     stub::function<const dummy_trak*()> trak;
     stub::function<const dummy_root*()> root;
@@ -58,13 +58,6 @@ TEST(extractor_test_timestamp_extractor_layer, api)
 {
     dummy_stack stack;
     dummy_layer& layer = stack;
-
-    layer.open.set_return(false);
-
-    EXPECT_FALSE(stack.open());
-    EXPECT_EQ(1U, layer.close.calls());
-
-    layer.open.set_return(true);
 
     dummy_trak trak;
 
@@ -165,7 +158,8 @@ TEST(extractor_test_timestamp_extractor_layer, api)
     layer.sample_index.set_return(0);
 
     // test stack
-    EXPECT_TRUE(stack.open());
+    stack.open(error);
+    ASSERT_FALSE(bool(error));
 
     // The value is not verified. This is merely a test that checks for
     // consistency - not correctness.
@@ -174,5 +168,5 @@ TEST(extractor_test_timestamp_extractor_layer, api)
     EXPECT_EQ(3000000U, stack.media_duration());
 
     stack.close();
-    EXPECT_EQ(2U, layer.close.calls());
+    EXPECT_EQ(1U, layer.close.calls());
 }

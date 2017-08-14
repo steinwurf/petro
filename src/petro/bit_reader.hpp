@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <cassert>
 #include <vector>
+#include <limits>
 
 namespace petro
 {
@@ -32,19 +33,20 @@ public:
 
     bit_reader(const uint8_t* data, uint32_t size) :
         m_data(data),
-        m_bits(size * 8),
+        m_size(size),
         m_bit_offset(0)
-    { }
+    {
+        // Make sure we can address all the bits
+        assert(m_size < std::numeric_limits<uint64_t>::max() / 8);
+    }
 
     bit_reader(const std::vector<uint8_t>& data) :
-        m_data(data.data()),
-        m_bits(data.size() * 8),
-        m_bit_offset(0)
+        bit_reader(data.data(), data.size())
     { }
 
     uint8_t read_next_bit()
     {
-        assert(m_bit_offset < m_bits);
+        assert(m_bit_offset < bits());
         auto byte = m_bit_offset / 8;
         auto position = 7 - (m_bit_offset % 8);
         m_bit_offset += 1;
@@ -54,7 +56,13 @@ public:
     void skip(uint64_t bits)
     {
         m_bit_offset += bits;
-        assert(m_bit_offset < m_bits);
+        assert(m_bit_offset < bit_reader::bits());
+    }
+
+    void seek(uint64_t offset)
+    {
+        assert(offset < bits());
+        m_bit_offset = offset;
     }
 
     uint8_t read_bit()
@@ -100,19 +108,18 @@ public:
 
     uint64_t size() const
     {
-        return m_bits;
+        return m_size;
     }
 
-    uint64_t offset() const
+    uint64_t bits() const
     {
-        return m_bit_offset;
+        return size() * 8U;
     }
-
 
 private:
 
     const uint8_t* m_data;
-    uint64_t m_bits;
+    uint64_t m_size;
     uint64_t m_bit_offset;
 };
 }

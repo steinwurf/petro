@@ -29,6 +29,11 @@ public:
         box(data, size)
     { }
 
+    error box_error_code() const override
+    {
+        return error::invalid_ipro_box;
+    }
+
     std::string type() const override
     {
         return TYPE;

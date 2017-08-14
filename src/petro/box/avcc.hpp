@@ -22,7 +22,6 @@ namespace box
 /// MPEG-4 decoder configuration
 class avcc : public box
 {
-
 public:
 
     static const std::string TYPE;
@@ -107,6 +106,11 @@ public:
         m_bs.skip(m_bs.remaining_size(), error);
         if (error)
             return;
+    }
+
+    error box_error_code() const override
+    {
+        return error::invalid_avcc_box;
     }
 
     std::string type() const override

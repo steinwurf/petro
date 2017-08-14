@@ -31,7 +31,7 @@ struct dummy_trak : public petro::box::base_box
 
 struct dummy_layer
 {
-    stub::function<bool()> open;
+    stub::function<void(std::error_code)> open;
     stub::function<void()> close;
     stub::function<std::shared_ptr<const petro::box::base_box>()> trak;
     stub::function<const uint8_t* ()> data;
@@ -44,13 +44,6 @@ TEST(extractor_test_sample_extractor_layer, init)
 {
     dummy_stack stack;
     dummy_layer& layer = stack;
-
-    layer.open.set_return(false);
-
-    EXPECT_FALSE(stack.open());
-    EXPECT_EQ(1U, layer.close.calls());
-
-    layer.open.set_return(true);
 
     auto trak = std::make_shared<dummy_trak>();
 
@@ -136,7 +129,8 @@ TEST(extractor_test_sample_extractor_layer, init)
 
     // Do the test
 
-    EXPECT_TRUE(stack.open());
+    stack.open(error);
+    ASSERT_FALSE(bool(error));
     EXPECT_FALSE(stack.at_end());
 
     auto data = (const uint8_t*)0x00000042;

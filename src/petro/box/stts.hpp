@@ -31,6 +31,12 @@ public:
         uint32_t sample_delta;
     };
 
+    struct sample
+    {
+        uint32_t decoding_time;
+        uint32_t duration;
+    };
+
 public:
 
     static const std::string TYPE;
@@ -69,14 +75,22 @@ public:
             for (uint32_t i = 0; i < sample_count; ++i)
             {
                 decoding_time += sample_delta;
-                m_decoding_times.push_back(decoding_time);
-                m_durations.push_back(sample_delta);
+                m_samples.push_back(
+                {
+                    decoding_time,
+                    sample_delta
+                });
             }
         }
 
         m_bs.skip(m_bs.remaining_size(), error);
         if (error)
             return;
+    }
+
+    error box_error_code() const override
+    {
+        return error::invalid_stts_box;
     }
 
     std::string type() const override
@@ -108,19 +122,19 @@ public:
 
     uint32_t samples() const
     {
-        return m_decoding_times.size();
+        return m_samples.size();
     }
 
     uint32_t decoding_time(uint32_t sample_index) const
     {
-        assert(sample_index < m_decoding_times.size());
-        return m_decoding_times[sample_index];
+        assert(sample_index < samples());
+        return m_samples[sample_index].decoding_time;
     }
 
     uint32_t duration(uint32_t sample_index) const
     {
-        assert(sample_index < m_durations.size());
-        return m_durations[sample_index];
+        assert(sample_index < samples());
+        return m_samples[sample_index].duration;
     }
 
 private:
@@ -131,15 +145,10 @@ private:
     /// a vector containing each entry's sample count and sample delta.
     std::vector<entry_type> m_entries;
 
-    /// the decoding time for each sample.
+    /// the decoding time and duration for each sample.
     /// this field is not part of the standard, and is simply a result of
     /// the extraction of the data in the entries.
-    std::vector<uint32_t> m_decoding_times;
-
-    /// the duration for each sample.
-    /// this field is not part of the standard, and is simply a result of
-    /// the extraction of the data in the entries.
-    std::vector<uint32_t> m_durations;
+    std::vector<sample> m_samples;
 };
 }
 }

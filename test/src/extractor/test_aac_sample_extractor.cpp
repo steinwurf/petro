@@ -34,7 +34,10 @@ TEST(extractor_test_aac_sample_extractor, test_aac_file)
     petro::extractor::aac_sample_extractor extractor;
     extractor.set_file_path("test1.mp4");
     EXPECT_EQ("test1.mp4", extractor.file_path());
-    EXPECT_TRUE(extractor.open());
+    std::error_code error;
+    extractor.open(error);
+    EXPECT_FALSE(bool(error));
+
     EXPECT_EQ(7U, extractor.adts_header_size());
 
     EXPECT_EQ(2U, extractor.mpeg_audio_object_type());

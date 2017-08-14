@@ -65,7 +65,7 @@ struct dummy_root
 
 struct dummy_layer
 {
-    stub::function<bool()> open;
+    stub::function<void(std::error_code)> open;
     stub::function<void()> close;
     stub::function<std::shared_ptr<dummy_root>()> root;
 };
@@ -107,13 +107,8 @@ TEST(extractor_test_aac_track_layer, api)
 
     layer.root.set_return(root);
 
-
-    layer.open.set_return(false);
-    EXPECT_FALSE(stack.open());
-    EXPECT_EQ(1U, layer.close.calls());
-
-    layer.open.set_return(true);
-    ASSERT_TRUE(stack.open());
+    stack.open(error);
+    ASSERT_FALSE(bool(error));
 
     EXPECT_EQ(2U, stack.mpeg_audio_object_type());
     EXPECT_EQ(3U, stack.frequency_index());
@@ -121,5 +116,5 @@ TEST(extractor_test_aac_track_layer, api)
     EXPECT_EQ("trak", stack.trak()->type());
 
     stack.close();
-    EXPECT_EQ(2U, layer.close.calls());
+    EXPECT_EQ(1U, layer.close.calls());
 }

@@ -58,6 +58,11 @@ public:
         }
     }
 
+    error box_error_code() const override
+    {
+        return error::invalid_dref_box;
+    }
+
     std::string type() const override
     {
         return TYPE;

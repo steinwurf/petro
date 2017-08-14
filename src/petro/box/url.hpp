@@ -39,6 +39,11 @@ public:
         }
     }
 
+    error box_error_code() const override
+    {
+        return error::invalid_url_box;
+    }
+
     std::string type() const override
     {
         return TYPE;

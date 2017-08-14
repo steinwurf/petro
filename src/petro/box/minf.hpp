@@ -46,6 +46,11 @@ public:
             return;
     }
 
+    error box_error_code() const override
+    {
+        return error::invalid_minf_box;
+    }
+
     std::string type() const override
     {
         return TYPE;

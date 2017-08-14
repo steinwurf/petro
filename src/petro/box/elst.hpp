@@ -147,6 +147,11 @@ public:
         return ss.str();
     }
 
+    error box_error_code() const override
+    {
+        return error::invalid_elst_box;
+    }
+
     std::string type() const override
     {
         return TYPE;

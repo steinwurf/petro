@@ -59,6 +59,11 @@ public:
                 return;
         }
 
+        error box_error_code() const override
+        {
+            return error::invalid_sample_entry;
+        }
+
         std::string type() const override
         {
             return m_type;
@@ -405,6 +410,11 @@ public:
         m_bs.skip(m_bs.remaining_size(), error);
         if (error)
             return;
+    }
+
+    error box_error_code() const override
+    {
+        return error::invalid_stsd_box;
     }
 
     std::string type() const override

@@ -27,6 +27,11 @@ public:
         box(data, size)
     { }
 
+    error box_error_code() const override
+    {
+        return error::invalid_tfra_box;
+    }
+
     std::string type() const override
     {
         return TYPE;

@@ -28,7 +28,6 @@ public:
         full_box(data, size)
     { }
 
-
     void parse_full_box_content(std::error_code& error) override
     {
         assert(!error);
@@ -57,6 +56,11 @@ public:
             name += c;
         }
         m_name = name;
+    }
+
+    error box_error_code() const override
+    {
+        return error::invalid_hdlr_box;
     }
 
     std::string type() const override

@@ -26,12 +26,14 @@ class sample_extractor_layer : public Super
 public:
 
     /// Open this and the underlying layer
-    bool open()
+    void open(std::error_code& error)
     {
-        if (!Super::open())
+        assert(!error);
+        Super::open(error);
+        if (error)
         {
             Super::close();
-            return false;
+            return;
         }
         auto trak = Super::trak();
 
@@ -48,7 +50,8 @@ public:
             if (co64 == nullptr)
             {
                 close();
-                return false;
+                error = petro::error::co64_box_missing;
+                return;
             }
 
             chunk_offsets = co64->entries();
@@ -58,14 +61,16 @@ public:
         if (stsc == nullptr)
         {
             close();
-            return false;
+            error = petro::error::stsc_box_missing;
+            return;
         }
 
         auto stsz = trak->template get_child<box::stsz>();
         if (stsz == nullptr)
         {
             close();
-            return false;
+            error = petro::error::stsz_box_missing;
+            return;
         }
 
         reset();
@@ -74,8 +79,6 @@ public:
 
         m_stsc = stsc;
         m_stsz = stsz;
-
-        return true;
     }
 
     /// Close this and the underlying layer

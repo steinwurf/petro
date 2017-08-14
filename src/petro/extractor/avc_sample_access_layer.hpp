@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <cassert>
 #include <vector>
+#include <system_error>
 
 #include "read_bytes.hpp"
 
@@ -23,15 +24,16 @@ class avc_sample_access_layer : public Super
 public:
 
     /// Opens this and the underlying layers.
-    bool open()
+    void open(std::error_code& error)
     {
-        if (!Super::open())
+        assert(!error);
+        Super::open(error);
+        if (error)
         {
             Super::close();
-            return false;
+            return;
         }
         update_state();
-        return true;
     }
 
     /// Resets this and the underlying layers.

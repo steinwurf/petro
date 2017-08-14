@@ -29,11 +29,6 @@ public:
         box(data, size)
     { }
 
-    std::string type() const override
-    {
-        return TYPE;
-    }
-
     void parse_box_content(std::error_code& error) override
     {
         assert(!error);
@@ -48,6 +43,16 @@ public:
         m_bs.skip(m_bs.remaining_size(), error);
         if (error)
             return;
+    }
+
+    error box_error_code() const override
+    {
+        return error::invalid_meta_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
     }
 };
 

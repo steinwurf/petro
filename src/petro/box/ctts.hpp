@@ -76,6 +76,11 @@ public:
             return;
     }
 
+    error box_error_code() const override
+    {
+        return error::invalid_ctts_box;
+    }
+
     std::string type() const override
     {
         return TYPE;
@@ -110,7 +115,7 @@ public:
 
     uint32_t composition_time(uint32_t sample_index) const
     {
-        assert(sample_index < m_composition_times.size());
+        assert(sample_index < samples());
         return m_composition_times[sample_index];
     }
 

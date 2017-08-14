@@ -6,8 +6,9 @@
 #pragma once
 
 #include <cstdint>
-#include <string>
 #include <memory>
+#include <string>
+#include <system_error>
 
 namespace petro
 {
@@ -28,7 +29,7 @@ struct avc_sample_extractor
     ~avc_sample_extractor();
 
     /// Open this an the underlying layers
-    bool open();
+    void open(std::error_code& error);
 
     /// Close this an the underlying layers
     void close();
