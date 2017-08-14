@@ -8,14 +8,14 @@
 #include <cstdint>
 #include <string>
 
-#include "box.hpp"
+#include "data_box.hpp"
 
 namespace petro
 {
 namespace box
 {
 /// original format box
-class frma : public box
+class frma : public data_box
 {
 
 public:
@@ -24,7 +24,7 @@ public:
 
 public:
     frma(const uint8_t* data, uint64_t size) :
-        box(data, size)
+        data_box(data, size)
     { }
 
     error box_error_code() const override

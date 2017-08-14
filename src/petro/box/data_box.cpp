@@ -3,19 +3,19 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include "box.hpp"
+#include "data_box.hpp"
 
 namespace petro
 {
 namespace box
 {
-box::box(const uint8_t* data, uint64_t size) :
+data_box::data_box(const uint8_t* data, uint64_t size) :
     m_bs(data, size)
 {
     m_bs.set_error_code(petro::error::invalid_box);
 }
 
-void box::parse(std::error_code& error)
+void data_box::parse(std::error_code& error)
 {
     assert(!error);
 
@@ -87,7 +87,7 @@ void box::parse(std::error_code& error)
         return;
 }
 
-void box::parse_box_content(std::error_code& error)
+void data_box::parse_box_content(std::error_code& error)
 {
     assert(!error);
     m_bs.skip(m_bs.remaining_size(), error);
@@ -95,23 +95,23 @@ void box::parse_box_content(std::error_code& error)
         return;
 }
 
-std::string box::extended_type() const
+std::string data_box::extended_type() const
 {
     assert(!m_type.empty() && "Run parse before getting extended_type");
     return m_extended_type;
 }
 
-uint64_t box::size() const
+uint64_t data_box::size() const
 {
     return m_bs.size();
 }
 
-void box::set_parent(std::weak_ptr<base_box> parent)
+void data_box::set_parent(std::weak_ptr<base_box> parent)
 {
     m_parent = parent;
 }
 
-std::string box::describe() const
+std::string data_box::describe() const
 {
     std::stringstream ss;
     ss << type() << std::endl;
@@ -120,12 +120,12 @@ std::string box::describe() const
     return ss.str();
 }
 
-std::string box::box_describe() const
+std::string data_box::box_describe() const
 {
     return "";
 }
 
-error box::box_error_code() const
+error data_box::box_error_code() const
 {
     return error::invalid_box;
 }

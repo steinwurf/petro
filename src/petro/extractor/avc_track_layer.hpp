@@ -9,7 +9,7 @@
 #include <cassert>
 #include <memory>
 
-#include "../box/box.hpp"
+#include "../box/data_box.hpp"
 #include "../box/avcc.hpp"
 
 namespace petro

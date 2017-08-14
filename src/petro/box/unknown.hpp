@@ -11,19 +11,19 @@
 #include <sstream>
 #include <cassert>
 
-#include "box.hpp"
+#include "data_box.hpp"
 
 namespace petro
 {
 namespace box
 {
 /// unknown box
-class unknown : public box
+class unknown : public data_box
 {
 public:
 
     unknown(const uint8_t* data, uint64_t size) :
-        box(data, size)
+        data_box(data, size)
     { }
 
     std::string type() const override

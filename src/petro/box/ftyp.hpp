@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "box.hpp"
+#include "data_box.hpp"
 
 #include <cassert>
 #include <string>
@@ -16,7 +16,7 @@ namespace petro
 namespace box
 {
 /// file type and compatibility
-class ftyp : public box
+class ftyp : public data_box
 {
 
 public:
@@ -26,7 +26,7 @@ public:
 public:
 
     ftyp(const uint8_t* data, uint64_t size) :
-        box(data, size)
+        data_box(data, size)
     { }
 
     void parse_box_content(std::error_code& error) override

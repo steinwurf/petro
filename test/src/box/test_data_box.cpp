@@ -3,16 +3,16 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/box.hpp>
+#include <petro/box/data_box.hpp>
 
 #include <gtest/gtest.h>
 
 namespace
 {
-struct dummy_box1 : petro::box::box
+struct dummy_box1 : petro::box::data_box
 {
     dummy_box1(const uint8_t* data, uint64_t size) :
-        box(data, size)
+        data_box(data, size)
     { }
 
     std::string type() const override
@@ -20,10 +20,10 @@ struct dummy_box1 : petro::box::box
         return m_type;
     }
 };
-struct dummy_box2 : petro::box::box
+struct dummy_box2 : petro::box::data_box
 {
     dummy_box2(const std::string& type) :
-        box((uint8_t*)0x12345678, 1U)
+        data_box((uint8_t*)0x12345678, 1U)
     {
         m_type = type;
     }
@@ -35,11 +35,11 @@ struct dummy_box2 : petro::box::box
 
 private:
 
-    using box::parse;
+    using data_box::parse;
 };
 }
 
-TEST(box_test_box, create)
+TEST(box_test_data_box, create)
 {
     std::vector<uint8_t> buffer =
         {
@@ -49,7 +49,7 @@ TEST(box_test_box, create)
     auto box = std::make_shared<dummy_box1>(buffer.data(), buffer.size());
 }
 
-TEST(box_test_box, type)
+TEST(box_test_data_box, type)
 {
     auto type = "box ";
     std::vector<uint8_t> buffer =
@@ -66,7 +66,7 @@ TEST(box_test_box, type)
     EXPECT_EQ(type, box->type());
 }
 
-TEST(box_test_box, extended_type)
+TEST(box_test_data_box, extended_type)
 {
     {
         SCOPED_TRACE("no extended type");
@@ -107,7 +107,7 @@ TEST(box_test_box, extended_type)
     }
 }
 
-TEST(box_test_box, size)
+TEST(box_test_data_box, size)
 {
     {
         SCOPED_TRACE("size zero = whole buffer");
@@ -175,7 +175,7 @@ TEST(box_test_box, size)
     }
 }
 
-TEST(box_test_box, children)
+TEST(box_test_data_box, children)
 {
     auto parent = std::make_shared<dummy_box2>("parent");
     EXPECT_EQ(0U, parent->children().size());
@@ -195,7 +195,7 @@ TEST(box_test_box, children)
     EXPECT_EQ(child->type(), parent->get_children(child->type())[0]->type());
 }
 
-TEST(box_test_box, describe)
+TEST(box_test_data_box, describe)
 {
     auto type = "test";
     auto box = std::make_shared<dummy_box2>(type);

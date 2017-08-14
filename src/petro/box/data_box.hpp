@@ -21,11 +21,11 @@ namespace petro
 {
 namespace box
 {
-class box : public base_box
+class data_box : public base_box
 {
 public:
 
-    box(const uint8_t* data, uint64_t size);
+    data_box(const uint8_t* data, uint64_t size);
 
     void parse(std::error_code& error);
 

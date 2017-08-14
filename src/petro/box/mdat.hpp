@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "box.hpp"
+#include "data_box.hpp"
 
 #include <string>
 #include <vector>
@@ -15,7 +15,7 @@ namespace petro
 namespace box
 {
 /// media data container
-class mdat : public box
+class mdat : public data_box
 {
 
 public:
@@ -24,7 +24,7 @@ public:
 
 public:
     mdat(const uint8_t* data, uint64_t size) :
-        box(data, size)
+        data_box(data, size)
     { }
 
     error box_error_code() const override

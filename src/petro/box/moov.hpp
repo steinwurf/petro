@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "box.hpp"
+#include "data_box.hpp"
 
 #include <cassert>
 #include <string>
@@ -17,7 +17,7 @@ namespace box
 {
 /// container for all the metadata
 template<class Parser>
-class moov : public box
+class moov : public data_box
 {
 
 public:
@@ -27,7 +27,7 @@ public:
 public:
 
     moov(const uint8_t* data, uint64_t size) :
-        box(data, size)
+        data_box(data, size)
     { }
 
     void parse_box_content(std::error_code& error) override

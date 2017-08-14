@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <string>
 
-#include "box.hpp"
+#include "data_box.hpp"
 
 namespace petro
 {
@@ -16,7 +16,7 @@ namespace box
 {
 /// container for an individual track or stream
 template<class Parser>
-class trak : public box
+class trak : public data_box
 {
 
 public:
@@ -26,7 +26,7 @@ public:
 public:
 
     trak(const uint8_t* data, uint64_t size) :
-        box(data, size)
+        data_box(data, size)
     { }
 
     void parse_box_content(std::error_code& error) override

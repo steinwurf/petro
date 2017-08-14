@@ -8,7 +8,7 @@
 #include <petro/box/stsc.hpp>
 #include <petro/box/stsz.hpp>
 #include <petro/box/co64.hpp>
-#include <petro/box/box.hpp>
+#include <petro/box/data_box.hpp>
 
 #include <stub/function.hpp>
 

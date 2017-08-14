@@ -11,7 +11,7 @@
 #include <cstring>
 
 #include "box/unknown.hpp"
-#include "box/box.hpp"
+#include "box/data_box.hpp"
 #include "box/root.hpp"
 #include "stream.hpp"
 
@@ -49,7 +49,7 @@ public:
         return parent.lock();
     }
 
-    std::shared_ptr<box::box> parse_box(
+    std::shared_ptr<box::data_box> parse_box(
         const uint8_t* data,
         uint64_t size,
         std::weak_ptr<box::base_box> parent,
@@ -94,7 +94,7 @@ private:
     template<class...>
     struct parse_helper
     {
-        static std::shared_ptr<box::box> call(
+        static std::shared_ptr<box::data_box> call(
             const std::string& type,
             const uint8_t* data,
             uint64_t size,
@@ -116,7 +116,7 @@ private:
     template<class Box, class... Boxes>
     struct parse_helper<Box, Boxes...>
     {
-        static std::shared_ptr<box::box> call(
+        static std::shared_ptr<box::data_box> call(
             const std::string& type,
             const uint8_t* data,
             uint64_t size,

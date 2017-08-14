@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <cassert>
 
-#include "../box/box.hpp"
+#include "../box/data_box.hpp"
 #include "../box/esds.hpp"
 
 namespace petro

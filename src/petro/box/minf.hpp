@@ -9,7 +9,7 @@
 #include <string>
 #include <cassert>
 
-#include "box.hpp"
+#include "data_box.hpp"
 
 namespace petro
 {
@@ -17,7 +17,7 @@ namespace box
 {
 /// media information container
 template<class Parser>
-class minf : public box
+class minf : public data_box
 {
 
 public:
@@ -27,7 +27,7 @@ public:
 public:
 
     minf(const uint8_t* data, uint64_t size) :
-        box(data, size)
+        data_box(data, size)
     { }
 
     void parse_box_content(std::error_code& error) override

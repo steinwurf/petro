@@ -4,7 +4,7 @@
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
 #include <petro/box/urn.hpp>
-#include <petro/box/box.hpp>
+#include <petro/box/data_box.hpp>
 
 #include <gtest/gtest.h>
 

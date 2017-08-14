@@ -9,7 +9,7 @@
 #include <string>
 #include <cassert>
 
-#include "box.hpp"
+#include "data_box.hpp"
 
 namespace petro
 {
@@ -17,7 +17,7 @@ namespace box
 {
 /// user-data
 template<class Parser>
-class udta : public box
+class udta : public data_box
 {
 
 public:
@@ -26,7 +26,7 @@ public:
 
 public:
     udta(const uint8_t* data, uint64_t size) :
-        box(data, size)
+        data_box(data, size)
     { }
 
     void parse_box_content(std::error_code& error) override

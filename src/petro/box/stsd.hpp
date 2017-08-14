@@ -24,13 +24,13 @@ class stsd : public full_box
 {
 public:
 
-    class sample_entry : public box
+    class sample_entry : public data_box
     {
 
     public:
 
         sample_entry(const uint8_t* data, uint64_t size) :
-            box(data, size)
+            data_box(data, size)
         { }
 
         void parse_box_content(std::error_code& error) override final

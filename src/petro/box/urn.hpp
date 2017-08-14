@@ -8,14 +8,14 @@
 #include <cstdint>
 #include <string>
 
-#include "box.hpp"
+#include "data_box.hpp"
 
 namespace petro
 {
 namespace box
 {
 /// urn
-class urn : public box
+class urn : public data_box
 {
 
 public:
@@ -24,7 +24,7 @@ public:
 
 public:
     urn(const uint8_t* data, uint64_t size) :
-        box(data, size)
+        data_box(data, size)
     { }
 
     error box_error_code() const override

@@ -9,18 +9,18 @@
 #include <sstream>
 #include <memory>
 
-#include "box.hpp"
+#include "data_box.hpp"
 
 namespace petro
 {
 namespace box
 {
-class full_box : public box
+class full_box : public data_box
 {
 public:
 
     full_box(const uint8_t* data, uint64_t size) :
-        box(data, size)
+        data_box(data, size)
     { }
 
     void parse_box_content(std::error_code& error) override final
