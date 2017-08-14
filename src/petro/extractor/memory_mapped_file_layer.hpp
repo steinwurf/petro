@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <cassert>
+#include <system_error>
 
 #include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/filesystem/operations.hpp>
