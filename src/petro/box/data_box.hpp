@@ -12,7 +12,7 @@
 #include <sstream>
 #include <queue>
 
-#include "base_box.hpp"
+#include "box.hpp"
 
 #include "../error.hpp"
 #include "../stream.hpp"
@@ -21,7 +21,7 @@ namespace petro
 {
 namespace box
 {
-class data_box : public base_box
+class data_box : public box
 {
 public:
 
@@ -35,7 +35,7 @@ public:
 
     uint64_t size() const;
 
-    void set_parent(std::weak_ptr<base_box> parent);
+    void set_parent(std::weak_ptr<box> parent);
 
     std::string describe() const override final;
 

@@ -106,7 +106,7 @@ uint64_t data_box::size() const
     return m_bs.size();
 }
 
-void data_box::set_parent(std::weak_ptr<base_box> parent)
+void data_box::set_parent(std::weak_ptr<box> parent)
 {
     m_parent = parent;
 }

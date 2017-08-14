@@ -9,14 +9,14 @@
 #include <cstdint>
 #include <string>
 
-#include "base_box.hpp"
+#include "box.hpp"
 
 namespace petro
 {
 namespace box
 {
 /// root object
-class root : public base_box
+class root : public box
 {
 public:
 

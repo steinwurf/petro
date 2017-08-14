@@ -20,23 +20,6 @@ struct dummy_box1 : petro::box::data_box
         return m_type;
     }
 };
-struct dummy_box2 : petro::box::data_box
-{
-    dummy_box2(const std::string& type) :
-        data_box((uint8_t*)0x12345678, 1U)
-    {
-        m_type = type;
-    }
-
-    std::string type() const override
-    {
-        return m_type;
-    }
-
-private:
-
-    using data_box::parse;
-};
 }
 
 TEST(box_test_data_box, create)
@@ -173,35 +156,4 @@ TEST(box_test_data_box, size)
         EXPECT_NE(buffer.size(), box->size());
         EXPECT_EQ(16U, box->size());
     }
-}
-
-TEST(box_test_data_box, children)
-{
-    auto parent = std::make_shared<dummy_box2>("parent");
-    EXPECT_EQ(0U, parent->children().size());
-
-    auto child_type = "child";
-    auto child = std::make_shared<dummy_box2>(child_type);
-    child->set_parent(parent);
-    parent->add_child(child);
-
-    EXPECT_EQ(1U, parent->children().size());
-
-    EXPECT_EQ(parent->type(), child->parent()->type());
-    EXPECT_EQ(parent->type(), child->get_parent(parent->type())->type());
-    EXPECT_EQ(child->type(), parent->get_child(child->type())->type());
-
-    EXPECT_EQ(1U, parent->get_children(child->type()).size());
-    EXPECT_EQ(child->type(), parent->get_children(child->type())[0]->type());
-}
-
-TEST(box_test_data_box, describe)
-{
-    auto type = "test";
-    auto box = std::make_shared<dummy_box2>(type);
-
-    auto description = box->describe();
-
-    auto found = description.find(type);
-    EXPECT_NE(std::string::npos, found);
 }

@@ -14,7 +14,7 @@
 #include <boost/iostreams/device/mapped_file.hpp>
 
 
-void print_box(std::shared_ptr<petro::box::base_box> b, uint32_t level = 0)
+void print_box(std::shared_ptr<petro::box::box> b, uint32_t level = 0)
 {
     assert(b != nullptr);
     std::stringstream ss(b->describe());

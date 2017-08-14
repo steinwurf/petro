@@ -3,29 +3,29 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include "base_box.hpp"
+#include "box.hpp"
 
 namespace petro
 {
 namespace box
 {
 
-const std::vector<std::shared_ptr<base_box>> base_box::children() const
+const std::vector<std::shared_ptr<box>> box::children() const
 {
     return m_children;
 }
 
-void base_box::add_child(std::shared_ptr<base_box> box)
+void box::add_child(std::shared_ptr<box> box)
 {
     m_children.push_back(box);
 }
 
-std::shared_ptr<base_box> base_box::parent() const
+std::shared_ptr<box> box::parent() const
 {
     return m_parent.lock();
 }
 
-std::shared_ptr<base_box> base_box::get_parent(const std::string& type) const
+std::shared_ptr<box> box::get_parent(const std::string& type) const
 {
     auto parent = m_parent.lock();
     if (parent == nullptr || parent->type() == type)
@@ -36,10 +36,10 @@ std::shared_ptr<base_box> base_box::get_parent(const std::string& type) const
     return parent->get_parent(type);
 }
 
-std::shared_ptr<const base_box> base_box::get_child(const std::string& type)
+std::shared_ptr<const box> box::get_child(const std::string& type)
 const
 {
-    std::queue<std::shared_ptr<const base_box>> queue;
+    std::queue<std::shared_ptr<const box>> queue;
     auto child = shared_from_this();
     while (true)
     {
@@ -62,11 +62,11 @@ const
     return nullptr;
 }
 
-std::vector<std::shared_ptr<const base_box>> base_box::get_children(
+std::vector<std::shared_ptr<const box>> box::get_children(
     const std::string& type) const
 {
-    std::vector<std::shared_ptr<const base_box>> result;
-    std::queue<std::shared_ptr<const base_box>> queue;
+    std::vector<std::shared_ptr<const box>> result;
+    std::queue<std::shared_ptr<const box>> queue;
     auto child = shared_from_this();
     while (true)
     {

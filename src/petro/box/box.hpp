@@ -19,23 +19,23 @@ namespace petro
 {
 namespace box
 {
-class base_box : public std::enable_shared_from_this<base_box>
+class box : public std::enable_shared_from_this<box>
 {
 public:
 
     virtual std::string type() const = 0;
 
-    const std::vector<std::shared_ptr<base_box>> children() const;
+    const std::vector<std::shared_ptr<box>> children() const;
 
-    void add_child(std::shared_ptr<base_box> box);
+    void add_child(std::shared_ptr<box> box);
 
-    std::shared_ptr<base_box> parent() const;
+    std::shared_ptr<box> parent() const;
 
-    std::shared_ptr<base_box> get_parent(const std::string& type) const;
+    std::shared_ptr<box> get_parent(const std::string& type) const;
 
-    std::shared_ptr<const base_box> get_child(const std::string& type) const;
+    std::shared_ptr<const box> get_child(const std::string& type) const;
 
-    std::vector<std::shared_ptr<const base_box>> get_children(
+    std::vector<std::shared_ptr<const box>> get_children(
         const std::string& type) const;
 
     virtual std::string describe() const = 0;
@@ -51,8 +51,8 @@ public:
 
 protected:
 
-    std::weak_ptr<base_box> m_parent;
-    std::vector<std::shared_ptr<base_box>> m_children;
+    std::weak_ptr<box> m_parent;
+    std::vector<std::shared_ptr<box>> m_children;
 };
 }
 }

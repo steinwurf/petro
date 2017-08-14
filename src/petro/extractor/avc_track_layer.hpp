@@ -70,7 +70,7 @@ public:
     }
 
     /// Return a shared pointer to the h264 trak
-    std::shared_ptr<const box::base_box> trak() const
+    std::shared_ptr<const box::box> trak() const
     {
         assert(m_trak != nullptr);
         return m_trak;
@@ -121,7 +121,7 @@ public:
 
 private:
 
-    std::shared_ptr<const box::base_box> m_trak;
+    std::shared_ptr<const box::box> m_trak;
 
     const uint8_t* m_pps_data;
     uint32_t m_pps_size;

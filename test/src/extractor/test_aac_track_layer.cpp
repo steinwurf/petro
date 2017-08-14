@@ -15,7 +15,7 @@
 
 namespace
 {
-struct dummy_trak : public petro::box::base_box
+struct dummy_trak : public petro::box::box
 {
     std::string type() const override
     {
@@ -28,9 +28,9 @@ struct dummy_trak : public petro::box::base_box
     }
 };
 
-struct dummy_mp4a : public petro::box::base_box
+struct dummy_mp4a : public petro::box::box
 {
-    dummy_mp4a(std::shared_ptr<petro::box::base_box> parent)
+    dummy_mp4a(std::shared_ptr<petro::box::box> parent)
     {
         m_parent = parent;
     }
@@ -52,7 +52,7 @@ struct dummy_root
         m_dummy_mp4a(mp4a)
     { }
 
-    std::shared_ptr<const petro::box::base_box> get_child(
+    std::shared_ptr<const petro::box::box> get_child(
         const std::string& type) const
     {
         if (type == "mp4a")

@@ -22,10 +22,10 @@ class parser
 {
 public:
 
-    std::shared_ptr<box::base_box> parse(
+    std::shared_ptr<box::box> parse(
         const uint8_t* data,
         uint64_t size,
-        std::weak_ptr<box::base_box> parent,
+        std::weak_ptr<box::box> parent,
         std::error_code& error)
     {
         assert(data != nullptr);
@@ -52,7 +52,7 @@ public:
     std::shared_ptr<box::data_box> parse_box(
         const uint8_t* data,
         uint64_t size,
-        std::weak_ptr<box::base_box> parent,
+        std::weak_ptr<box::box> parent,
         std::error_code& error)
     {
         assert(data != nullptr);
@@ -98,7 +98,7 @@ private:
             const std::string& type,
             const uint8_t* data,
             uint64_t size,
-            std::weak_ptr<box::base_box> parent,
+            std::weak_ptr<box::box> parent,
             std::error_code& error)
         {
             (void) type;
@@ -120,7 +120,7 @@ private:
             const std::string& type,
             const uint8_t* data,
             uint64_t size,
-            std::weak_ptr<box::base_box> parent,
+            std::weak_ptr<box::box> parent,
             std::error_code& error)
         {
             if (Box::TYPE == type)

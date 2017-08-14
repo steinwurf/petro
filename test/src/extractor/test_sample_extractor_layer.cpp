@@ -16,7 +16,7 @@
 
 namespace
 {
-struct dummy_trak : public petro::box::base_box
+struct dummy_trak : public petro::box::box
 {
     std::string type() const override
     {
@@ -33,7 +33,7 @@ struct dummy_layer
 {
     stub::function<void(std::error_code)> open;
     stub::function<void()> close;
-    stub::function<std::shared_ptr<const petro::box::base_box>()> trak;
+    stub::function<std::shared_ptr<const petro::box::box>()> trak;
     stub::function<const uint8_t* ()> data;
 };
 
