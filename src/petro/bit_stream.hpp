@@ -144,7 +144,7 @@ public:
         }
         else
         {
-            out = -(v / 2);
+            out = -(int32_t)(v / 2);
         }
     }
 
