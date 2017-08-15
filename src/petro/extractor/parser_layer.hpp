@@ -74,11 +74,8 @@ public:
         > parser;
 
         auto root = std::make_shared<petro::box::root>();
-        parser.parse(
-            Super::data(),
-            Super::data_size(),
-            root,
-            error);
+        parser.parse(Super::data(), Super::data_size(), root, error);
+
         if (error)
             return;
         m_root = root;
