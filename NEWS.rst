@@ -6,6 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+8.0.0
+-----
 * Major: Added error codes.
 * Major: ``bit_reader`` renamed to ``bit_stream``.
 * Major: ``byte_stream`` was replaced by a wrapper of an ``endian::reader``.
