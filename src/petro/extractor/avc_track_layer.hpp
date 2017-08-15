@@ -9,7 +9,7 @@
 #include <cassert>
 #include <memory>
 
-#include "../box/box.hpp"
+#include "../box/data_box.hpp"
 #include "../box/avcc.hpp"
 
 namespace petro
@@ -24,12 +24,14 @@ class avc_track_layer : public Super
 public:
 
     /// Open this and the underlying layer, returns false upon failure.
-    bool open()
+    void open(std::error_code& error)
     {
-        if (!Super::open())
+        assert(!error);
+        Super::open(error);
+        if (error)
         {
             Super::close();
-            return false;
+            return;
         }
 
         auto root = Super::root();
@@ -38,21 +40,24 @@ public:
         if (avc1 == nullptr)
         {
             Super::close();
-            return false;
+            error = petro::error::avc1_box_missing;
+            return;
         }
 
         auto avcc = avc1->template get_child<box::avcc>();
         if (avcc == nullptr)
         {
             Super::close();
-            return false;
+            error = petro::error::avcc_box_missing;
+            return;
         }
 
         auto trak = avc1->get_parent("trak");
         if (trak == nullptr)
         {
             Super::close();
-            return false;
+            error = petro::error::trak_box_missing;
+            return;
         }
 
         m_pps_data = avcc->picture_parameter_set(0)->data();
@@ -62,7 +67,6 @@ public:
         m_nalu_length_size = avcc->length_size();
 
         m_trak = trak;
-        return true;
     }
 
     /// Return a shared pointer to the h264 trak

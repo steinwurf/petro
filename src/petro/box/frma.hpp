@@ -8,15 +8,14 @@
 #include <cstdint>
 #include <string>
 
-#include "box.hpp"
-#include "../byte_stream.hpp"
+#include "data_box.hpp"
 
 namespace petro
 {
 namespace box
 {
 /// original format box
-class frma : public box
+class frma : public data_box
 {
 
 public:
@@ -24,14 +23,18 @@ public:
     static const std::string TYPE;
 
 public:
-    frma(std::weak_ptr<box> parent) :
-        box(frma::TYPE, parent)
+    frma(const uint8_t* data, uint64_t size) :
+        data_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    error box_error_code() const override
     {
-        box::read(size, bs);
-        bs.skip(m_remaining_bytes);
+        return error::invalid_frma_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
     }
 };
 }

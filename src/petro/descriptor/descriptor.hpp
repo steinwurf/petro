@@ -7,7 +7,8 @@
 
 #include <cstdint>
 
-#include "../byte_stream.hpp"
+#include "../stream.hpp"
+#include "tag.hpp"
 
 namespace petro
 {
@@ -16,46 +17,74 @@ namespace descriptor
 class descriptor
 {
 public:
-    descriptor(byte_stream& bs, uint8_t tag) :
-        m_tag(tag)
+
+    descriptor(const uint8_t* data, uint64_t size) :
+        m_bs(data, size)
+    { }
+
+    void parse(std::error_code& error)
     {
+        assert(!error);
+        m_bs.seek(0, error);
+        if (error)
+            return;
+
+        m_bs.read(m_tag, error);
+        if (error)
+            return;
+
         // The next byte is either the descriptor length or the first of
         // a three bytes optional extended descriptor type tag string.
         // The tag types are 0x80,0x81,0xFE.
-        auto length = bs.read_uint8_t();
-        m_size = 1;
+        uint8_t length = 0;
+        m_bs.read(length, error);
+
         if (length == 0x80 ||
             length == 0x81 ||
             length == 0xFE)
         {
             // appearently we are reading the optional extended
             // descriptor type tag string - let's throw it away...
-            bs.skip(2);
+            m_bs.skip(2, error);
+            if (error)
+                return;
+
             // ... and read the descriptor length.
-            length = bs.read_uint8_t();
-            m_size += 3;
+            m_bs.read(length, error);
+            if (error)
+                return;
         }
 
-        // to know how much we have (will) read from the byte stream in
-        // this descriptor object, we increment the size member
-        // variable m_size.
-        m_size += length;
+        // the length variable defines the length of the descriptor,
+        // excluding the tag, optional extended descriptor type tag, and length.
+        // hence the total size is how much we've read already, plus the legnth.
+        auto position = m_bs.position();
+        auto total_size = position + length;
+        m_bs = stream(m_bs.data(), total_size);
+        m_bs.seek(position, error);
+        if (error)
+            return;
+        parse_descriptor_content(error);
+    }
 
-        // for descriptors the bytes to be read is the length, not
-        // including the bytes for reading the length or the tag.
-        m_remaining_bytes = length;
+    virtual void parse_descriptor_content(std::error_code& error)
+    {
+        assert(!error);
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
     }
 
     /// The total size in bytes used by this descriptor
     uint32_t size()
     {
-        return m_size;
+        return m_bs.size();
     }
 
 protected:
-    uint8_t m_tag;
-    uint32_t m_size;
-    uint32_t m_remaining_bytes;
+
+    stream m_bs;
+    tag m_tag = tag(0U);
 };
 }
 }

@@ -5,8 +5,7 @@
 
 #pragma once
 
-#include "../byte_stream.hpp"
-#include "box.hpp"
+#include "data_box.hpp"
 
 #include <cassert>
 #include <string>
@@ -18,7 +17,7 @@ namespace box
 {
 /// container for all the metadata
 template<class Parser>
-class moov : public box
+class moov : public data_box
 {
 
 public:
@@ -26,17 +25,35 @@ public:
     static const std::string TYPE;
 
 public:
-    moov(std::weak_ptr<box> parent) :
-        box(moov::TYPE, parent)
+
+    moov(const uint8_t* data, uint64_t size) :
+        data_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void parse_box_content(std::error_code& error) override
     {
-        box::read(size, bs);
+        assert(!error);
         Parser p;
-        auto branched_bs = byte_stream(bs, m_remaining_bytes);
-        p.read(branched_bs, shared_from_this());
-        assert(branched_bs.remaining_bytes() == 0);
+        p.parse(
+            m_bs.remaining_data(),
+            m_bs.remaining_size(),
+            shared_from_this(), error);
+        if (error)
+            return;
+
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
+    }
+
+    error box_error_code() const override
+    {
+        return error::invalid_moov_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
     }
 };
 

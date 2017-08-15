@@ -26,12 +26,14 @@ class timestamp_extractor_layer : public Super
 public:
 
     /// Open this an the underlying layers
-    bool open()
+    void open(std::error_code& error)
     {
-        if (!Super::open())
+        assert(!error);
+        Super::open(error);
+        if (error)
         {
             Super::close();
-            return false;
+            return;
         }
 
         auto root = Super::root();
@@ -39,7 +41,8 @@ public:
         if (mvhd == nullptr)
         {
             close();
-            return false;
+            error = petro::error::mvhd_box_missing;
+            return;
         }
         m_media_duration = mvhd->duration() * 1000000 / mvhd->timescale();
 
@@ -49,7 +52,8 @@ public:
         if (mdhd == nullptr)
         {
             close();
-            return false;
+            error = petro::error::mdhd_box_missing;
+            return;
         }
         m_timescale = mdhd->timescale();
 
@@ -57,13 +61,12 @@ public:
         if (stts == nullptr)
         {
             close();
-            return false;
+            error = petro::error::stts_box_missing;
+            return;
         }
 
         m_stts = stts;
         m_ctts = trak->template get_child<box::ctts>();
-
-        return true;
     }
 
     /// Close this an the underlying layers

@@ -8,15 +8,14 @@
 #include <cstdint>
 #include <string>
 
-#include "box.hpp"
-#include "../byte_stream.hpp"
+#include "data_box.hpp"
 
 namespace petro
 {
 namespace box
 {
 /// sample-to-group
-class sbgp : public box
+class sbgp : public data_box
 {
 
 public:
@@ -24,14 +23,18 @@ public:
     static const std::string TYPE;
 
 public:
-    sbgp(std::weak_ptr<box> parent) :
-        box(sbgp::TYPE, parent)
+    sbgp(const uint8_t* data, uint64_t size) :
+        data_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    error box_error_code() const override
     {
-        box::read(size, bs);
-        bs.skip(m_remaining_bytes);
+        return error::invalid_sbgp_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
     }
 };
 }

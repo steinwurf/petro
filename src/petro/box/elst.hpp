@@ -9,7 +9,6 @@
 #include <string>
 
 #include "full_box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -49,47 +48,79 @@ public:
     static const std::string TYPE;
 
 public:
-    elst(std::weak_ptr<box> parent) :
-        full_box(elst::TYPE, parent)
+    elst(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void parse_full_box_content(std::error_code& error) override
     {
-        full_box::read(size, bs);
-        m_entry_count = bs.read_uint32_t();
-        m_remaining_bytes -= 4;
+        m_bs.read(m_entry_count, error);
+        if (error)
+            return;
+
         for (uint32_t i = 0; i < m_entry_count; ++i)
         {
-            uint64_t segment_duration;
-            int64_t media_time;
             if (m_version == 1)
             {
-                segment_duration = bs.read_uint64_t();
-                media_time = bs.read_int64_t();
-                m_remaining_bytes -= 16;
+                uint64_t segment_duration = 0;
+                m_bs.read(segment_duration, error);
+                if (error)
+                    return;
+                int64_t media_time = 0;
+                m_bs.read(media_time, error);
+                if (error)
+                    return;
+                uint16_t media_rate_integer = 0;
+                m_bs.read(media_rate_integer, error);
+                if (error)
+                    return;
+                uint16_t media_rate_fraction = 0;
+                m_bs.read(media_rate_fraction, error);
+                if (error)
+                    return;
+                m_entries.push_back(
+                    {
+                        segment_duration,
+                        media_time,
+                        media_rate_integer,
+                        media_rate_fraction
+                    });
             }
             else // m_version == 0
             {
-                segment_duration = bs.read_uint32_t();
-                media_time = bs.read_int32_t();
-                m_remaining_bytes -= 8;
+                uint32_t segment_duration = 0;
+                m_bs.read(segment_duration, error);
+                if (error)
+                    return;
+                int32_t media_time = 0;
+                m_bs.read(media_time, error);
+                if (error)
+                    return;
+                uint16_t media_rate_integer = 0;
+                m_bs.read(media_rate_integer, error);
+                if (error)
+                    return;
+                uint16_t media_rate_fraction = 0;
+                m_bs.read(media_rate_fraction, error);
+                if (error)
+                    return;
+                m_entries.push_back(
+                    {
+                        segment_duration,
+                        media_time,
+                        media_rate_integer,
+                        media_rate_fraction
+                    });
             }
-            m_entries.push_back(
-                {
-                    segment_duration,
-                    media_time,
-                    bs.read_uint16_t(),  // media_rate_integer
-                    bs.read_uint16_t()
-                }); // media_rate_fraction
-            m_remaining_bytes -= 4;
         }
-        bs.skip(m_remaining_bytes);
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
     }
 
-    virtual std::string describe() const
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  entry_count: " << m_entry_count << std::endl;
         ss << "  entries (";
         ss << "segment_duration, ";
@@ -114,6 +145,16 @@ public:
             ss << "...";
         ss << std::endl;
         return ss.str();
+    }
+
+    error box_error_code() const override
+    {
+        return error::invalid_elst_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
     }
 
 private:

@@ -9,8 +9,7 @@
 #include <string>
 #include <cassert>
 
-#include "box.hpp"
-#include "../byte_stream.hpp"
+#include "data_box.hpp"
 
 namespace petro
 {
@@ -18,7 +17,7 @@ namespace box
 {
 /// movie extends box
 template<class Parser>
-class mvex : public box
+class mvex : public data_box
 {
 
 public:
@@ -26,17 +25,34 @@ public:
     static const std::string TYPE;
 
 public:
-    mvex(std::weak_ptr<box> parent) :
-        box(mvex::TYPE, parent)
+    mvex(const uint8_t* data, uint64_t size) :
+        data_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void parse_box_content(std::error_code& error) override
     {
-        box::read(size, bs);
+        assert(!error);
         Parser p;
-        auto branched_bs = byte_stream(bs, m_remaining_bytes);
-        p.read(branched_bs, shared_from_this());
-        assert(branched_bs.remaining_bytes() == 0);
+        p.parse(
+            m_bs.remaining_data(),
+            m_bs.remaining_size(),
+            shared_from_this(), error);
+        if (error)
+            return;
+
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
+    }
+
+    error box_error_code() const override
+    {
+        return error::invalid_mvex_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
     }
 };
 

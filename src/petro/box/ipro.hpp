@@ -9,8 +9,7 @@
 #include <string>
 #include <cassert>
 
-#include "box.hpp"
-#include "../byte_stream.hpp"
+#include "data_box.hpp"
 
 namespace petro
 {
@@ -18,7 +17,7 @@ namespace box
 {
 /// item protection
 template<class Parser>
-class ipro : public box
+class ipro : public data_box
 {
 
 public:
@@ -26,17 +25,34 @@ public:
     static const std::string TYPE;
 
 public:
-    ipro(std::weak_ptr<box> parent) :
-        box(ipro::TYPE, parent)
+    ipro(const uint8_t* data, uint64_t size) :
+        data_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    error box_error_code() const override
     {
-        box::read(size, bs);
+        return error::invalid_ipro_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    void parse_box_content(std::error_code& error) override
+    {
+        assert(!error);
         Parser p;
-        auto branched_bs = byte_stream(bs, m_remaining_bytes);
-        p.read(branched_bs, shared_from_this());
-        assert(branched_bs.remaining_bytes() == 0);
+        p.parse(
+            m_bs.remaining_data(),
+            m_bs.remaining_size(),
+            shared_from_this(), error);
+        if (error)
+            return;
+
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
     }
 };
 

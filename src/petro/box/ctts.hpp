@@ -9,7 +9,6 @@
 #include <string>
 
 #include "full_box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -37,26 +36,34 @@ public:
     static const std::string TYPE;
 
 public:
-    ctts(std::weak_ptr<box> parent) :
-        full_box(ctts::TYPE, parent)
+
+    ctts(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void parse_full_box_content(std::error_code& error) override
     {
-        full_box::read(size, bs);
-        m_entry_count = bs.read_uint32_t();
-        m_remaining_bytes -= 4;
+        m_bs.read(m_entry_count, error);
+        if (error)
+            return;
 
         for (uint32_t i = 0; i < m_entry_count; ++i)
         {
-            uint32_t sample_count = bs.read_uint32_t();
-            uint32_t sample_offset = bs.read_uint32_t();
+            uint32_t sample_count = 0;
+            uint32_t sample_offset = 0;
+            m_bs.read(sample_count, error);
+            if (error)
+                return;
+
+            m_bs.read(sample_offset, error);
+            if (error)
+                return;
+
             m_entries.push_back(entry_type
             {
                 sample_count,
                 sample_offset
             });
-            m_remaining_bytes -= 8;
 
             for (uint32_t i = 0; i < sample_count; ++i)
             {
@@ -64,14 +71,24 @@ public:
             }
         }
 
-        assert(m_remaining_bytes == 0);
-        bs.skip(m_remaining_bytes);
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
     }
 
-    virtual std::string describe() const
+    error box_error_code() const override
+    {
+        return error::invalid_ctts_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  entry_count: " << m_entry_count << std::endl;
         ss << "  entries (count, offset): ";
         auto seperator = "";
@@ -91,7 +108,6 @@ public:
 
         return ss.str();
     }
-
     uint32_t samples() const
     {
         return m_composition_times.size();
@@ -99,7 +115,7 @@ public:
 
     uint32_t composition_time(uint32_t sample_index) const
     {
-        assert(sample_index < m_composition_times.size());
+        assert(sample_index < samples());
         return m_composition_times[sample_index];
     }
 

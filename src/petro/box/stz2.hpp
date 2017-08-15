@@ -10,7 +10,6 @@
 #include <string>
 
 #include "full_box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -25,57 +24,80 @@ public:
     static const std::string TYPE;
 
 public:
-    stz2(std::weak_ptr<box> parent) :
-        full_box(stz2::TYPE, parent)
+    stz2(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void parse_full_box_content(std::error_code& error) override
     {
-        full_box::read(size, bs);
-        bs.skip(3);
-        m_remaining_bytes -= 3;
+        // reserved
+        m_bs.skip(3, error);
+        if (error)
+            return;
 
-        m_field_size = bs.read_uint8_t();
-        m_remaining_bytes -= 1;
+        m_bs.read(m_field_size, error);
+        if (error)
+            return;
 
-        m_sample_count = bs.read_uint32_t();
-        m_remaining_bytes -= 4;
+        m_bs.read(m_sample_count, error);
+        if (error)
+            return;
 
         for (uint32_t i = 0; i < m_sample_count; ++i)
         {
             if (m_field_size == 4)
             {
-                uint8_t data = bs.read_uint8_t();
-                m_entry_sizes.push_back(data & 0x0F);
-                m_entry_sizes.push_back(data & 0xF0);
-                m_remaining_bytes -= 1;
+                uint8_t data_value = 0;
+                m_bs.read(data_value, error);
+                if (error)
+                    return;
+
+                m_entry_sizes.push_back(data_value & 0x0F);
+                m_entry_sizes.push_back(data_value & 0xF0);
                 i += 1;
             }
             else if (m_field_size == 8)
             {
-                m_entry_sizes.push_back(bs.read_uint8_t());
-                m_remaining_bytes -= 1;
+                uint8_t data_value = 0;
+                m_bs.read(data_value, error);
+                if (error)
+                    return;
+                m_entry_sizes.push_back(data_value);
             }
             else if (m_field_size == 16)
             {
-                m_entry_sizes.push_back(bs.read_uint16_t());
-                m_remaining_bytes -= 2;
+                uint16_t data_value = 0;
+                m_bs.read(data_value, error);
+                if (error)
+                    return;
+                m_entry_sizes.push_back(data_value);
             }
             else
             {
                 // illegal field size
-                assert(0);
+                error = box_error_code();
+                return;
             }
-            m_entry_sizes.push_back(bs.read_uint32_t());
-            m_remaining_bytes -= 4;
         }
-        bs.skip(m_remaining_bytes);
+
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
     }
 
-    virtual std::string describe() const
+    error box_error_code() const override
+    {
+        return error::invalid_stz2_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  field_size: " << m_field_size << std::endl;
         ss << "  sample_count: " << m_sample_count << std::endl;
         ss << "  samples (size): ";

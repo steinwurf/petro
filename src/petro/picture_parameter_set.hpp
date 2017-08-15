@@ -8,6 +8,9 @@
 #include <cstdint>
 #include <sstream>
 #include <vector>
+#include <cassert>
+
+#include "bit_stream.hpp"
 
 namespace petro
 {
@@ -15,18 +18,22 @@ class picture_parameter_set
 {
 public:
     picture_parameter_set(const uint8_t* data, uint32_t size) :
-        m_data(data),
-        m_size(size)
+        m_bs(data, size)
     { }
+
+    void parse(std::error_code& error)
+    {
+        assert(!error);
+    }
 
     const uint8_t* data() const
     {
-        return m_data;
+        return m_bs.data();
     }
 
-    uint32_t size() const
+    uint64_t size() const
     {
-        return m_size;
+        return m_bs.size();
     }
 
     std::string describe() const
@@ -40,7 +47,6 @@ public:
 
 private:
 
-    const uint8_t* m_data;
-    uint32_t m_size;
+    bit_stream m_bs;
 };
 }

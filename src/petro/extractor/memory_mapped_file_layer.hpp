@@ -7,8 +7,10 @@
 
 #include <cstdint>
 #include <cassert>
+#include <system_error>
 
 #include <boost/iostreams/device/mapped_file.hpp>
+#include <boost/filesystem/operations.hpp>
 
 namespace petro
 {
@@ -21,7 +23,7 @@ public:
 
     /// Opens the file. Remember to set the file path before calling this.
     /// Returns true if successful.
-    bool open()
+    void open(std::error_code& error)
     {
         assert(!m_file_path.empty());
         assert(!m_file.is_open());
@@ -29,12 +31,11 @@ public:
         {
             m_file.open(m_file_path);
         }
-        catch (std::exception& e)
+        catch (boost::filesystem::filesystem_error& e)
         {
-            (void) e;
-            return false;
+            error = std::make_error_code(
+                static_cast<std::errc>(e.code().value()));
         }
-        return m_file.is_open();
     }
 
     /// Sets the file path of the fíle to open.

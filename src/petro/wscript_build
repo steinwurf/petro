@@ -1,10 +1,13 @@
 # encoding: utf-8
 
+use_flags = [
+    'boost_includes', 'boost_iostreams', 'endian_includes']
+
 bld.stlib(
     features='cxx',
     source=bld.path.ant_glob('**/*.cpp'),
     target='petro',
-    use=['boost_includes', 'boost_iostreams'],
+    use=use_flags,
     export_includes=['..']
 )
 
@@ -20,6 +23,6 @@ if '-fPIC' in bld.env.CXXFLAGS:
         features='cxx',
         source=bld.path.ant_glob('**/*.cpp'),
         target='petro_shared',
-        use=['boost_includes', 'boost_iostreams'],
+        use=use_flags,
         export_includes=['..']
     )

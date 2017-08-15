@@ -13,7 +13,6 @@
 #include "esds.hpp"
 #include "full_box.hpp"
 #include "hdlr.hpp"
-#include "../byte_stream.hpp"
 #include "../parser.hpp"
 
 namespace petro
@@ -23,36 +22,67 @@ namespace box
 /// sample descriptions (codec types, initialization etc.)
 class stsd : public full_box
 {
-
 public:
 
-    class sample_entry : public box
+    class sample_entry : public data_box
     {
 
     public:
 
-        sample_entry(const std::string& format, std::weak_ptr<box> parent) :
-            box(format, parent)
+        sample_entry(const uint8_t* data, uint64_t size) :
+            data_box(data, size)
         { }
 
-        void read(uint64_t size, byte_stream& bs)
+        void parse_box_content(std::error_code& error) override final
         {
-            box::read(size, bs);
-            // reserved
-            bs.skip(6);
-            m_remaining_bytes -= 6;
+            assert(!error);
 
-            m_data_reference_index = bs.read_uint16_t();
-            m_remaining_bytes -= 2;
+            // reserved
+            m_bs.skip(6, error);
+            if (error)
+                return;
+
+            m_bs.read(m_data_reference_index, error);
+            if (error)
+                return;
+
+            parse_sample_entry(error);
+            if (error)
+                return;
         }
 
-        virtual std::string describe() const
+        virtual void parse_sample_entry(std::error_code& error)
+        {
+            assert(!error);
+            m_bs.skip(m_bs.remaining_size(), error);
+            if (error)
+                return;
+        }
+
+        error box_error_code() const override
+        {
+            return error::invalid_sample_entry;
+        }
+
+        std::string type() const override
+        {
+            return m_type;
+        }
+
+        std::string box_describe() const override final
         {
             std::stringstream ss;
-            ss << box::describe() << std::endl;
             ss << "  data_reference_index: " << m_data_reference_index;
+            ss << sample_entry_describe() << std::endl;
             return ss.str();
         }
+
+        virtual std::string sample_entry_describe() const
+        {
+            return "";
+        }
+
+
 
     private:
 
@@ -60,7 +90,7 @@ public:
         /// to retrieve data associated with samples that use this sample
         /// description. Data references are stored in dref boxes. The index
         /// ranges from 1 to the number of data references.
-        uint32_t m_data_reference_index;
+        uint16_t m_data_reference_index;
     };
 
     class visual_sample_entry : public sample_entry
@@ -68,67 +98,87 @@ public:
 
     public:
 
-        visual_sample_entry(const std::string& coding_name,
-                            std::weak_ptr<box> parent) :
-            sample_entry(coding_name, parent)
+        visual_sample_entry(const uint8_t* data, uint64_t size) :
+            sample_entry(data, size)
         { }
 
-        void read(uint64_t size, byte_stream& bs)
+        void parse_sample_entry(std::error_code& error) override
         {
-            sample_entry::read(size, bs);
             // pre_defined
-            bs.skip(2);
-            m_remaining_bytes -= 2;
+            m_bs.skip(2, error);
+            if (error)
+                return;
 
             // reserved
-            bs.skip(2);
-            m_remaining_bytes -= 2;
+            m_bs.skip(2, error);
+            if (error)
+                return;
 
             // pre_defined
-            bs.skip(4 * 3);
-            m_remaining_bytes -= 4 * 3;
+            m_bs.skip(4 * 3, error);
+            if (error)
+                return;
 
-            m_width = bs.read_uint16_t();
-            m_remaining_bytes -= 2;
+            m_bs.read(m_width, error);
+            if (error)
+                return;
 
-            m_height = bs.read_uint16_t();
-            m_remaining_bytes -= 2;
+            m_bs.read(m_height, error);
+            if (error)
+                return;
 
-            m_horizontal_resolution = bs.read_fixed_point_1616();
-            m_remaining_bytes -= 4;
+            m_bs.read_fixed_point_1616(m_horizontal_resolution, error);
+            if (error)
+                return;
 
-            m_vertical_resolution = bs.read_fixed_point_1616();
-            m_remaining_bytes -= 4;
+            m_bs.read_fixed_point_1616(m_vertical_resolution, error);
+            if (error)
+                return;
 
             // reserved
-            bs.skip(4);
-            m_remaining_bytes -= 4;
+            m_bs.skip(4, error);
+            if (error)
+                return;
 
-            m_frame_count = bs.read_uint16_t();
-            m_remaining_bytes -= 2;
-            for (uint8_t i = 0; i < 32; ++i)
+            m_bs.read(m_frame_count, error);
+            if (error)
+                return;
+
+            m_bs.read(m_compressor_name, 32, error);
+            if (error)
+                return;
+
+            m_bs.read(m_depth, error);
+            if (error)
+                return;
+
+            // pre_defined
+            m_bs.skip(2, error);
+            if (error)
+                return;
+
+            if (m_bs.remaining_size() == 0)
             {
-                m_compressor_name += bs.read_uint8_t();
-                m_remaining_bytes -= 1;
+                error = box_error_code();
+                return;
             }
 
-            m_depth = bs.read_uint16_t();
-            m_remaining_bytes -= 2;
-
-            // pre_defined
-            bs.skip(2);
-            m_remaining_bytes -= 2;
-
             parser<avcc> p;
-            auto branched_bs = byte_stream(bs, m_remaining_bytes);
-            p.read(branched_bs, shared_from_this());
-            assert(branched_bs.remaining_bytes() == 0);
+            p.parse(
+                m_bs.remaining_data(),
+                m_bs.remaining_size(),
+                shared_from_this(), error);
+            if (error)
+                return;
+
+            m_bs.skip(m_bs.remaining_size(), error);
+            if (error)
+                return;
         }
 
-        std::string describe() const
+        std::string sample_entry_describe() const override
         {
             std::stringstream ss;
-            ss << sample_entry::describe() << std::endl;
             ss << "  width: " << m_width << std::endl;
             ss << "  height: " << m_height << std::endl;
             ss << "  horizontal_resolution: " << m_horizontal_resolution
@@ -175,43 +225,62 @@ public:
 
     public:
 
-        audio_sample_entry(const std::string& coding_name, std::weak_ptr<box> parent) :
-            sample_entry(coding_name, parent)
+        audio_sample_entry(const uint8_t* data, uint64_t size) :
+            sample_entry(data, size)
         { }
 
-        void read(uint64_t size, byte_stream& bs)
+        void parse_sample_entry(std::error_code& error) override
         {
-            sample_entry::read(size, bs);
             // reserved
-            bs.skip(4 * 2);
-            m_remaining_bytes -= 4 * 2;
+            m_bs.skip(4 * 2, error);
+            if (error)
+                return;
 
-            m_channel_count = bs.read_uint16_t();
-            m_sample_size = bs.read_uint16_t();
-            m_remaining_bytes -= 4;
+            m_bs.read(m_channel_count, error);
+            if (error)
+                return;
+
+            m_bs.read(m_sample_size, error);
+            if (error)
+                return;
 
             // pre_defined
-            bs.skip(2);
-            m_remaining_bytes -= 2;
+            m_bs.skip(2, error);
+            if (error)
+                return;
 
             // reserved
-            bs.skip(2);
-            m_remaining_bytes -= 2;
+            m_bs.skip(2, error);
+            if (error)
+                return;
 
             // {timescale of media}<<16;
-            m_sample_rate = bs.read_fixed_point_1616();
-            m_remaining_bytes -= 4;
+            m_bs.read_fixed_point_1616(m_sample_rate, error);
+            if (error)
+                return;
+
+            if (m_bs.remaining_size() == 0)
+            {
+                error = box_error_code();
+                return;
+            }
 
             parser<esds> p;
-            auto branched_bs = byte_stream(bs, m_remaining_bytes);
-            p.read(branched_bs, shared_from_this());
-            assert(branched_bs.remaining_bytes() == 0);
+            p.parse(
+                m_bs.remaining_data(),
+                m_bs.remaining_size(),
+                shared_from_this(), error);
+            if (error)
+                return;
+
+            m_bs.skip(m_bs.remaining_size(), error);
+            if (error)
+                return;
         }
 
-        std::string describe() const
+        std::string sample_entry_describe() const override
         {
             std::stringstream ss;
-            ss << sample_entry::describe() << std::endl;
             ss << "  channel_count: " << m_channel_count << std::endl;
             ss << "  sample_size: " << m_sample_size << std::endl;
             ss << "  sample_rate: " << m_sample_rate;
@@ -241,43 +310,29 @@ public:
 
     public:
 
-        hint_sample_entry(const std::string& protocol, std::weak_ptr<box> parent) :
-            sample_entry(protocol, parent)
+        hint_sample_entry(const uint8_t* data, uint64_t size) :
+            sample_entry(data, size)
         { }
 
-        void read(uint64_t size, byte_stream& bs)
+        void parse_sample_entry(std::error_code& error) override
         {
-            sample_entry::read(size, bs);
-            bs.skip(m_remaining_bytes);
+            m_data.resize(m_bs.remaining_size());
+            m_bs.read(m_data.data(), m_data.size(), error);
+            if (error)
+                return;
         }
 
-        std::string describe() const
+        std::string sample_entry_describe() const override
         {
             std::stringstream ss;
-            ss << sample_entry::describe() << std::endl;
-            ss << "    data: " << (uint64_t)m_data << std::endl;
+            ss << "    data: " << (uint64_t)m_data.data() << std::endl;
+            ss << "    data.size: " << m_data.size() << std::endl;
             return ss.str();
         }
 
     private:
 
-        uint8_t* m_data = nullptr;
-    };
-
-    class unknown_sample_entry : public sample_entry
-    {
-
-    public:
-
-        unknown_sample_entry(const std::string& format, std::weak_ptr<box> parent) :
-            sample_entry(format, parent)
-        { }
-
-        void read(uint64_t size, byte_stream& bs)
-        {
-            sample_entry::read(size, bs);
-            bs.skip(m_remaining_bytes);
-        }
+        std::vector<uint8_t> m_data;
     };
 
 public:
@@ -285,63 +340,91 @@ public:
     static const std::string TYPE;
 
 public:
-    stsd(std::weak_ptr<box> parent) :
-        full_box(stsd::TYPE, parent)
+
+    stsd(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void parse_full_box_content(std::error_code& error) override
     {
-        full_box::read(size, bs);
-        m_entry_count = bs.read_uint32_t();
-        m_remaining_bytes -= 4;
+        m_bs.read(m_entry_count, error);
+        if (error)
+            return;
 
         // get handler to know which kind of sample we are reading.
+        std::string handler_type = "none";
         auto mdia = get_parent("mdia");
-        assert(mdia != nullptr);
-        auto hdlr = std::dynamic_pointer_cast<const petro::box::hdlr>(
-            mdia->get_child("hdlr"));
+        if (mdia != nullptr)
+        {
+            auto hdlr = mdia->get_child<petro::box::hdlr>();
+            if (hdlr != nullptr)
+            {
+                handler_type = hdlr->handler_type();
+            }
+        }
 
         for (uint32_t i = 0; i < m_entry_count; ++i)
         {
-            uint32_t entry_size = bs.read_uint32_t();
-            std::string entry_type = bs.read_type();
-
+            if (m_bs.remaining_size() == 0)
+            {
+                error = box_error_code();
+                return;
+            }
             std::shared_ptr<sample_entry> entry = nullptr;
-            if (hdlr != nullptr)
+            if (handler_type == "vide") // for video tracks
             {
-                std::string handler_type = hdlr->handler_type();
-                if (handler_type == "vide") // for video tracks
-                {
-                    entry = std::make_shared<visual_sample_entry>(entry_type, shared_from_this());
-                    entry->read(entry_size, bs);
-                }
-                else if (handler_type == "soun") // for audio tracks
-                {
-                    entry = std::make_shared<audio_sample_entry>(entry_type, shared_from_this());
-                    entry->read(entry_size, bs);
-                }
-                else if (handler_type == "hint")
-                {
-                    entry = std::make_shared<hint_sample_entry>(entry_type, shared_from_this());
-                    entry->read(entry_size, bs);
-                }
+                entry = std::make_shared<visual_sample_entry>(
+                    m_bs.remaining_data(),
+                    m_bs.remaining_size());
             }
-            if (!entry)
+            else if (handler_type == "soun") // for audio tracks
             {
-                entry = std::make_shared<unknown_sample_entry>(entry_type, shared_from_this());
-                entry->read(entry_size, bs);
+                entry = std::make_shared<audio_sample_entry>(
+                    m_bs.remaining_data(),
+                    m_bs.remaining_size());
+            }
+            else if (handler_type == "hint")
+            {
+                entry = std::make_shared<hint_sample_entry>(
+                    m_bs.remaining_data(),
+                    m_bs.remaining_size());
+            }
+            else
+            {
+                entry = std::make_shared<sample_entry>(
+                    m_bs.remaining_data(),
+                    m_bs.remaining_size());
             }
 
-            m_remaining_bytes -= entry->size();
+            entry->set_parent(shared_from_this());
+            entry->parse(error);
+            if (error)
+                return;
+
+            m_bs.skip(entry->size(), error);
+            if (error)
+                return;
             m_children.push_back(entry);
         }
-        bs.skip(m_remaining_bytes);
+
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
     }
 
-    virtual std::string describe() const
+    error box_error_code() const override
+    {
+        return error::invalid_stsd_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  entry_count: " << m_entry_count << std::endl;
         return ss.str();
     }

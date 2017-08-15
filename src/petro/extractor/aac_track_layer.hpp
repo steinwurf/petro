@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <cassert>
 
-#include "../box/box.hpp"
+#include "../box/data_box.hpp"
 #include "../box/esds.hpp"
 
 namespace petro
@@ -23,12 +23,14 @@ class aac_track_layer : public Super
 public:
 
     /// open this and the underlying layer, returns false upon failure.
-    bool open()
+    void open(std::error_code& error)
     {
-        if (!Super::open())
+        assert(!error);
+        Super::open(error);
+        if (error)
         {
             Super::close();
-            return false;
+            return;
         }
 
         auto root = Super::root();
@@ -36,32 +38,44 @@ public:
         auto mp4a = root->get_child("mp4a");
         if (mp4a == nullptr)
         {
+            error = petro::error::mp4a_box_missing;
             Super::close();
-            return false;
+            return;
         }
 
         auto trak = mp4a->get_parent("trak");
         if (trak == nullptr)
         {
+            error = petro::error::trak_box_missing;
             Super::close();
-            return false;
+            return;
         }
 
         auto esds = mp4a->template get_child<box::esds>();
         if (esds == nullptr)
         {
+            error = petro::error::esds_box_missing;
             Super::close();
-            return false;
+            return;
         }
 
         m_trak = trak;
 
-        auto descriptor = esds->descriptor()->decoder_config_descriptor();
+        auto descriptor =
+            esds->descriptor()->
+            decoder_config_descriptor()->
+            decoder_specific_info_descriptor();
+
+        if (descriptor == nullptr)
+        {
+            error = petro::error::descriptor_missing;
+            Super::close();
+            return;
+        }
+
         m_mpeg_audio_object_type = descriptor->mpeg_audio_object_type();
         m_frequency_index = descriptor->frequency_index();
         m_channel_configuration = descriptor->channel_configuration();
-
-        return true;
     }
 
     /// close this and the underlying layer

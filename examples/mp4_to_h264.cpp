@@ -24,9 +24,13 @@ int main(int argc, char* argv[])
     petro::extractor::nalu_extractor extractor;
     extractor.set_file_path(filename);
 
-    if (!extractor.open())
+    std::error_code error;
+    extractor.open(error);
+    if (error)
     {
-        std::cerr << "Error reading file: " << filename << std::endl;
+        std::cerr << "Error. Unable to extract h264 from: "
+                  << filename << std::endl
+                  << "Error message: " << error.message() << std::endl;
         return 1;
     }
 

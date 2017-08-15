@@ -8,12 +8,12 @@
 #include <string>
 #include <istream>
 #include <memory>
-#include <iostream>
+#include <cstring>
 
-#include "byte_stream.hpp"
 #include "box/unknown.hpp"
-#include "box/box.hpp"
+#include "box/data_box.hpp"
 #include "box/root.hpp"
+#include "stream.hpp"
 
 namespace petro
 {
@@ -22,54 +22,90 @@ class parser
 {
 public:
 
-    std::shared_ptr<box::box> read(
-        byte_stream& bs,
-        std::weak_ptr<box::box> parent = std::make_shared<box::root>())
+    void parse(
+        const uint8_t* data,
+        uint64_t size,
+        std::weak_ptr<box::box> parent,
+        std::error_code& error)
     {
-        while (bs.remaining_bytes() != 0)
+        assert(data != nullptr);
+        assert(size != 0);
+        assert(parent.lock() != nullptr);
+        assert(!error);
+
+        uint64_t position = 0;
+        while (position != size)
         {
-            parse(bs, parent);
+            auto box = parse_box(data + position, size - position, parent, error);
+            if (error)
+                return;
+            position += box->size();
+            assert(position <= size &&
+                   "This should not be possible, the boxes should set the "
+                   "error code if they read more than size.");
         }
-        return parent.lock();
     }
 
-    void parse(byte_stream& bs, std::weak_ptr<box::box> parent)
+    std::shared_ptr<box::data_box> parse_box(
+        const uint8_t* data,
+        uint64_t size,
+        std::weak_ptr<box::box> parent,
+        std::error_code& error)
     {
-        // size is an integer that specifies the number of bytes in this
-        // box, including all its fields and contained boxes.
-        uint32_t size = bs.read_uint32_t();
+        assert(data != nullptr);
+        assert(size != 0);
+        assert(parent.lock() != nullptr);
+        assert(!error);
+
+        stream bs(data, size);
+        // Skip the size, we are only interested in the type
+        bs.skip(4, error);
+        if (error)
+            return 0;
 
         // type identifies the box type; standard boxes use a compact type,
         // which is normally four printable characters,
-        // to permit ease of identification,
-        // and is shown so in the boxes below.
+        // to permit ease of identification.
         // User extensions use an extended type; in this case,
         // the type field is set to "uuid".
-        std::string type = bs.read_type();
+        std::string type;
+        bs.read_type(type, error);
+        if (error)
+            return 0;
 
         // Try parsing the found type
-        auto box = parse_helper<PBoxes...>::call(type, size, bs, parent);
+        auto box = parse_helper<PBoxes...>::call(type, data, size, parent, error);
+        if (error)
+            return 0;
         assert(box);
+
         auto p = parent.lock();
         assert(p);
         p->add_child(box);
+
+        return box;
     }
 
 private:
 
-    template<class... Boxes>
+    template<class...>
     struct parse_helper
     {
-        static std::shared_ptr<box::box> call(
+        static std::shared_ptr<box::data_box> call(
             const std::string& type,
-            uint32_t size,
-            byte_stream& bs,
-            std::weak_ptr<box::box> parent)
+            const uint8_t* data,
+            uint64_t size,
+            std::weak_ptr<box::box> parent,
+            std::error_code& error)
         {
+            (void) type;
             // if the parser doesn't support the given type, a generic box
             // type called "unknown" is used instead.
-            auto box = std::make_shared<box::unknown>(type, parent);
-            box->read(size, bs);
+            auto box = std::make_shared<box::unknown>(data, size);
+
+            box->set_parent(parent);
+
+            box->parse(error);
             return box;
         }
     };
@@ -77,19 +113,23 @@ private:
     template<class Box, class... Boxes>
     struct parse_helper<Box, Boxes...>
     {
-        static std::shared_ptr<box::box> call(
+        static std::shared_ptr<box::data_box> call(
             const std::string& type,
-            uint32_t size,
-            byte_stream& bs,
-            std::weak_ptr<box::box> parent)
+            const uint8_t* data,
+            uint64_t size,
+            std::weak_ptr<box::box> parent,
+            std::error_code& error)
         {
             if (Box::TYPE == type)
             {
-                auto box = std::make_shared<Box>(parent);
-                box->read(size, bs);
+                auto box = std::make_shared<Box>(data, size);
+
+                box->set_parent(parent);
+
+                box->parse(error);
                 return box;
             }
-            return parse_helper<Boxes...>::call(type, size, bs, parent);
+            return parse_helper<Boxes...>::call(type, data, size, parent, error);
         }
     };
 };

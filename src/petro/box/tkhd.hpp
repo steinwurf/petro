@@ -9,7 +9,6 @@
 #include <string>
 
 #include "full_box.hpp"
-#include "../byte_stream.hpp"
 #include "../matrix.hpp"
 
 namespace petro
@@ -25,74 +24,116 @@ public:
     static const std::string TYPE;
 
 public:
-    tkhd(std::weak_ptr<box> parent) :
-        full_box(tkhd::TYPE, parent)
+    tkhd(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void parse_full_box_content(std::error_code& error) override
     {
-        full_box::read(size, bs);
-
-        m_track_enabled = (m_flags.m_data[2] & 0x01) != 0;
-        m_track_in_movie = (m_flags.m_data[2] & 0x02) != 0;
-        m_track_in_preview = (m_flags.m_data[2] & 0x04) != 0;
+        m_track_enabled = (m_flags[2] & 0x01) != 0;
+        m_track_in_movie = (m_flags[2] & 0x02) != 0;
+        m_track_in_preview = (m_flags[2] & 0x04) != 0;
 
         if (m_version == 1)
         {
-            m_creation_time = bs.read_time64();
-            m_modification_time = bs.read_time64();
-            m_track_id = bs.read_uint32_t();
+            m_bs.read_time64(m_creation_time, error);
+            if (error)
+                return;
+
+            m_bs.read_time64(m_modification_time, error);
+            if (error)
+                return;
+
+            m_bs.read(m_track_id, error);
+            if (error)
+                return;
 
             // reserved
-            bs.skip(4);
+            m_bs.skip(4, error);
+            if (error)
+                return;
 
-            m_duration = bs.read_uint64_t();
-            m_remaining_bytes -= 32;
+            m_bs.read<uint64_t>(m_duration, error);
+            if (error)
+                return;
         }
         else  // m_version == 0
         {
-            m_creation_time = bs.read_time32();
-            m_modification_time = bs.read_time32();
-            m_track_id = bs.read_uint32_t();
+            m_bs.read_time32(m_creation_time, error);
+            if (error)
+                return;
+
+            m_bs.read_time32(m_modification_time, error);
+            if (error)
+                return;
+
+            m_bs.read(m_track_id, error);
+            if (error)
+                return;
 
             // reserved
-            bs.skip(4);
+            m_bs.skip(4, error);
+            if (error)
+                return;
 
-            m_duration = bs.read_uint32_t();
-            m_remaining_bytes -= 20;
+            uint32_t duration_value = 0;
+            m_bs.read<uint32_t>(duration_value, error);
+            if (error)
+                return;
+            m_duration = duration_value;
         }
         // reserved
-        bs.skip(8);
-        m_remaining_bytes -= 8;
+        m_bs.skip(8, error);
+        if (error)
+            return;
 
-        m_layer = bs.read_int16_t();
-        m_remaining_bytes -= 2;
+        m_bs.read(m_layer, error);
+        if (error)
+            return;
 
-        m_alternate_group = bs.read_int16_t();
-        m_remaining_bytes -= 2;
+        m_bs.read(m_alternate_group, error);
+        if (error)
+            return;
 
-        m_volume = bs.read_fixed_point_88();
-        m_remaining_bytes -= 2;
+        m_bs.read_fixed_point_88(m_volume, error);
+        if (error)
+            return;
 
         // reserved
-        bs.skip(2);
-        m_remaining_bytes -= 2;
+        m_bs.skip(2, error);
+        if (error)
+            return;
 
-        m_matrix.read(bs);
-        m_remaining_bytes -= 4 * 9;
+        m_bs.read(m_matrix, error);
+        if (error)
+            return;
 
-        m_width = bs.read_fixed_point_1616();
-        m_remaining_bytes -= 4;
+        m_bs.read_fixed_point_1616(m_width, error);
+        if (error)
+            return;
 
-        m_height = bs.read_fixed_point_1616();
-        m_remaining_bytes -= 4;
-        bs.skip(m_remaining_bytes);
+        m_bs.read_fixed_point_1616(m_height, error);
+        if (error)
+            return;
+
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
     }
 
-    virtual std::string describe() const
+    error box_error_code() const override
+    {
+        return error::invalid_tkhd_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  track_enabled: " << m_track_enabled << std::endl;
         ss << "  track_in_movie: " << m_track_in_movie << std::endl;
         ss << "  track_in_preview: " << m_track_in_preview << std::endl;

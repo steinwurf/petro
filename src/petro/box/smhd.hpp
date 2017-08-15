@@ -9,7 +9,6 @@
 #include <string>
 
 #include "full_box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -24,24 +23,37 @@ public:
     static const std::string TYPE;
 
 public:
-    smhd(std::weak_ptr<box> parent) :
-        full_box(smhd::TYPE, parent)
+    smhd(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void parse_full_box_content(std::error_code& error) override
     {
-        full_box::read(size, bs);
-        m_balance = bs.read_fixed_point_88();
-        m_remaining_bytes -= 2;
-        bs.skip(2);
-        m_remaining_bytes -= 2;
-        bs.skip(m_remaining_bytes);
+        m_bs.read_fixed_point_88(m_balance, error);
+        if (error)
+            return;
+        m_bs.skip(2, error);
+        if (error)
+            return;
+
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
     }
 
-    virtual std::string describe() const
+    error box_error_code() const override
+    {
+        return error::invalid_smhd_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  balance: " << m_balance << std::endl;
         return ss.str();
     }

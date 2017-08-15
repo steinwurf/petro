@@ -16,6 +16,7 @@
 
 void print_box(std::shared_ptr<petro::box::box> b, uint32_t level = 0)
 {
+    assert(b != nullptr);
     std::stringstream ss(b->describe());
     std::string line;
     while (std::getline(ss, line))
@@ -148,8 +149,15 @@ int main(int argc, char* argv[])
         >>
     > parser;
 
-    petro::byte_stream bs((uint8_t*)mp4_file.data(), mp4_file.size());
-    auto root = parser.read(bs);
+    std::error_code error;
+    auto root = std::make_shared<petro::box::root>();
+    parser.parse((uint8_t*)mp4_file.data(), mp4_file.size(), root, error);
+
+    if (error)
+    {
+        std::cerr << error.message() << std::endl;
+        return 1;
+    }
 
     for (auto box : root->children())
     {

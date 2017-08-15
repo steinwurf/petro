@@ -18,6 +18,10 @@ inline uint64_t decoding_time(
     uint32_t media_header_timescale,
     uint32_t sample_index)
 {
+    assert(stts != nullptr);
+    assert(media_header_timescale != 0);
+    assert(sample_index < stts->samples());
+
     uint64_t decoding_time = stts->decoding_time(sample_index);
 
     decoding_time *= 1000000;

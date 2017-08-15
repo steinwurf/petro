@@ -6,10 +6,11 @@
 #pragma once
 
 #include <cstdint>
+#include <iostream>
 #include <sstream>
 #include <vector>
 
-#include "bit_reader.hpp"
+#include "bit_stream.hpp"
 
 namespace petro
 {
@@ -18,30 +19,84 @@ class sequence_parameter_set
 {
 
 public:
-    sequence_parameter_set(const uint8_t* data, uint32_t size) :
-        m_data(data),
-        m_size(size)
+    sequence_parameter_set(const uint8_t* data, uint64_t size) :
+        m_bs(data, size)
+    { }
+
+    void parse(std::error_code& error)
     {
-        auto bits = bit_reader(m_data, m_size);
-        uint8_t forbidden_zero_bit = bits.read_bit();
-        assert(forbidden_zero_bit == 0);
-        bits.skip(2); // nal_ref_idc
-        uint8_t nal_unit_type = bits.read_bits(5);
-        assert(nal_unit_type == 7U); // should be 7 for SPS
+        m_bs.seek(0, error);
+        if (error)
+            return;
 
-        m_profile_idc = bits.read_bits(8);
-        m_constraint_set0_flag = bits.read_bit();
-        m_constraint_set1_flag = bits.read_bit();
-        m_constraint_set2_flag = bits.read_bit();
-        m_constraint_set3_flag = bits.read_bit();
-        m_constraint_set4_flag = bits.read_bit();
-        m_constraint_set5_flag = bits.read_bit();
+        uint8_t forbidden_zero_bit = 0;
+        m_bs.read_bit(forbidden_zero_bit, error);
+        if (error)
+            return;
+
+        if (forbidden_zero_bit != 0U)
+        {
+            error = petro::error::invalid_sps;
+            return;
+        }
+
+        m_bs.skip(2, error); // nal_ref_idc
+        if (error)
+            return;
+
+        uint8_t nal_unit_type = 0;
+        m_bs.read_bits(nal_unit_type, 5, error);
+        if (error)
+            return;
+
+        if (nal_unit_type != 7U)
+        {
+            error = petro::error::invalid_sps;
+            return;
+        }
+
+        m_bs.read_bits(m_profile_idc, 8, error);
+        if (error)
+            return;
+
+        m_bs.read_bit(m_constraint_set0_flag, error);
+        if (error)
+            return;
+
+        m_bs.read_bit(m_constraint_set1_flag, error);
+        if (error)
+            return;
+
+        m_bs.read_bit(m_constraint_set2_flag, error);
+        if (error)
+            return;
+
+        m_bs.read_bit(m_constraint_set3_flag, error);
+        if (error)
+            return;
+
+        m_bs.read_bit(m_constraint_set4_flag, error);
+        if (error)
+            return;
+
+        m_bs.read_bit(m_constraint_set5_flag, error);
+        if (error)
+            return;
+
         // reserved_zero_2bits
-        bits.skip(2);
+        m_bs.skip(2, error);
+        if (error)
+            return;
 
-        m_level_idc = bits.read_bits(8);
-        m_seq_parameter_set_id =
-            bits.read_unsigned_exponential_golomb_code();
+        m_bs.read_bits(m_level_idc, 8, error);
+        if (error)
+            return;
+
+        m_bs.read_unsigned_exponential_golomb_code(
+            m_seq_parameter_set_id, error);
+        if (error)
+            return;
+
 
         if (m_profile_idc == 44 || m_profile_idc == 83 ||
             m_profile_idc == 86 || m_profile_idc == 100 ||
@@ -50,19 +105,39 @@ public:
             m_profile_idc == 134 || m_profile_idc == 138 ||
             m_profile_idc == 139 || m_profile_idc == 244)
         {
-            m_chroma_format_idc =
-                bits.read_unsigned_exponential_golomb_code();
+            m_bs.read_unsigned_exponential_golomb_code(
+                m_chroma_format_idc, error);
+            if (error)
+                return;
+
             if (m_chroma_format_idc == 3)
             {
-                m_separate_colour_plane_flag = bits.read_bit();
+                m_bs.read_bit(m_separate_colour_plane_flag, error);
+                if (error)
+                    return;
+
             }
 
-            m_bit_depth_luma =
-                bits.read_unsigned_exponential_golomb_code() + 8;
-            m_bit_depth_chroma =
-                bits.read_unsigned_exponential_golomb_code() + 8;
-            m_qpprime_y_zero_transform_bypass_flag = bits.read_bit();
-            m_seq_scaling_matrix_present_flag = bits.read_bit();
+            m_bs.read_unsigned_exponential_golomb_code(m_bit_depth_luma, error);
+            if (error)
+                return;
+
+            m_bit_depth_luma += 8;
+            m_bs.read_unsigned_exponential_golomb_code(
+                m_bit_depth_chroma, error);
+            if (error)
+                return;
+
+            m_bit_depth_chroma += 8;
+
+            m_bs.read_bit(m_qpprime_y_zero_transform_bypass_flag, error);
+            if (error)
+                return;
+
+            m_bs.read_bit(m_seq_scaling_matrix_present_flag, error);
+            if (error)
+                return;
+
 
             if (m_seq_scaling_matrix_present_flag)
             {
@@ -70,7 +145,10 @@ public:
                     ((m_chroma_format_idc != 3) ? 8 : 12);
                 for (uint8_t i = 0; i < seq_scaling_matrix_size; ++i)
                 {
-                    m_seq_scaling_list_present_flag = bits.read_bit();
+                    m_bs.read_bit(m_seq_scaling_list_present_flag, error);
+                    if (error)
+                        return;
+
                     if (m_seq_scaling_list_present_flag)
                     {
                         uint8_t size_of_scaling_list = (i < 6) ? 16 : 64;
@@ -80,8 +158,12 @@ public:
                         {
                             if (next_scale != 0)
                             {
-                                auto delta_scale =
-                                    bits.read_signed_exponential_golomb_code();
+                                int32_t delta_scale = 0;
+                                m_bs.read_signed_exponential_golomb_code(
+                                    delta_scale, error);
+                                if (error)
+                                    return;
+
                                 next_scale =
                                     (last_scale + delta_scale + 256) % 256;
                             }
@@ -92,58 +174,134 @@ public:
                 }
             }
         }
+        else if (m_profile_idc == 183)
+        {
+            m_chroma_format_idc = 0;
+        }
+        else
+        {
+            m_chroma_format_idc = 1;
+        }
 
-        m_log2_max_frame_num =
-            bits.read_unsigned_exponential_golomb_code() + 4;
-        m_pic_order_cnt_type = bits.read_unsigned_exponential_golomb_code();
+        m_bs.read_unsigned_exponential_golomb_code(m_log2_max_frame_num, error);
+        if (error)
+            return;
+
+        m_log2_max_frame_num += 4;
+
+        m_bs.read_unsigned_exponential_golomb_code(m_pic_order_cnt_type, error);
+        if (error)
+            return;
+
         if (m_pic_order_cnt_type == 0)
         {
-            m_log2_max_pic_order_cnt_lsb =
-                bits.read_unsigned_exponential_golomb_code() + 4;
+            m_bs.read_unsigned_exponential_golomb_code(
+                m_log2_max_pic_order_cnt_lsb, error);
+            if (error)
+                return;
+
+            m_log2_max_pic_order_cnt_lsb += 4;
         }
         else if (m_pic_order_cnt_type == 1)
         {
-            m_delta_pic_order_always_zero_flag = bits.read_bit();
-            m_offset_for_non_ref_pic = bits.read_bit();
-            m_offset_for_top_to_bottom_field = bits.read_bit();
-            m_num_ref_frames_in_pic_order_cnt_cycle =
-                bits.read_unsigned_exponential_golomb_code();
+            m_bs.read_bit(m_delta_pic_order_always_zero_flag, error);
+            if (error)
+                return;
+
+            m_bs.read_bit(m_offset_for_non_ref_pic, error);
+            if (error)
+                return;
+
+            m_bs.read_bit(m_offset_for_top_to_bottom_field, error);
+            if (error)
+                return;
+
+            m_bs.read_unsigned_exponential_golomb_code(
+                m_num_ref_frames_in_pic_order_cnt_cycle, error);
+            if (error)
+                return;
+
             for (uint32_t i = 0;
                  i < m_num_ref_frames_in_pic_order_cnt_cycle; i++)
             {
-                // offset_for_ref_frame[i]
-                bits.read_signed_exponential_golomb_code();
+                int32_t offset_for_ref_frame = 0;
+                m_bs.read_signed_exponential_golomb_code(
+                    offset_for_ref_frame, error);
+                if (error)
+                    return;
+
             }
         }
 
-        m_num_ref_frames = bits.read_unsigned_exponential_golomb_code();
-        m_gaps_in_frame_num_value_allowed_flag = bits.read_bit();
+        m_bs.read_unsigned_exponential_golomb_code(m_num_ref_frames, error);
+        if (error)
+            return;
 
-        m_pic_width_in_mbs =
-            bits.read_unsigned_exponential_golomb_code() + 1;
-        m_pic_height_in_map_units =
-            bits.read_unsigned_exponential_golomb_code() + 1;
+        m_bs.read_bit(m_gaps_in_frame_num_value_allowed_flag, error);
+        if (error)
+            return;
 
-        m_frame_mbs_only_flag = bits.read_bit();
+
+        m_bs.read_unsigned_exponential_golomb_code(m_pic_width_in_mbs, error);
+        if (error)
+            return;
+
+        m_pic_width_in_mbs += 1;
+
+        m_bs.read_unsigned_exponential_golomb_code(
+            m_pic_height_in_map_units, error);
+        if (error)
+            return;
+
+        m_pic_height_in_map_units += 1;
+
+        m_bs.read_bit(m_frame_mbs_only_flag, error);
+        if (error)
+            return;
+
         if (!m_frame_mbs_only_flag)
         {
-            m_mb_adaptive_frame_field_flag = bits.read_bit();
+            m_bs.read_bit(m_mb_adaptive_frame_field_flag, error);
+            if (error)
+                return;
+
         }
-        m_direct_8x8_inference_flag = bits.read_bit();
-        m_frame_cropping_flag = bits.read_bit();
+        m_bs.read_bit(m_direct_8x8_inference_flag, error);
+        if (error)
+            return;
+
+        m_bs.read_bit(m_frame_cropping_flag, error);
+        if (error)
+            return;
+
 
         if (m_frame_cropping_flag)
         {
-            m_frame_crop_left_offset =
-                bits.read_unsigned_exponential_golomb_code();
-            m_frame_crop_right_offset =
-                bits.read_unsigned_exponential_golomb_code();
-            m_frame_crop_top_offset =
-                bits.read_unsigned_exponential_golomb_code();
-            m_frame_crop_bottom_offset =
-                bits.read_unsigned_exponential_golomb_code();
+            m_bs.read_unsigned_exponential_golomb_code(
+                m_frame_crop_left_offset, error);
+            if (error)
+                return;
+
+            m_bs.read_unsigned_exponential_golomb_code(
+                m_frame_crop_right_offset, error);
+            if (error)
+                return;
+
+            m_bs.read_unsigned_exponential_golomb_code(
+                m_frame_crop_top_offset, error);
+            if (error)
+                return;
+
+            m_bs.read_unsigned_exponential_golomb_code(
+                m_frame_crop_bottom_offset, error);
+            if (error)
+                return;
+
         }
-        m_vui_parameters_present_flag = bits.read_bit();
+        m_bs.read_bit(m_vui_parameters_present_flag, error);
+        if (error)
+            return;
+
 
         uint32_t pic_width_in_samples = m_pic_width_in_mbs * 16;
         m_width =
@@ -217,7 +375,7 @@ public:
         return m_seq_parameter_set_id;
     }
 
-    uint8_t chroma_format_idc() const
+    uint32_t chroma_format_idc() const
     {
         return m_chroma_format_idc;
     }
@@ -354,12 +512,12 @@ public:
 
     const uint8_t* data() const
     {
-        return m_data;
+        return m_bs.data();
     }
 
-    uint32_t size() const
+    uint64_t size() const
     {
-        return m_size;
+        return m_bs.size();
     }
 
     std::string describe() const
@@ -373,8 +531,7 @@ public:
 
 private:
 
-    const uint8_t* m_data;
-    uint32_t m_size;
+    bit_stream m_bs;
 
     uint32_t m_height;
     uint32_t m_width;
@@ -395,7 +552,7 @@ private:
     uint32_t m_pic_order_cnt_type;
     uint32_t m_seq_parameter_set_id;
 
-    uint8_t m_chroma_format_idc;
+    uint32_t m_chroma_format_idc = 0;
     uint8_t m_level_idc;
     uint8_t m_profile_idc;
 

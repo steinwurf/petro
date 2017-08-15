@@ -12,7 +12,7 @@ namespace
 {
 struct dummy_layer
 {
-    stub::function<bool()> open;
+    stub::function<void(std::error_code)> open;
     stub::function<void()> close;
     stub::function<void()> reset;
     stub::function<void()> advance;
@@ -30,10 +30,6 @@ TEST(extractor_avc_sample_access_layer, api)
     dummy_stack stack;
     dummy_layer& layer = stack;
 
-    layer.open.set_return(false);
-    EXPECT_FALSE(stack.open());
-    EXPECT_EQ(1U, layer.close.calls());
-
     std::vector<uint8_t> avc_sample
     {
         0x00, 0x00, 0x03, 0x22, 0x33, 0x44,
@@ -46,8 +42,9 @@ TEST(extractor_avc_sample_access_layer, api)
     layer.sample_data.set_return(avc_sample.data());
     layer.sample_size.set_return(avc_sample.size());
 
-    layer.open.set_return(true);
-    EXPECT_TRUE(stack.open());
+    std::error_code error;
+    stack.open(error);
+    ASSERT_FALSE(bool(error));
 
     ASSERT_EQ(3U, stack.nalu_count());
 

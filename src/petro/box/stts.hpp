@@ -10,7 +10,6 @@
 #include <string>
 
 #include "full_box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -32,52 +31,76 @@ public:
         uint32_t sample_delta;
     };
 
+    struct sample
+    {
+        uint32_t decoding_time;
+        uint32_t duration;
+    };
+
 public:
 
     static const std::string TYPE;
 
 public:
-    stts(std::weak_ptr<box> parent) :
-        full_box(stts::TYPE, parent)
+
+    stts(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void parse_full_box_content(std::error_code& error) override
     {
-        full_box::read(size, bs);
-        m_entry_count = bs.read_uint32_t();
-        m_remaining_bytes -= 4;
+        m_bs.read(m_entry_count, error);
+        if (error)
+            return;
 
         uint32_t decoding_time = 0;
         for (uint32_t i = 0; i < m_entry_count; ++i)
         {
-            uint32_t sample_count = bs.read_uint32_t();
-            uint32_t sample_delta = bs.read_uint32_t();
+            uint32_t sample_count = 0;
+            m_bs.read(sample_count, error);
+            if (error)
+                return;
+
+            uint32_t sample_delta = 0;
+            m_bs.read(sample_delta, error);
+            if (error)
+                return;
+
             m_entries.push_back(entry_type
             {
                 sample_count,
                 sample_delta
             });
-            m_remaining_bytes -= 8;
 
             for (uint32_t i = 0; i < sample_count; ++i)
             {
                 decoding_time += sample_delta;
-                m_decoding_times.push_back(decoding_time);
-            }
-
-            for (uint32_t i = 0; i < sample_count; ++i)
-            {
-                m_durations.push_back(sample_delta);
+                m_samples.push_back(sample
+                {
+                    decoding_time,
+                    sample_delta
+                });
             }
         }
-        assert(m_decoding_times.size() == m_durations.size());
-        bs.skip(m_remaining_bytes);
+
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
     }
 
-    virtual std::string describe() const
+    error box_error_code() const override
+    {
+        return error::invalid_stts_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  entry_count: " << m_entry_count << std::endl;
         ss << "  entries (count, delta): ";
         auto seperator = "";
@@ -99,19 +122,19 @@ public:
 
     uint32_t samples() const
     {
-        return m_decoding_times.size();
+        return m_samples.size();
     }
 
     uint32_t decoding_time(uint32_t sample_index) const
     {
-        assert(sample_index < m_decoding_times.size());
-        return m_decoding_times[sample_index];
+        assert(sample_index < samples());
+        return m_samples[sample_index].decoding_time;
     }
 
     uint32_t duration(uint32_t sample_index) const
     {
-        assert(sample_index < m_durations.size());
-        return m_durations[sample_index];
+        assert(sample_index < samples());
+        return m_samples[sample_index].duration;
     }
 
 private:
@@ -122,15 +145,10 @@ private:
     /// a vector containing each entry's sample count and sample delta.
     std::vector<entry_type> m_entries;
 
-    /// the decoding time for each sample.
+    /// the decoding time and duration for each sample.
     /// this field is not part of the standard, and is simply a result of
     /// the extraction of the data in the entries.
-    std::vector<uint32_t> m_decoding_times;
-
-    /// the duration for each sample.
-    /// this field is not part of the standard, and is simply a result of
-    /// the extraction of the data in the entries.
-    std::vector<uint32_t> m_durations;
+    std::vector<sample> m_samples;
 };
 }
 }

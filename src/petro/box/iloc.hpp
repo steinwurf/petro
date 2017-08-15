@@ -8,15 +8,14 @@
 #include <cstdint>
 #include <string>
 
-#include "box.hpp"
-#include "../byte_stream.hpp"
+#include "data_box.hpp"
 
 namespace petro
 {
 namespace box
 {
 /// item location
-class iloc : public box
+class iloc : public data_box
 {
 
 public:
@@ -24,14 +23,18 @@ public:
     static const std::string TYPE;
 
 public:
-    iloc(std::weak_ptr<box> parent) :
-        box(iloc::TYPE, parent)
+    iloc(const uint8_t* data, uint64_t size) :
+        data_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    error box_error_code() const override
     {
-        box::read(size, bs);
-        bs.skip(m_remaining_bytes);
+        return error::invalid_iloc_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
     }
 };
 }

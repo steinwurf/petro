@@ -9,7 +9,6 @@
 #include <string>
 
 #include "full_box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -24,44 +23,85 @@ public:
     static const std::string TYPE;
 
 public:
-    mdhd(std::weak_ptr<box> parent) :
-        full_box(mdhd::TYPE, parent)
+
+    mdhd(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void parse_full_box_content(std::error_code& error) override
     {
-        full_box::read(size, bs);
         if (m_version == 1)
         {
-            m_creation_time = bs.read_time64();
-            m_modification_time = bs.read_time64();
-            m_timescale = bs.read_uint32_t();
-            m_duration = bs.read_uint64_t();
-            m_remaining_bytes -= 28;
+            m_bs.read_time64(m_creation_time, error);
+            if (error)
+                return;
+
+            m_bs.read_time64(m_modification_time, error);
+            if (error)
+                return;
+
+            m_bs.read(m_timescale, error);
+            if (error)
+                return;
+
+            m_bs.read(m_duration, error);
+            if (error)
+                return;
         }
-        else // m_version == 0
+        else if (m_version == 0)
         {
-            m_creation_time = bs.read_time32();
-            m_modification_time = bs.read_time32();
-            m_timescale = bs.read_uint32_t();
-            m_duration = bs.read_uint32_t();
-            m_remaining_bytes -= 16;
+            m_bs.read_time32(m_creation_time, error);
+            if (error)
+                return;
+
+            m_bs.read_time32(m_modification_time, error);
+            if (error)
+                return;
+
+            m_bs.read(m_timescale, error);
+            if (error)
+                return;
+
+            uint32_t duration = 0;
+            m_bs.read<uint32_t>(duration, error);
+            if (error)
+                return;
+            m_duration = duration;
+        }
+        else
+        {
+            error = box_error_code();
+            return;
         }
 
         // ISO-639-2/T language code
-        m_language = bs.read_iso639();
-        m_remaining_bytes -= 2;
+        m_bs.read_iso639(m_language, error);
+        if (error)
+            return;
 
         // pre_defined
-        bs.skip(2);
-        m_remaining_bytes -= 2;
-        bs.skip(m_remaining_bytes);
+        m_bs.skip(2, error);
+        if (error)
+            return;
+
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
     }
 
-    virtual std::string describe() const
+    error box_error_code() const override
+    {
+        return error::invalid_mdhd_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  creation_time: " << m_creation_time << std::endl;
         ss << "  modification_time: " << m_modification_time << std::endl;
         ss << "  time_scale: " << m_timescale << std::endl;
@@ -122,7 +162,6 @@ private:
     /// confined to being three lower-case letters, these values are
     /// strictly positive.
     std::string m_language;
-
 };
 }
 }

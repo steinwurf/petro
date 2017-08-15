@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "full_box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -26,27 +25,43 @@ public:
     static const std::string TYPE;
 
 public:
-    stco(std::weak_ptr<box> parent) :
-        full_box(stco::TYPE, parent)
+
+    stco(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void parse_full_box_content(std::error_code& error) override
     {
-        full_box::read(size, bs);
-        m_entry_count = bs.read_uint32_t();
-        m_remaining_bytes -= 4;
+        m_bs.read(m_entry_count, error);
+        if (error)
+            return;
         for (uint32_t i = 0; i < m_entry_count; ++i)
         {
-            m_entries.push_back(bs.read_uint32_t());
-            m_remaining_bytes -= 4;
+            uint32_t chunk_offset = 0;
+            m_bs.read(chunk_offset, error);
+            if (error)
+                return;
+            m_entries.push_back(chunk_offset);
         }
-        bs.skip(m_remaining_bytes);
+
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
     }
 
-    virtual std::string describe() const
+    error box_error_code() const override
+    {
+        return error::invalid_stco_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  entry_count: " << m_entry_count << std::endl;
         ss << "  entries (chunk_offset): ";
         auto seperator = "";

@@ -40,12 +40,14 @@ class parser_layer : public Super
 public:
 
     /// Open this and the underlying layer, returns false upon failure.
-    bool open()
+    void open(std::error_code& error)
     {
-        if (!Super::open())
+        assert(!error);
+        Super::open(error);
+        if (error)
         {
             Super::close();
-            return false;
+            return;
         }
 
         parser<
@@ -71,10 +73,12 @@ public:
             >>
         > parser;
 
-        byte_stream bs(Super::data(), Super::data_size());
+        auto root = std::make_shared<petro::box::root>();
+        parser.parse(Super::data(), Super::data_size(), root, error);
 
-        m_root = parser.read(bs);
-        return true;
+        if (error)
+            return;
+        m_root = root;
     }
 
     /// Close this and the underlying layer.

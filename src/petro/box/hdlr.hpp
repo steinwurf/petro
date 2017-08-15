@@ -9,7 +9,6 @@
 #include <string>
 
 #include "full_box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -24,35 +23,54 @@ public:
     static const std::string TYPE;
 
 public:
-    hdlr(std::weak_ptr<box> parent) :
-        full_box(hdlr::TYPE, parent)
+
+    hdlr(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void parse_full_box_content(std::error_code& error) override
     {
-        full_box::read(size, bs);
+        assert(!error);
         // predefined
-        bs.skip(4);
-        m_remaining_bytes -= 4;
+        m_bs.skip(4U, error);
+        if (error)
+            return;
 
-        m_handler_type = bs.read_type();
-        m_remaining_bytes -= 4;
+        m_bs.read_type(m_handler_type, error);
+        if (error)
+            return;
 
         // reserved
-        bs.skip(4 * 3);
-        m_remaining_bytes -= 4 * 3;
+        m_bs.skip(4U * 3U, error);
+        if (error)
+            return;
 
-        while (m_remaining_bytes != 0)
+        std::string name = "";
+        while (m_bs.remaining_size() != 0)
         {
-            m_name += bs.read_uint8_t();
-            m_remaining_bytes -= 1;
+            uint8_t c = 0;
+            m_bs.read(c, error);
+            if (error)
+                return;
+
+            name += c;
         }
+        m_name = name;
     }
 
-    virtual std::string describe() const
+    error box_error_code() const override
+    {
+        return error::invalid_hdlr_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  handler_type: " << m_handler_type << std::endl;
         ss << "  name: " << m_name << std::endl;
         return ss.str();

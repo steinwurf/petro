@@ -4,15 +4,31 @@
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
 #include <petro/box/ftyp.hpp>
-#include <petro/box/box.hpp>
+#include <petro/box/data_box.hpp>
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <memory>
+#include <system_error>
+#include <vector>
 
 TEST(box_test_ftyp, construct)
 {
-    std::weak_ptr<petro::box::box> parent;
-    petro::box::ftyp b(parent);
-    EXPECT_EQ("ftyp", b.type());
+    std::vector<uint8_t> buffer =
+        {
+            0x00, 0x00, 0x00, 0x00,
+            'f', 't', 'y', 'p',
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00
+        };
+    auto ftyp_box = std::make_shared<petro::box::ftyp>(
+        buffer.data(), buffer.size());
+
+    std::error_code error;
+    ftyp_box->parse(error);
+    ASSERT_FALSE(bool(error));
+
+    EXPECT_EQ("ftyp", ftyp_box->type());
 }

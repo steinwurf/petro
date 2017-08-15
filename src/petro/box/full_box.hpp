@@ -9,45 +9,69 @@
 #include <sstream>
 #include <memory>
 
-#include "box.hpp"
-#include "../byte_stream.hpp"
-#include "../flags.hpp"
+#include "data_box.hpp"
 
 namespace petro
 {
 namespace box
 {
-class full_box : public box
+class full_box : public data_box
 {
 public:
 
-    full_box(const std::string& type, std::weak_ptr<box> parent) :
-        box(type, parent)
+    full_box(const uint8_t* data, uint64_t size) :
+        data_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void parse_box_content(std::error_code& error) override final
     {
-        box::read(size, bs);
-        m_version = bs.read_uint8_t();
-        m_remaining_bytes -= 1;
-        m_flags.read(bs);
-        m_remaining_bytes -= 3;
+        assert(!error);
+        m_bs.read(m_version, error);
+        if (error)
+            return;
+
+        // read 24 bytes
+        m_flags.resize(3);
+        m_bs.read(m_flags.data(), m_flags.size(), error);
+        if (error)
+            return;
+
+        parse_full_box_content(error);
+        if (error)
+            return;
     }
 
-    virtual std::string describe() const
+    virtual void parse_full_box_content(std::error_code& error)
+    {
+        assert(!error);
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
+    }
+
+    std::string box_describe() const override final
     {
         std::stringstream ss;
-        ss << box::describe() << std::endl;
-        ss << "  version: " << (uint32_t)m_version;
-
+        ss << "  version: " << (uint32_t)m_version << std::endl;
+        ss << full_box_describe();
         return ss.str();
+    }
+
+
+    virtual std::string full_box_describe() const
+    {
+        return "";
+    }
+
+    error box_error_code() const override
+    {
+        return error::invalid_full_box;
     }
 
 protected:
 
     uint8_t m_version;
-    flags m_flags;
-
+    std::vector<uint8_t> m_flags;
 };
 }
 }

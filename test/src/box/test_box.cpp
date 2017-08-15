@@ -7,126 +7,116 @@
 
 #include <gtest/gtest.h>
 
-TEST(box_test_box, create)
+namespace
 {
-    petro::box::box b("test", std::weak_ptr<petro::box::box>());
-}
-
-TEST(box_test_box, type)
+struct dummy_box : petro::box::box
 {
-    auto type = "test";
-    petro::box::box b(type, std::weak_ptr<petro::box::box>());
-    EXPECT_EQ(type, b.type());
-}
+    dummy_box(const std::string& type) :
+        m_type(type)
+    { }
 
-TEST(box_test_box, extended_type)
-{
-    petro::box::box btest("test", std::weak_ptr<petro::box::box>());
-    EXPECT_TRUE(btest.extended_type().empty());
-
-    auto extended_type = "abcdefghijklmnop";
-    // extended type in big endian hex codes.
-    std::vector<uint8_t> data
+    std::string type() const override
     {
-        0x61,
-        0x62,
-        0x63,
-        0x64,
-        0x65,
-        0x66,
-        0x67,
-        0x68,
-        0x69,
-        0x6a,
-        0x6b,
-        0x6c,
-        0x6d,
-        0x6e,
-        0x6f,
-        0x70
-    };
-    petro::byte_stream bs(data.data(), data.size());
+        return m_type;
+    }
 
-    petro::box::box buuid("uuid", std::weak_ptr<petro::box::box>());
-    buuid.read(24, bs);
-    EXPECT_EQ(extended_type, buuid.extended_type());
+    std::string describe() const override
+    {
+        return "description";
+    }
+
+    using petro::box::box::m_parent;
+
+private:
+
+    std::string m_type;
+};
+struct special_box : dummy_box
+{
+    static const std::string TYPE;
+
+    special_box() :
+        dummy_box(TYPE)
+    { }
+
+};
+
+const std::string special_box::TYPE = "special";
+
+struct special_box2
+{
+    static const std::string TYPE;
+};
+const std::string special_box2::TYPE = "special2";
 }
 
-TEST(box_test_box, size)
+TEST(box_test_data_box, children)
 {
-    petro::box::box b("test", std::weak_ptr<petro::box::box>());
-    EXPECT_EQ(0U, b.size());
-
-
-    auto size = 42;
-    std::vector<uint8_t> data;
-    petro::byte_stream bs(data.data(), size);
-    b.read(size, bs);
-}
-
-TEST(box_test_box, children)
-{
-    auto parent_type = "parent";
-    auto parent = std::make_shared<petro::box::box>(
-        parent_type, std::weak_ptr<petro::box::box>());
+    auto parent = std::make_shared<dummy_box>("parent");
     EXPECT_EQ(0U, parent->children().size());
 
     auto child_type = "child";
-    auto child = std::make_shared<petro::box::box>(
-        child_type, parent);
-
+    auto child = std::make_shared<dummy_box>(child_type);
+    child->m_parent = parent;
     parent->add_child(child);
+
     EXPECT_EQ(1U, parent->children().size());
 
     EXPECT_EQ(parent->type(), child->parent()->type());
     EXPECT_EQ(parent->type(), child->get_parent(parent->type())->type());
     EXPECT_EQ(child->type(), parent->get_child(child->type())->type());
 
-    EXPECT_EQ(1U, parent->get_children(child->type()).size());
+    ASSERT_EQ(1U, parent->get_children(child->type()).size());
     EXPECT_EQ(child->type(), parent->get_children(child->type())[0]->type());
 }
 
-TEST(box_test_box, describe)
+TEST(box_test_data_box, parent_of_parent)
 {
-    auto type = "test";
-    petro::box::box b(type, std::weak_ptr<petro::box::box>());
+    auto child = std::make_shared<dummy_box>("child");
+    auto parent = std::make_shared<dummy_box>("parent");
+    auto grand_parent = std::make_shared<dummy_box>("grand_parent");
 
-    auto description = b.describe();
+    grand_parent->add_child(parent);
+    parent->m_parent = grand_parent;
 
-    auto found = description.find(type);
-    EXPECT_NE(std::string::npos, found);
+    parent->add_child(child);
+    child->m_parent = parent;
+
+    ASSERT_NE(nullptr, child->parent());
+    EXPECT_EQ("parent", child->parent()->type());
+    ASSERT_NE(nullptr, parent->parent());
+    EXPECT_EQ("grand_parent", parent->parent()->type());
+    ASSERT_NE(nullptr, child->get_parent("grand_parent"));
+    EXPECT_EQ("grand_parent", child->get_parent("grand_parent")->type());
 }
 
-TEST(box_test_box, read)
+TEST(box_test_data_box, child_extraction)
 {
-    {
-        SCOPED_TRACE("default size");
-        petro::box::box b("test", std::weak_ptr<petro::box::box>());
-        auto box_size = 42U;
-        std::vector<uint8_t> data(box_size + 10, 1);
-        petro::byte_stream bs(data.data(), data.size());
-        b.read(box_size, bs);
-        EXPECT_EQ(box_size, b.size());
-    }
-    {
-        SCOPED_TRACE("extended size");
-        petro::box::box b("test", std::weak_ptr<petro::box::box>());
-        std::vector<uint8_t> data
-        {
-            // 1337 in big endian hex code.
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x39
-        };
-        petro::byte_stream bs(data.data(), data.size());
-        b.read(1, bs);
-        EXPECT_EQ(1337U, b.size());
-    }
-    {
-        SCOPED_TRACE("eof size");
-        petro::box::box b("test", std::weak_ptr<petro::box::box>());
-        auto byte_stream_size = 42U;
-        std::vector<uint8_t> data(byte_stream_size, 1);
-        petro::byte_stream bs(data.data(), data.size());
-        b.read(0, bs);
-        EXPECT_EQ(byte_stream_size, b.size());
-    }
+    auto child = std::make_shared<special_box>();
+    auto parent = std::make_shared<dummy_box>("parent");
+    auto grand_parent = std::make_shared<dummy_box>("grand_parent");
+
+    grand_parent->add_child(parent);
+    parent->m_parent = grand_parent;
+
+    parent->add_child(child);
+    child->m_parent = parent;
+
+    ASSERT_NE(nullptr, grand_parent->get_child("parent"));
+    EXPECT_EQ("parent", grand_parent->get_child("parent")->type());
+    ASSERT_NE(nullptr, grand_parent->get_child(child->type()));
+    EXPECT_EQ(child->type(), grand_parent->get_child(child->type())->type());
+
+    EXPECT_EQ(nullptr, grand_parent->get_child<special_box2>());
+    ASSERT_NE(nullptr, grand_parent->get_child<special_box>());
+    EXPECT_EQ(child->type(), grand_parent->get_child<special_box>()->type());
+}
+
+TEST(box_test_data_box, describe)
+{
+    auto type = "test";
+    auto box = std::make_shared<dummy_box>(type);
+
+    auto description = box->describe();
+    EXPECT_EQ("description", description);
 }

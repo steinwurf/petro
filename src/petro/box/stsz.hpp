@@ -12,7 +12,6 @@
 #include <algorithm>
 
 #include "full_box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -27,48 +26,69 @@ public:
     static const std::string TYPE;
 
 public:
-    stsz(std::weak_ptr<box> parent) :
-        full_box(stsz::TYPE, parent)
+
+    stsz(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void parse_full_box_content(std::error_code& error) override
     {
-        full_box::read(size, bs);
-        m_sample_size = bs.read_uint32_t();
-        m_sample_count = bs.read_uint32_t();
-        m_remaining_bytes -= 4 * 2;
+        m_bs.read(m_sample_size, error);
+        if (error)
+            return;
+
+        m_bs.read(m_sample_count, error);
+        if (error)
+            return;
 
         if (m_sample_size == 0)
         {
             for (uint32_t i = 0; i < m_sample_count; ++i)
             {
-                m_entries.push_back(bs.read_uint32_t());
-                m_remaining_bytes -= 4;
+                uint32_t entry_value = 0;
+                m_bs.read(entry_value, error);
+                if (error)
+                    return;
+                m_entries.push_back(entry_value);
             }
         }
 
-        bs.skip(m_remaining_bytes);
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
     }
 
-    virtual std::string describe() const
+    error box_error_code() const override
+    {
+        return error::invalid_stsz_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  sample_size: " << m_sample_size << std::endl;
         ss << "  sample_count: " << m_sample_count << std::endl;
-        ss << "  entities (size):";
-        auto seperator = "";
-        uint32_t max_print = 5;
-        for (uint32_t i = 0;
-             i < std::min((uint32_t)m_entries.size(), max_print); ++i)
+        if (m_sample_size == 0)
         {
-            ss << seperator;
-            ss << "(" << m_entries[i] << ")";
-            seperator =  ", ";
+            ss << "  entities (size):";
+            auto seperator = "";
+            uint32_t max_print = 5;
+            for (uint32_t i = 0;
+                 i < std::min((uint32_t)m_entries.size(), max_print); ++i)
+            {
+                ss << seperator;
+                ss << "(" << m_entries[i] << ")";
+                seperator =  ", ";
+            }
+            if (m_entries.size() > max_print)
+                ss << "...";
+            ss << std::endl;
         }
-        if (m_entries.size() > max_print)
-            ss << "...";
-        ss << std::endl;
         return ss.str();
     }
 

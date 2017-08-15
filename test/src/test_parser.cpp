@@ -29,7 +29,7 @@ TEST(test_parser, read_data)
     auto test_filename = "test1.mp4";
     boost::iostreams::mapped_file_source test_mp4(test_filename);
 
-    EXPECT_TRUE(test_mp4.is_open());
+    ASSERT_TRUE(test_mp4.is_open());
 
     using trak_type = petro::box::trak<petro::parser<>>;
 
@@ -45,9 +45,10 @@ TEST(test_parser, read_data)
         petro::box::ftyp> p;
 
     auto root = std::make_shared<petro::box::root>();
-    petro::byte_stream bs((uint8_t*)test_mp4.data(), test_mp4.size());
 
-    p.read(bs, root);
+    std::error_code error;
+    p.parse((uint8_t*)test_mp4.data(), test_mp4.size(), root, error);
+    ASSERT_FALSE(bool(error));
 
     // check that we can get the children and cast them to their appropiate
     // type.
@@ -86,16 +87,17 @@ TEST(test_parser, no_boxes)
 {
     auto test_filename = "test1.mp4";
     boost::iostreams::mapped_file_source test_mp4(test_filename);
-    EXPECT_TRUE(test_mp4.is_open());
+    ASSERT_TRUE(test_mp4.is_open());
 
     petro::parser<> p;
 
     auto root = std::make_shared<petro::box::root>();
-    petro::byte_stream bs((uint8_t*)test_mp4.data(), test_mp4.size());
-    p.read(bs, root);
+
+    std::error_code error;
+    p.parse((uint8_t*)test_mp4.data(), test_mp4.size(), root, error);
+    ASSERT_FALSE(bool(error));
 
     // check that the children can be found, but only as basic boxes.
-
     auto mdat_box = root->get_child("mdat");
     EXPECT_NE(nullptr, mdat_box);
     auto mdat = std::dynamic_pointer_cast<const petro::box::mdat>(mdat_box);

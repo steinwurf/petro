@@ -9,7 +9,6 @@
 #include <string>
 
 #include "full_box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -24,14 +23,18 @@ public:
     static const std::string TYPE;
 
 public:
-    nmhd(std::weak_ptr<box> parent) :
-        full_box(nmhd::TYPE, parent)
+    nmhd(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    error box_error_code() const override
     {
-        full_box::read(size, bs);
-        bs.skip(m_remaining_bytes);
+        return error::invalid_nmhd_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
     }
 };
 }

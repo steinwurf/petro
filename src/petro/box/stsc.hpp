@@ -10,7 +10,6 @@
 #include <string>
 
 #include "full_box.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -53,32 +52,57 @@ public:
     static const std::string TYPE;
 
 public:
-    stsc(std::weak_ptr<box> parent) :
-        full_box(stsc::TYPE, parent)
+
+    stsc(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void parse_full_box_content(std::error_code& error) override
     {
-        full_box::read(size, bs);
-        m_entry_count = bs.read_uint32_t();
-        m_remaining_bytes -= 4;
+        m_bs.read(m_entry_count, error);
+        if (error)
+            return;
+
         for (uint32_t i = 0; i < m_entry_count; ++i)
         {
+            uint32_t first_chunk = 0;
+            m_bs.read(first_chunk, error);
+            if (error)
+                return;
+            uint32_t samples_per_chunk = 0;
+            m_bs.read(samples_per_chunk, error);
+            if (error)
+                return;
+            uint32_t sample_description_index = 0;
+            m_bs.read(sample_description_index, error);
+            if (error)
+                return;
             m_entries.push_back(entry_type
             {
-                bs.read_uint32_t(),
-                bs.read_uint32_t(),
-                bs.read_uint32_t()});
-
-            m_remaining_bytes -= 4 * 3;
+                first_chunk,
+                samples_per_chunk,
+                sample_description_index
+            });
         }
-        bs.skip(m_remaining_bytes);
+
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
     }
 
-    virtual std::string describe() const
+    error box_error_code() const override
+    {
+        return error::invalid_stsc_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  entry_count: " << m_entry_count << std::endl;
         ss << "  entries (";
         ss << "first_chunk, ";

@@ -8,15 +8,14 @@
 #include <cstdint>
 #include <string>
 
-#include "box.hpp"
-#include "../byte_stream.hpp"
+#include "data_box.hpp"
 
 namespace petro
 {
 namespace box
 {
 /// binary XML container
-class bxml : public box
+class bxml : public data_box
 {
 
 public:
@@ -24,9 +23,20 @@ public:
     static const std::string TYPE;
 
 public:
-    bxml(std::weak_ptr<box> parent);
 
-    void read(uint64_t size, byte_stream& bs);
+    bxml(const uint8_t* data, uint64_t size) :
+        data_box(data, size)
+    { }
+
+    error box_error_code() const override
+    {
+        return error::invalid_bxml_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
+    }
 };
 }
 }

@@ -33,7 +33,10 @@ void test_h264_file(const std::string& h264_file, const std::string& mp4_file)
     petro::extractor::annex_b_writer extractor;
     extractor.set_file_path(mp4_file);
     EXPECT_EQ(mp4_file, extractor.file_path());
-    EXPECT_TRUE(extractor.open());
+
+    std::error_code error;
+    extractor.open(error);
+    ASSERT_FALSE(bool(error));
 
     // skip nalu start codes
     test_h264.seekg(4, std::ios::cur);

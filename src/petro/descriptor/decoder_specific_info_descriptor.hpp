@@ -9,8 +9,7 @@
 
 #include "descriptor.hpp"
 
-#include "../byte_stream.hpp"
-#include "../bit_reader.hpp"
+#include "../bit_stream.hpp"
 
 namespace petro
 {
@@ -19,35 +18,53 @@ namespace descriptor
 class decoder_specific_info_descriptor : public descriptor
 {
 public:
-    decoder_specific_info_descriptor(byte_stream& bs, uint8_t tag) :
-        descriptor(bs, tag)
+
+    decoder_specific_info_descriptor(const uint8_t* data, uint64_t size) :
+        descriptor(data, size)
+    { }
+
+    void parse_descriptor_content(std::error_code& error) override
     {
-        assert(m_tag == 0x05);
-        while (m_remaining_bytes != 0)
+        assert(!error);
+        if (m_tag != tag::decoder_specific_info)
         {
-            m_specific_info.push_back(bs.read_uint8_t());
-            m_remaining_bytes -= 1;
+            error = std::make_error_code(std::errc::not_supported);
+            return;
         }
 
-        auto bit_reader = petro::bit_reader(m_specific_info);
-        m_mpeg_audio_object_type = bit_reader.read_bits(5);
+        auto bit_stream =
+            petro::bit_stream(m_bs.remaining_data(), m_bs.remaining_size());
 
-        if (m_mpeg_audio_object_type == 0x1f)
-            m_mpeg_audio_object_type = 32 + bit_reader.read_bits(6);
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
 
-        m_frequency_index = bit_reader.read_bits(4);
+        bit_stream.read_bits(m_mpeg_audio_object_type, 5, error);
+        if (error)
+            return;
 
-        if (m_frequency_index == 15)
-            m_frequency_index =
-                (uint32_t) bit_reader.read_bits(8) << 16 |
-                (uint32_t) bit_reader.read_bits(8) << 8 |
-                (uint32_t) bit_reader.read_bits(8);
+        if (m_mpeg_audio_object_type == 0x1F)
+        {
+            bit_stream.read_bits(m_mpeg_audio_object_type, 6, error);
+            if (error)
+                return;
+            m_mpeg_audio_object_type += 32;
+        }
 
-        m_channel_configuration = bit_reader.read_bits(4);
-    }
-    std::vector<uint8_t> specific_info() const
-    {
-        return m_specific_info;
+        bit_stream.read_bits(m_frequency_index, 4, error);
+        if (error)
+            return;
+
+        if (m_frequency_index == 0x0F)
+        {
+            bit_stream.read_bits(m_frequency_index, 24, error);
+            if (error)
+                return;
+        }
+
+        bit_stream.read_bits(m_channel_configuration, 4, error);
+        if (error)
+            return;
     }
 
     uint8_t mpeg_audio_object_type() const
@@ -67,10 +84,9 @@ public:
 
 private:
 
-    std::vector<uint8_t> m_specific_info;
-    uint8_t m_mpeg_audio_object_type;
-    uint32_t m_frequency_index;
-    uint8_t m_channel_configuration;
+    uint8_t m_mpeg_audio_object_type = 0;
+    uint32_t m_frequency_index = 0;
+    uint8_t m_channel_configuration = 0;
 };
 }
 }

@@ -31,10 +31,11 @@ avc_sample_extractor::avc_sample_extractor() :
 avc_sample_extractor::~avc_sample_extractor()
 { }
 
-bool avc_sample_extractor::open()
+void avc_sample_extractor::open(std::error_code& error)
 {
     assert(m_impl);
-    return m_impl->open();
+    assert(!error);
+    m_impl->open(error);
 }
 
 void avc_sample_extractor::close()

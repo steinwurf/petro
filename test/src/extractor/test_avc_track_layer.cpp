@@ -5,7 +5,7 @@
 
 #include <petro/extractor/avc_track_layer.hpp>
 
-#include <petro/box/box.hpp>
+#include <petro/box/data_box.hpp>
 
 #include <stub/function.hpp>
 
@@ -64,9 +64,15 @@ struct dummy_avcc
 
 struct dummy_trak : public petro::box::box
 {
-    dummy_trak() :
-        petro::box::box("dummy_trak", std::weak_ptr<petro::box::box>())
-    { }
+    std::string type() const override
+    {
+        return "trak";
+    }
+
+    std::string describe() const override
+    {
+        return "";
+    }
 };
 
 struct dummy_avc1
@@ -106,7 +112,7 @@ struct dummy_root
 
 struct dummy_layer
 {
-    stub::function<bool()> open;
+    stub::function<void(std::error_code)> open;
     stub::function<void()> close;
     stub::function<std::shared_ptr<dummy_root>()> root;
 };
@@ -118,15 +124,13 @@ TEST(extractor_test_avc_track_layer, api)
 {
     dummy_stack stack;
     dummy_layer& layer = stack;
-    layer.open.set_return(false, true);
-
-    EXPECT_FALSE(stack.open());
-    EXPECT_EQ(1U, layer.close.calls());
 
     auto root = std::make_shared<dummy_root>();
     layer.root.set_return(root);
 
-    EXPECT_TRUE(stack.open());
+    std::error_code error;
+    stack.open(error);
+    ASSERT_FALSE(bool(error));
 
     EXPECT_EQ((const uint8_t*)1, stack.pps_data());
     EXPECT_EQ(1U, stack.pps_size());
@@ -136,5 +140,5 @@ TEST(extractor_test_avc_track_layer, api)
     EXPECT_NE(nullptr, stack.trak());
 
     stack.close();
-    EXPECT_EQ(2U, layer.close.calls());
+    EXPECT_EQ(1U, layer.close.calls());
 }

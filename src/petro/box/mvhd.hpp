@@ -12,7 +12,6 @@
 
 #include "full_box.hpp"
 #include "../matrix.hpp"
-#include "../byte_stream.hpp"
 
 namespace petro
 {
@@ -27,56 +26,95 @@ public:
     static const std::string TYPE;
 
 public:
-    mvhd(std::weak_ptr<box> parent) :
-        full_box(mvhd::TYPE, parent)
+
+    mvhd(const uint8_t* data, uint64_t size) :
+        full_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void parse_full_box_content(std::error_code& error) override
     {
-        full_box::read(size, bs);
         if (m_version == 1)
         {
-            m_creation_time = bs.read_time64();
-            m_modification_time = bs.read_time64();
-            m_timescale = bs.read_uint32_t();
-            m_duration = bs.read_uint64_t();
-            m_remaining_bytes -= 28;
+            m_bs.read_time64(m_creation_time, error);
+            if (error)
+                return;
+            m_bs.read_time64(m_modification_time, error);
+            if (error)
+                return;
+            m_bs.read(m_timescale, error);
+            if (error)
+                return;
+            m_bs.read<uint64_t>(m_duration, error);
+            if (error)
+                return;
+        }
+        else if (m_version == 0)
+        {
+            m_bs.read_time32(m_creation_time, error);
+            if (error)
+                return;
+            m_bs.read_time32(m_modification_time, error);
+            if (error)
+                return;
+            m_bs.read(m_timescale, error);
+            if (error)
+                return;
+            uint32_t duration = 0;
+            m_bs.read<uint32_t>(duration, error);
+            if (error)
+                return;
+            m_duration = duration;
         }
         else
         {
-            assert(m_version == 0);
-            m_creation_time = bs.read_time32();
-            m_modification_time = bs.read_time32();
-            m_timescale = bs.read_uint32_t();
-            m_duration = bs.read_uint32_t();
-            m_remaining_bytes -= 16;
+            error = box_error_code();
+            return;
         }
 
-        m_rate = bs.read_fixed_point_1616();
-        m_remaining_bytes -= 4;
-        m_volume = bs.read_fixed_point_88();
-        m_remaining_bytes -= 2;
+        m_bs.read_fixed_point_1616(m_rate, error);
+        if (error)
+            return;
+
+        m_bs.read_fixed_point_88(m_volume, error);
+        if (error)
+            return;
 
         // reserved
-        bs.skip(2 + 4 + 4);
-        m_remaining_bytes -= 2 + 4 + 4;
+        m_bs.skip(2 + 4 + 4, error);
+        if (error)
+            return;
 
-        m_matrix.read(bs);
-        m_remaining_bytes -= 4 * 9;
+        m_bs.read(m_matrix, error);
+        if (error)
+            return;
 
         // pre_defined
-        bs.skip(6 * 4);
-        m_remaining_bytes -= 6 * 4;
+        m_bs.skip(6 * 4, error);
+        if (error)
+            return;
 
-        m_next_track_id = bs.read_uint32_t();
-        m_remaining_bytes -= 4;
-        assert(m_remaining_bytes == 0);
+        m_bs.read(m_next_track_id, error);
+        if (error)
+            return;
+
+        m_bs.skip(m_bs.remaining_size(), error);
+        if (error)
+            return;
     }
 
-    virtual std::string describe() const
+    error box_error_code() const override
+    {
+        return error::invalid_mvhd_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string full_box_describe() const override
     {
         std::stringstream ss;
-        ss << full_box::describe() << std::endl;
         ss << "  creation_time: " << m_creation_time << std::endl;
         ss << "  modification_time: " << m_modification_time << std::endl;
         ss << "  time_scale: " << m_timescale << std::endl;

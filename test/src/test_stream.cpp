@@ -3,7 +3,7 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/byte_stream.hpp>
+#include <petro/stream.hpp>
 
 #include <cstdint>
 #include <vector>
@@ -16,84 +16,74 @@
 
 #include <gtest/gtest.h>
 
-TEST(test_byte_stream, create)
+namespace
 {
-    // create byte_stream
+template<class ValueType>
+void test_read(
+    petro::stream& bs,
+    const std::vector<ValueType>& expected_values)
+{
+    // check vitals
+    EXPECT_EQ(expected_values.size() * sizeof(ValueType), bs.remaining_size());
+
+    for (auto expected_value : expected_values)
+    {
+        ValueType out = 0;
+        std::error_code error;
+        bs.read(out, error);
+        ASSERT_FALSE(bool(error));
+        EXPECT_EQ(expected_value, out);
+    }
+
+    EXPECT_EQ(0U, bs.remaining_size());
+}
+}
+
+TEST(test_stream, create)
+{
     uint32_t size = 42;
     uint8_t content = 8;
     std::vector<uint8_t> data(size, content);
-    auto bs = petro::byte_stream(data.data(), size);
+    auto bs = petro::stream(data.data(), size);
 
     // check vitals
-    EXPECT_EQ(size, bs.remaining_bytes());
+    EXPECT_EQ(size, bs.remaining_size());
 
     // check contents
-    uint64_t last_remaing_bytes = bs.remaining_bytes();
-    while (bs.remaining_bytes() != 0)
+    uint64_t last_remaining_size = bs.remaining_size();
+    while (bs.remaining_size() != 0)
     {
-        EXPECT_EQ(content, bs.read_uint8_t());
-        EXPECT_NE(last_remaing_bytes, bs.remaining_bytes());
-        last_remaing_bytes = bs.remaining_bytes();
+        uint8_t out = 0;
+        std::error_code error;
+        bs.read(out, error);
+        ASSERT_FALSE(bool(error));
+
+        EXPECT_EQ(content, out);
+        EXPECT_NE(last_remaining_size, bs.remaining_size());
+        last_remaining_size = bs.remaining_size();
     }
 }
 
-TEST(test_byte_stream, create_from_byte_stream)
+TEST(test_stream, skip)
 {
-    // create source byte_stream
+    uint32_t remaining_size = 5;
     uint32_t size = 42;
     uint8_t content = 8;
     std::vector<uint8_t> data(size, content);
-    auto bs = petro::byte_stream(data.data(), size);
-
-    // create byte_stream 1 from source byte_stream
-    auto bs1 = petro::byte_stream(bs, size / 2);
-
-    // create byte_stream 2 from source byte_stream
-    auto bs2 = petro::byte_stream(bs, size / 2);
-
-    // check vitals of byte_stream..
-    EXPECT_EQ(0U, bs.remaining_bytes());
-    // .. and byte_stream 1 and 2
-    EXPECT_EQ(size / 2, bs1.remaining_bytes());
-    EXPECT_EQ(size / 2, bs2.remaining_bytes());
-
-    // check content of byte_stream 1 and 2
-    uint64_t last_remaing_bytes1 = bs1.remaining_bytes();
-    while (bs1.remaining_bytes() != 0)
-    {
-        EXPECT_EQ(content, bs1.read_uint8_t());
-        EXPECT_NE(last_remaing_bytes1, bs1.remaining_bytes());
-        last_remaing_bytes1 = bs1.remaining_bytes();
-    }
-
-    uint64_t last_remaing_bytes2 = bs2.remaining_bytes();
-    while (bs2.remaining_bytes() != 0)
-    {
-        EXPECT_EQ(content, bs2.read_uint8_t());
-        EXPECT_NE(last_remaing_bytes2, bs2.remaining_bytes());
-        last_remaing_bytes2 = bs2.remaining_bytes();
-    }
-}
-
-TEST(test_byte_stream, skip)
-{
-    // create byte_stream
-    uint32_t remaining_bytes = 5;
-    uint32_t size = 42;
-    uint8_t content = 8;
-    std::vector<uint8_t> data(size, content);
-    auto bs = petro::byte_stream(data.data(), size);
+    auto bs = petro::stream(data.data(), size);
 
     // check vitals
-    EXPECT_EQ(size, bs.remaining_bytes());
+    EXPECT_EQ(size, bs.remaining_size());
 
-    bs.skip(size - remaining_bytes);
+    std::error_code error;
+    bs.skip(size - remaining_size, error);
+    ASSERT_FALSE(bool(error));
 
     // check vitals after skip
-    EXPECT_EQ(remaining_bytes, bs.remaining_bytes());
+    EXPECT_EQ(remaining_size, bs.remaining_size());
 }
 
-TEST(test_byte_stream, read_uint8_t)
+TEST(test_stream, read_uint8_t)
 {
     std::vector<uint8_t> data =
         {
@@ -105,21 +95,11 @@ TEST(test_byte_stream, read_uint8_t)
         };
     auto expected = data;
 
-    // create byte_stream
-    auto bs = petro::byte_stream(data.data(), data.size());
-
-    // check vitals
-    EXPECT_EQ(data.size(), bs.remaining_bytes());
-
-    for (uint32_t i = 0; i < data.size() / sizeof(uint8_t); ++i)
-    {
-        EXPECT_EQ(expected[i], bs.read_uint8_t());
-    }
-
-    EXPECT_EQ(0U, bs.remaining_bytes());
+    auto bs = petro::stream(data.data(), data.size());
+    test_read(bs, expected);
 }
 
-TEST(test_byte_stream, read_int16_t)
+TEST(test_stream, read_int16_t)
 {
     std::vector<uint8_t> data =
         {
@@ -139,21 +119,11 @@ TEST(test_byte_stream, read_int16_t)
             -15105  // hex = 0xC4FF
         };
 
-    // create byte_stream
-    auto bs = petro::byte_stream(data.data(), data.size());
-
-    // check vitals
-    EXPECT_EQ(data.size(), bs.remaining_bytes());
-
-    for (uint32_t i = 0; i < data.size() / sizeof(int16_t); ++i)
-    {
-        EXPECT_EQ(expected[i], bs.read_int16_t());
-    }
-
-    EXPECT_EQ(0U, bs.remaining_bytes());
+    auto bs = petro::stream(data.data(), data.size());
+    test_read(bs, expected);
 }
 
-TEST(test_byte_stream, read_uint16_t)
+TEST(test_stream, read_uint16_t)
 {
     std::vector<uint8_t> data =
         {
@@ -173,21 +143,11 @@ TEST(test_byte_stream, read_uint16_t)
             0xC4FF
         };
 
-    // create byte_stream
-    auto bs = petro::byte_stream(data.data(), data.size());
-
-    // check vitals
-    EXPECT_EQ(data.size(), bs.remaining_bytes());
-
-    for (uint32_t i = 0; i < data.size() / sizeof(uint16_t); ++i)
-    {
-        EXPECT_EQ(expected[i], bs.read_uint16_t());
-    }
-
-    EXPECT_EQ(0U, bs.remaining_bytes());
+    auto bs = petro::stream(data.data(), data.size());
+    test_read(bs, expected);
 }
 
-TEST(test_byte_stream, read_int32_t)
+TEST(test_stream, read_int32_t)
 {
     std::vector<uint8_t> data =
         {
@@ -213,22 +173,11 @@ TEST(test_byte_stream, read_int32_t)
             -60          // hex = 0xFFFFFFC4
         };
 
-    // create byte_stream
-    auto bs = petro::byte_stream(data.data(), data.size());
-
-    // check vitals
-    EXPECT_EQ(data.size(), bs.remaining_bytes());
-
-    for (uint32_t i = 0; i < data.size() / sizeof(int32_t); ++i)
-    {
-        SCOPED_TRACE(i);
-        EXPECT_EQ(expected[i], bs.read_int32_t());
-    }
-
-    EXPECT_EQ(0U, bs.remaining_bytes());
+    auto bs = petro::stream(data.data(), data.size());
+    test_read(bs, expected);
 }
 
-TEST(test_byte_stream, read_uint32_t)
+TEST(test_stream, read_uint32_t)
 {
     std::vector<uint8_t> data =
         {
@@ -252,21 +201,11 @@ TEST(test_byte_stream, read_uint32_t)
             0xC4FFFFFF
         };
 
-    // create byte_stream
-    auto bs = petro::byte_stream((uint8_t*)data.data(), data.size());
-
-    // check vitals
-    EXPECT_EQ(data.size(), bs.remaining_bytes());
-
-    for (uint32_t i = 0; i < data.size() / sizeof(uint32_t); ++i)
-    {
-        EXPECT_EQ(expected[i], bs.read_uint32_t());
-    }
-
-    EXPECT_EQ(0U, bs.remaining_bytes());
+    auto bs = petro::stream(data.data(), data.size());
+    test_read(bs, expected);
 }
 
-TEST(test_byte_stream, read_int64_t)
+TEST(test_stream, read_int64_t)
 {
     std::vector<uint8_t> data =
         {
@@ -292,21 +231,11 @@ TEST(test_byte_stream, read_int64_t)
             -4251398051666067404, // hex = 0xC4FFFFFF33A80034
         };
 
-    // create byte_stream
-    auto bs = petro::byte_stream((uint8_t*)data.data(), data.size());
-
-    // check vitals
-    EXPECT_EQ(data.size(), bs.remaining_bytes());
-
-    for (uint32_t i = 0; i < data.size() / sizeof(int64_t); ++i)
-    {
-        EXPECT_EQ(expected[i], bs.read_int64_t());
-    }
-
-    EXPECT_EQ(0U, bs.remaining_bytes());
+    auto bs = petro::stream(data.data(), data.size());
+    test_read(bs, expected);
 }
 
-TEST(test_byte_stream, read_uint64_t)
+TEST(test_stream, read_uint64_t)
 {
     std::vector<uint8_t> data =
         {
@@ -332,21 +261,29 @@ TEST(test_byte_stream, read_uint64_t)
             0xC4FFFFFF33A80034
         };
 
-    // create byte_stream
-    auto bs = petro::byte_stream((uint8_t*)data.data(), data.size());
-
-    // check vitals
-    EXPECT_EQ(data.size(), bs.remaining_bytes());
-
-    for (uint32_t i = 0; i < data.size() / sizeof(uint64_t); ++i)
-    {
-        EXPECT_EQ(expected[i], bs.read_uint64_t());
-    }
-
-    EXPECT_EQ(0U, bs.remaining_bytes());
+    auto bs = petro::stream(data.data(), data.size());
+    test_read(bs, expected);
 }
 
-TEST(test_byte_stream, read_type)
+TEST(test_stream, remaining_size)
+{
+    uint32_t size = 100;
+    std::vector<uint8_t> data(size);
+    auto bs = petro::stream(data.data(), size);
+    EXPECT_EQ(size, bs.remaining_size());
+    for (uint32_t i = 0; i < size; ++i)
+    {
+        EXPECT_EQ(size - i, bs.remaining_size());
+        uint8_t out = 0;
+        std::error_code error;
+        bs.read(out, error);
+        ASSERT_FALSE(bool(error));
+    }
+    EXPECT_EQ(0U, bs.remaining_size());
+}
+
+
+TEST(test_stream, read_type)
 {
     std::vector<char> data =
         {
@@ -366,21 +303,21 @@ TEST(test_byte_stream, read_type)
             "abcd",
         };
 
-    // create byte_stream
-    auto bs = petro::byte_stream((uint8_t*)data.data(), data.size());
-
-    // check vitals
-    EXPECT_EQ(data.size(), bs.remaining_bytes());
+    petro::stream bs((uint8_t*)data.data(), data.size());
 
     for (uint32_t i = 0; i < data.size() / 4; ++i)
     {
-        EXPECT_EQ(expected[i], bs.read_type());
-    }
+        std::string type;
+        std::error_code error;
+        bs.read_type(type, error);
+        ASSERT_FALSE(bool(error));
 
-    EXPECT_EQ(0U, bs.remaining_bytes());
+        EXPECT_EQ(expected[i], type);
+    }
+    EXPECT_EQ(0U, bs.remaining_size());
 }
 
-TEST(test_byte_stream, read_fixed_point_1616)
+TEST(test_stream, read_fixed_point_1616)
 {
     // the test data for this test is created based on an implementation which
     // is thought to be correct.
@@ -397,22 +334,22 @@ TEST(test_byte_stream, read_fixed_point_1616)
             1 << 16
         };
 
-    // create byte_stream
-    auto bs = petro::byte_stream(data.data(), data.size());
-
-    // check vitals
-    EXPECT_EQ(data.size(), bs.remaining_bytes());
+    petro::stream bs(data.data(), data.size());
 
     for (uint32_t i = 0; i < data.size() / 4; ++i)
     {
-        double diff = std::abs(expected[i] - bs.read_fixed_point_1616());
+        double v = 0;
+        std::error_code error;
+        bs.read_fixed_point_1616(v, error);
+        ASSERT_FALSE(bool(error));
+        double diff = std::abs(expected[i] - v);
         EXPECT_TRUE(diff < 0.01);
     }
 
-    EXPECT_EQ(0U, bs.remaining_bytes());
+    EXPECT_EQ(0U, bs.remaining_size());
 }
 
-TEST(test_byte_stream, read_fixed_point_0230)
+TEST(test_stream, read_fixed_point_0230)
 {
     // the test data for this test is created based on an implementation which
     // is thought to be correct.
@@ -429,22 +366,22 @@ TEST(test_byte_stream, read_fixed_point_0230)
             4.0 // ?
         };
 
-    // create byte_stream
-    auto bs = petro::byte_stream(data.data(), data.size());
-
-    // check vitals
-    EXPECT_EQ(data.size(), bs.remaining_bytes());
+    petro::stream bs(data.data(), data.size());
 
     for (uint32_t i = 0; i < data.size() / 4; ++i)
     {
-        double diff = std::abs(expected[i] - bs.read_fixed_point_0230());
+        double v = 0;
+        std::error_code error;
+        bs.read_fixed_point_0230(v, error);
+        ASSERT_FALSE(bool(error));
+        double diff = std::abs(expected[i] - v);
         EXPECT_TRUE(diff < 0.01);
     }
 
-    EXPECT_EQ(0U, bs.remaining_bytes());
+    EXPECT_EQ(0U, bs.remaining_size());
 }
 
-TEST(test_byte_stream, read_fixed_point_88)
+TEST(test_stream, read_fixed_point_88)
 {
     // the test data for this test is created based on an implementation which
     // is thought to be correct.
@@ -461,22 +398,22 @@ TEST(test_byte_stream, read_fixed_point_88)
             255.99609f // ~(1 << 8)
         };
 
-    // create byte_stream
-    auto bs = petro::byte_stream(data.data(), data.size());
-
-    // check vitals
-    EXPECT_EQ(data.size(), bs.remaining_bytes());
+    petro::stream bs(data.data(), data.size());
 
     for (uint32_t i = 0; i < data.size() / 2; ++i)
     {
-        double diff = std::abs(expected[i] - bs.read_fixed_point_88());
+        float v = 0;
+        std::error_code error;
+        bs.read_fixed_point_88(v, error);
+        ASSERT_FALSE(bool(error));
+        float diff = std::abs(expected[i] - v);
         EXPECT_TRUE(diff < 0.01);
     }
 
-    EXPECT_EQ(0U, bs.remaining_bytes());
+    EXPECT_EQ(0U, bs.remaining_size());
 }
 
-TEST(test_byte_stream, read_iso639)
+TEST(test_stream, read_iso639)
 {
     std::vector<uint8_t> data =
         {
@@ -490,21 +427,21 @@ TEST(test_byte_stream, read_iso639)
             "ger"
         };
 
-    // create byte_stream
-    auto bs = petro::byte_stream(data.data(), data.size());
-
-    // check vitals
-    EXPECT_EQ(data.size(), bs.remaining_bytes());
+    petro::stream bs(data.data(), data.size());
 
     for (uint32_t i = 0; i < data.size() / 2; ++i)
     {
-        EXPECT_EQ(expected[i], bs.read_iso639());
+        std::string v;
+        std::error_code error;
+        bs.read_iso639(v, error);
+        ASSERT_FALSE(bool(error));
+        EXPECT_EQ(expected[i], v);
     }
 
-    EXPECT_EQ(0U, bs.remaining_bytes());
+    EXPECT_EQ(0U, bs.remaining_size());
 }
 
-TEST(test_byte_stream, read_time32)
+TEST(test_stream, read_time32)
 {
     std::vector<uint8_t> data =
         {
@@ -522,21 +459,21 @@ TEST(test_byte_stream, read_time32)
             "2011-09-07 06:06:39"
         };
 
-    // create byte_stream
-    auto bs = petro::byte_stream(data.data(), data.size());
-
-    // check vitals
-    EXPECT_EQ(data.size(), bs.remaining_bytes());
+    petro::stream bs(data.data(), data.size());
 
     for (uint32_t i = 0; i < data.size() / 4; ++i)
     {
-        EXPECT_EQ(expected[i], bs.read_time32());
+        std::string v;
+        std::error_code error;
+        bs.read_time32(v, error);
+        ASSERT_FALSE(bool(error));
+        EXPECT_EQ(expected[i], v);
     }
 
-    EXPECT_EQ(0U, bs.remaining_bytes());
+    EXPECT_EQ(0U, bs.remaining_size());
 }
 
-TEST(test_byte_stream, read_time64)
+TEST(test_stream, read_time64)
 {
     std::vector<uint8_t> data =
         {
@@ -554,29 +491,16 @@ TEST(test_byte_stream, read_time64)
             "2011-09-07 06:06:39",
         };
 
-    // create byte_stream
-    auto bs = petro::byte_stream(data.data(), data.size());
-
-    // check vitals
-    EXPECT_EQ(data.size(), bs.remaining_bytes());
+    petro::stream bs(data.data(), data.size());
 
     for (uint32_t i = 0; i < data.size() / 8; ++i)
     {
-        EXPECT_EQ(expected[i], bs.read_time64());
+        std::string v;
+        std::error_code error;
+        bs.read_time64(v, error);
+        ASSERT_FALSE(bool(error));
+        EXPECT_EQ(expected[i], v);
     }
 
-    EXPECT_EQ(0U, bs.remaining_bytes());
-}
-
-TEST(test_byte_stream, remaining_bytes)
-{
-    uint32_t size = 100;
-    std::vector<uint8_t> data(size);
-    auto bs = petro::byte_stream(data.data(), size);
-    EXPECT_EQ(size, bs.remaining_bytes());
-    for (uint32_t i = 0; i < size; ++i)
-    {
-        bs.read_uint8_t();
-    }
-    EXPECT_EQ(0U, bs.remaining_bytes());
+    EXPECT_EQ(0U, bs.remaining_size());
 }

@@ -5,8 +5,7 @@
 
 #pragma once
 
-#include "../byte_stream.hpp"
-#include "box.hpp"
+#include "data_box.hpp"
 
 #include <string>
 #include <vector>
@@ -16,7 +15,7 @@ namespace petro
 namespace box
 {
 /// media data container
-class mdat : public box
+class mdat : public data_box
 {
 
 public:
@@ -24,21 +23,18 @@ public:
     static const std::string TYPE;
 
 public:
-    mdat(std::weak_ptr<box> parent) :
-        box(mdat::TYPE, parent)
+    mdat(const uint8_t* data, uint64_t size) :
+        data_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    error box_error_code() const override
     {
-        box::read(size, bs);
-        bs.skip(m_remaining_bytes);
+        return error::invalid_mdat_box;
     }
 
-    std::string describe() const
+    std::string type() const override
     {
-        std::stringstream ss;
-        ss << box::describe() << std::endl;
-        return ss.str();
+        return TYPE;
     }
 };
 }

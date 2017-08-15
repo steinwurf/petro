@@ -12,7 +12,8 @@
 #include <sstream>
 #include <queue>
 
-#include "../byte_stream.hpp"
+#include <endian/big_endian.hpp>
+#include <endian/stream_reader.hpp>
 
 namespace petro
 {
@@ -22,15 +23,7 @@ class box : public std::enable_shared_from_this<box>
 {
 public:
 
-    box(const std::string& type, std::weak_ptr<box> parent);
-
-    virtual void read(uint64_t size, byte_stream& bs);
-
-    virtual std::string type() const;
-
-    virtual std::string extended_type() const;
-
-    uint64_t size() const;
+    virtual std::string type() const = 0;
 
     const std::vector<std::shared_ptr<box>> children() const;
 
@@ -45,7 +38,7 @@ public:
     std::vector<std::shared_ptr<const box>> get_children(
         const std::string& type) const;
 
-    virtual std::string describe() const;
+    virtual std::string describe() const = 0;
 
 public:
 
@@ -58,18 +51,8 @@ public:
 
 protected:
 
-    std::string m_type;
-
     std::weak_ptr<box> m_parent;
-
-    uint64_t m_size;
-
-    uint64_t m_remaining_bytes;
-
-    std::string m_extended_type;
-
     std::vector<std::shared_ptr<box>> m_children;
-
 };
 }
 }

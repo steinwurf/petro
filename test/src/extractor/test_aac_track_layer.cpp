@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include <petro/box/box.hpp>
+#include <petro/box/data_box.hpp>
 
 #include <stub/function.hpp>
 
@@ -17,16 +17,33 @@ namespace
 {
 struct dummy_trak : public petro::box::box
 {
-    dummy_trak() :
-        petro::box::box("trak", std::weak_ptr<box>())
-    { }
+    std::string type() const override
+    {
+        return "trak";
+    }
+
+    std::string describe() const override
+    {
+        return "";
+    }
 };
 
 struct dummy_mp4a : public petro::box::box
 {
-    dummy_mp4a(std::shared_ptr<petro::box::box> parent) :
-        petro::box::box("mp4a", parent)
-    { }
+    dummy_mp4a(std::shared_ptr<petro::box::box> parent)
+    {
+        m_parent = parent;
+    }
+
+    std::string type() const override
+    {
+        return "mp4a";
+    }
+
+    std::string describe() const override
+    {
+        return "";
+    }
 };
 
 struct dummy_root
@@ -48,7 +65,7 @@ struct dummy_root
 
 struct dummy_layer
 {
-    stub::function<bool()> open;
+    stub::function<void(std::error_code)> open;
     stub::function<void()> close;
     stub::function<std::shared_ptr<dummy_root>()> root;
 };
@@ -60,14 +77,14 @@ TEST(extractor_test_aac_track_layer, api)
 {
     dummy_stack stack;
     dummy_layer& layer = stack;
-    layer.open.set_return(false, true);
 
     auto trak = std::make_shared<dummy_trak>();
     auto mp4a = std::make_shared<dummy_mp4a>(trak);
 
-    auto esds = std::make_shared<petro::box::esds>(trak);
     std::vector<uint8_t> esds_data =
         {
+            0x00, 0x00, 0x00, 0x27, // size
+            'e', 's', 'd', 's', // type
             0x00, // full_box version
             0x00, 0x00, 0x00, // full_box flag
             0x03, // esds elemetary_stream_descriptor_tag
@@ -77,17 +94,21 @@ TEST(extractor_test_aac_track_layer, api)
             0x00, 0xfd, 0x75, 0x05, 0x02, 0x11, 0x90, 0x06,
             0x01, 0x02
         };
-    auto bs = petro::byte_stream(esds_data.data(), esds_data.size());
-    esds->read(esds_data.size() + 8, bs);
+
+    auto esds = std::make_shared<petro::box::esds>(
+        esds_data.data(), esds_data.size());
+    std::error_code error;
+    esds->parse(error);
+    ASSERT_FALSE(bool(error));
+
     mp4a->add_child(esds);
 
     auto root = std::make_shared<dummy_root>(mp4a);
 
     layer.root.set_return(root);
 
-    EXPECT_FALSE(stack.open());
-    EXPECT_EQ(1U, layer.close.calls());
-    EXPECT_TRUE(stack.open());
+    stack.open(error);
+    ASSERT_FALSE(bool(error));
 
     EXPECT_EQ(2U, stack.mpeg_audio_object_type());
     EXPECT_EQ(3U, stack.frequency_index());
@@ -95,5 +116,5 @@ TEST(extractor_test_aac_track_layer, api)
     EXPECT_EQ("trak", stack.trak()->type());
 
     stack.close();
-    EXPECT_EQ(2U, layer.close.calls());
+    EXPECT_EQ(1U, layer.close.calls());
 }

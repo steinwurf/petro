@@ -5,8 +5,7 @@
 
 #pragma once
 
-#include "../byte_stream.hpp"
-#include "box.hpp"
+#include "data_box.hpp"
 
 #include <cassert>
 #include <string>
@@ -17,7 +16,7 @@ namespace petro
 namespace box
 {
 /// file type and compatibility
-class ftyp : public box
+class ftyp : public data_box
 {
 
 public:
@@ -25,31 +24,44 @@ public:
     static const std::string TYPE;
 
 public:
-    ftyp(std::weak_ptr<box> parent) :
-        box(ftyp::TYPE, parent)
+
+    ftyp(const uint8_t* data, uint64_t size) :
+        data_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    void parse_box_content(std::error_code& error) override
     {
-        box::read(size, bs);
-        m_major_brand = bs.read_type();
-        m_remaining_bytes -= 4;
-        m_minor_version = bs.read_uint32_t();
-        m_remaining_bytes -= 4;
+        m_bs.read(m_major_brand, 4, error);
+        if (error)
+            return;
+        m_bs.read(m_minor_version, error);
+        if (error)
+            return;
 
-        assert(m_remaining_bytes % 4 == 0);
-
-        while (m_remaining_bytes != 0)
+        while (m_bs.remaining_size() != 0)
         {
-            m_compatible_brands.push_back(bs.read_type());
-            m_remaining_bytes -= 4;
+            std::string compatible_brand;
+            m_bs.read(compatible_brand, 4, error);
+            if (error)
+                return;
+
+            m_compatible_brands.push_back(compatible_brand);
         }
-        assert(m_remaining_bytes == 0);
     }
-    virtual std::string describe() const
+
+    error box_error_code() const override
+    {
+        return error::invalid_ftyp_box;
+    }
+
+    std::string type() const override
+    {
+        return TYPE;
+    }
+
+    std::string box_describe() const override
     {
         std::stringstream ss;
-        ss << box::describe() << std::endl;
         ss << "  major_brand: " << m_major_brand << std::endl;
         ss << "  minor_version: " << m_minor_version << std::endl;
 

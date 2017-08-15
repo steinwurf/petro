@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "byte_stream.hpp"
+#include "stream.hpp"
 
 namespace petro
 {
@@ -18,20 +18,6 @@ namespace petro
 ///
 struct matrix
 {
-    void read(byte_stream& bs)
-    {
-        a = bs.read_fixed_point_1616();
-        b = bs.read_fixed_point_1616();
-        u = bs.read_fixed_point_0230();
-        c = bs.read_fixed_point_1616();
-        d = bs.read_fixed_point_1616();
-        v = bs.read_fixed_point_0230();
-        x = bs.read_fixed_point_1616();
-        y = bs.read_fixed_point_1616();
-        w = bs.read_fixed_point_0230();
-        // read 9 * 4 (36) bytes
-    }
-
     std::string describe() const
     {
         std::stringstream ss;

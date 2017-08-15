@@ -11,31 +11,31 @@
 #include <sstream>
 #include <cassert>
 
-#include "box.hpp"
-#include "../byte_stream.hpp"
+#include "data_box.hpp"
 
 namespace petro
 {
 namespace box
 {
 /// unknown box
-class unknown : public box
+class unknown : public data_box
 {
 public:
 
-    unknown(const std::string& type, std::weak_ptr<box> parent) :
-        box(type, parent)
+    unknown(const uint8_t* data, uint64_t size) :
+        data_box(data, size)
     { }
 
-    void read(uint64_t size, byte_stream& bs)
+    std::string type() const override
     {
-        box::read(size, bs);
-        bs.skip(m_remaining_bytes);
+        return m_type;
     }
 
-    virtual std::string type() const
+    std::string box_describe() const override
     {
-        return m_type + "?";
+        std::stringstream ss;
+        ss << "  unknown" << std::endl;
+        return ss.str();
     }
 };
 }
