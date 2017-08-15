@@ -22,7 +22,7 @@ class parser
 {
 public:
 
-    std::shared_ptr<box::box> parse(
+    void parse(
         const uint8_t* data,
         uint64_t size,
         std::weak_ptr<box::box> parent,
@@ -38,15 +38,12 @@ public:
         {
             auto box = parse_box(data + position, size - position, parent, error);
             if (error)
-                return nullptr;
+                return;
             position += box->size();
-            if (position > size)
-            {
-                error = std::make_error_code(std::errc::value_too_large);
-                return nullptr;
-            }
+            assert(position <= size &&
+                   "This should not be possible, the boxes should set the "
+                   "error code if they read more than size.");
         }
-        return parent.lock();
     }
 
     std::shared_ptr<box::data_box> parse_box(

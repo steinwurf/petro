@@ -73,13 +73,15 @@ public:
             >>
         > parser;
 
-        m_root = parser.parse(
+        auto root = std::make_shared<petro::box::root>();
+        parser.parse(
             Super::data(),
             Super::data_size(),
-            std::make_shared<petro::box::root>(),
+            root,
             error);
         if (error)
             return;
+        m_root = root;
     }
 
     /// Close this and the underlying layer.

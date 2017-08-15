@@ -150,8 +150,8 @@ int main(int argc, char* argv[])
     > parser;
 
     std::error_code error;
-    auto root = parser.parse((uint8_t*)mp4_file.data(), mp4_file.size(),
-                             std::make_shared<petro::box::root>(), error);
+    auto root = std::make_shared<petro::box::root>();
+    parser.parse((uint8_t*)mp4_file.data(), mp4_file.size(), root, error);
 
     if (error)
     {
