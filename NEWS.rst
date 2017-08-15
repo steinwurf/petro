@@ -6,9 +6,16 @@ every change, see the Git log.
 
 Latest
 ------
+* Major: Added error codes.
+* Major: ``bit_reader`` renamed to ``bit_stream``.
+* Major: ``byte_stream`` was replaced by a wrapper of an ``endian::reader``.
+* Major: The ``extractor``\ s open function now takes an error code and doesn't
+  rely on the returned boolean to announce the occurrence of an error.
+* Major: ``sequence_parameter_set`` and ``picture_parameter_set`` now needs to
+  be parsed.
 * Major: Changed constructor parameters of ``box``.
-* Major: Renamed ``box::read`` to ``box::parse``.
-* Major: Split ``box`` into two classes; ``box::base_box`` and ``box::box``.
+* Major: Renamed ``data_box::read`` to ``data_box::parse``.
+* Major: Split ``box`` into two classes; ``box::box`` and ``box::data_box``.
 
 7.2.0
 -----
