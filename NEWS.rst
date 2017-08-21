@@ -8,6 +8,11 @@ Latest
 ------
 * tbd
 
+8.0.1
+-----
+* Patch: Set the ``install_path`` of the petro shared lib to ``None`` to avoid
+  automatic installation to system directories during the waf install step.
+
 8.0.0
 -----
 * Major: Added error codes.
