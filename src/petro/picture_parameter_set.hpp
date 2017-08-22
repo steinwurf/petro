@@ -9,6 +9,7 @@
 #include <sstream>
 #include <vector>
 #include <cassert>
+#include <memory>
 
 #include "bit_stream.hpp"
 
@@ -17,6 +18,21 @@ namespace petro
 class picture_parameter_set
 {
 public:
+
+    static std::shared_ptr<picture_parameter_set> parse(
+        const uint8_t* data, uint64_t size, std::error_code& error)
+    {
+        std::shared_ptr<picture_parameter_set> pps(
+            new picture_parameter_set(data, size));
+        pps->parse(error);
+        if (error)
+            return nullptr;
+        else
+            return pps;
+    }
+
+private:
+
     picture_parameter_set(const uint8_t* data, uint32_t size) :
         m_bs(data, size)
     { }
@@ -25,6 +41,8 @@ public:
     {
         assert(!error);
     }
+
+public:
 
     const uint8_t* data() const
     {
