@@ -65,21 +65,18 @@ public:
 
         for (uint8_t i = 0; i < m_num_of_sequence_parameter_sets; ++i)
         {
-            uint16_t sequence_parameter_set_length = 0;
-            m_bs.read(sequence_parameter_set_length, error);
+            uint16_t length = 0;
+            m_bs.read(length, error);
             if (error)
                 return;
 
-            auto sequence_parameter_set_data = m_bs.remaining_data();
-            m_bs.skip(sequence_parameter_set_length, error);
+            auto data = m_bs.remaining_data();
+            m_bs.skip(length, error);
             if (error)
                 return;
             auto sequence_parameter_set =
-                std::make_shared<petro::sequence_parameter_set>(
-                    sequence_parameter_set_data,
-                    sequence_parameter_set_length);
+                petro::sequence_parameter_set::parse(data, length, error);
 
-            sequence_parameter_set->parse(error);
             if (error)
                 return;
 

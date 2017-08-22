@@ -45,10 +45,9 @@ public:
         m_file_path = file_path;
     }
 
-    /// Returns the file path of the fíle to open.
+    /// Returns the set file path.
     std::string file_path() const
     {
-        assert(!m_file.is_open());
         return m_file_path;
     }
 

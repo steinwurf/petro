@@ -40,7 +40,7 @@ struct avc_sample_extractor
     /// Sets the file path of the fíle to open.
     void set_file_path(const std::string& file_path);
 
-    /// Returns the file path of the fíle to open.
+    /// Returns the set file path.
     std::string file_path() const;
 
     /// Return the total media duration in microseconds
@@ -79,7 +79,7 @@ struct avc_sample_extractor
     /// Return the size of the sps data
     uint32_t sps_size() const;
 
-    /// Return the size of the length preceeded each nalu sample in the h264
+    /// Return the size of the length preceded each nalu sample in the h264
     /// sample.
     uint8_t nalu_length_size() const;
 

@@ -9,6 +9,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <memory>
 
 #include "bit_stream.hpp"
 
@@ -17,8 +18,22 @@ namespace petro
 /// Based on https://www.itu.int/rec/T-REC-H.264-201402-S/en
 class sequence_parameter_set
 {
-
 public:
+
+    static std::shared_ptr<sequence_parameter_set> parse(
+        const uint8_t* data, uint64_t size, std::error_code& error)
+    {
+        std::shared_ptr<sequence_parameter_set> sps(
+            new sequence_parameter_set(data, size));
+        sps->parse(error);
+        if (error)
+            return nullptr;
+        else
+            return sps;
+    }
+
+private:
+
     sequence_parameter_set(const uint8_t* data, uint64_t size) :
         m_bs(data, size)
     { }
@@ -319,6 +334,8 @@ public:
             (m_frame_crop_top_offset * 2) -
             (m_frame_crop_bottom_offset * 2);
     }
+
+public:
 
     uint32_t width() const
     {
