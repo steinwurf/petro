@@ -16,31 +16,31 @@ TEST(test_sequence_parameter_set, check_variables)
             0x67, 0x42, 0x00, 0x0A, 0xF8, 0x41, 0xA2
         };
 
-    petro::sequence_parameter_set sps(data.data(), data.size());
     std::error_code error;
-    sps.parse(error);
+    auto sps =
+        petro::sequence_parameter_set::parse(data.data(), data.size(), error);
     ASSERT_FALSE(bool(error));
 
-    EXPECT_EQ(66U, sps.profile_idc());
-    EXPECT_EQ(0U, sps.constraint_set0_flag());
-    EXPECT_EQ(0U, sps.constraint_set1_flag());
-    EXPECT_EQ(0U, sps.constraint_set2_flag());
-    EXPECT_EQ(0U, sps.constraint_set3_flag());
-    EXPECT_EQ(10U, sps.level_idc());
-    EXPECT_EQ(0U, sps.seq_parameter_set_id());
-    EXPECT_EQ(4U, sps.log2_max_frame_num());
-    EXPECT_EQ(0U, sps.pic_order_cnt_type());
-    EXPECT_EQ(4U, sps.log2_max_pic_order_cnt_lsb());
-    EXPECT_EQ(0U, sps.num_ref_frames_in_pic_order_cnt_cycle());
-    EXPECT_EQ(0U, sps.gaps_in_frame_num_value_allowed_flag());
-    EXPECT_EQ(8U, sps.pic_width_in_mbs());
-    EXPECT_EQ(6U, sps.pic_height_in_map_units());
-    EXPECT_EQ(1U, sps.frame_mbs_only_flag());
-    EXPECT_EQ(0U, sps.direct_8x8_inference_flag());
-    EXPECT_EQ(0U, sps.frame_cropping_flag());
-    EXPECT_EQ(0U, sps.vui_parameters_present_flag());
-    EXPECT_EQ(128U, sps.width());
-    EXPECT_EQ(96U, sps.height());
+    EXPECT_EQ(66U, sps->profile_idc());
+    EXPECT_EQ(0U, sps->constraint_set0_flag());
+    EXPECT_EQ(0U, sps->constraint_set1_flag());
+    EXPECT_EQ(0U, sps->constraint_set2_flag());
+    EXPECT_EQ(0U, sps->constraint_set3_flag());
+    EXPECT_EQ(10U, sps->level_idc());
+    EXPECT_EQ(0U, sps->seq_parameter_set_id());
+    EXPECT_EQ(4U, sps->log2_max_frame_num());
+    EXPECT_EQ(0U, sps->pic_order_cnt_type());
+    EXPECT_EQ(4U, sps->log2_max_pic_order_cnt_lsb());
+    EXPECT_EQ(0U, sps->num_ref_frames_in_pic_order_cnt_cycle());
+    EXPECT_EQ(0U, sps->gaps_in_frame_num_value_allowed_flag());
+    EXPECT_EQ(8U, sps->pic_width_in_mbs());
+    EXPECT_EQ(6U, sps->pic_height_in_map_units());
+    EXPECT_EQ(1U, sps->frame_mbs_only_flag());
+    EXPECT_EQ(0U, sps->direct_8x8_inference_flag());
+    EXPECT_EQ(0U, sps->frame_cropping_flag());
+    EXPECT_EQ(0U, sps->vui_parameters_present_flag());
+    EXPECT_EQ(128U, sps->width());
+    EXPECT_EQ(96U, sps->height());
 }
 
 TEST(test_sequence_parameter_set, width512_height288)
@@ -52,28 +52,29 @@ TEST(test_sequence_parameter_set, width512_height288)
             0x40, 0x00, 0x00, 0x07, 0xa3, 0xc5, 0x8b, 0x67,
             0x80
         };
-    petro::sequence_parameter_set sps(data.data(), data.size());
+
     std::error_code error;
-    sps.parse(error);
+    auto sps =
+        petro::sequence_parameter_set::parse(data.data(), data.size(), error);
     ASSERT_FALSE(bool(error));
 
-    EXPECT_EQ(100U, sps.profile_idc());
-    EXPECT_EQ(0U, sps.constraint_set0_flag());
-    EXPECT_EQ(0U, sps.constraint_set1_flag());
-    EXPECT_EQ(0U, sps.constraint_set2_flag());
-    EXPECT_EQ(0U, sps.constraint_set3_flag());
-    EXPECT_EQ(21U, sps.level_idc());
-    EXPECT_EQ(0U, sps.seq_parameter_set_id());
-    EXPECT_EQ(1U, sps.chroma_format_idc());
-    EXPECT_EQ(0U, sps.gaps_in_frame_num_value_allowed_flag());
-    EXPECT_EQ(32U, sps.pic_width_in_mbs());
-    EXPECT_EQ(18U, sps.pic_height_in_map_units());
-    EXPECT_EQ(1U, sps.frame_mbs_only_flag());
-    EXPECT_EQ(1U, sps.direct_8x8_inference_flag());
-    EXPECT_EQ(0U, sps.frame_cropping_flag());
-    EXPECT_EQ(1U, sps.vui_parameters_present_flag());
-    EXPECT_EQ(512U, sps.width());
-    EXPECT_EQ(288U, sps.height());
+    EXPECT_EQ(100U, sps->profile_idc());
+    EXPECT_EQ(0U, sps->constraint_set0_flag());
+    EXPECT_EQ(0U, sps->constraint_set1_flag());
+    EXPECT_EQ(0U, sps->constraint_set2_flag());
+    EXPECT_EQ(0U, sps->constraint_set3_flag());
+    EXPECT_EQ(21U, sps->level_idc());
+    EXPECT_EQ(0U, sps->seq_parameter_set_id());
+    EXPECT_EQ(1U, sps->chroma_format_idc());
+    EXPECT_EQ(0U, sps->gaps_in_frame_num_value_allowed_flag());
+    EXPECT_EQ(32U, sps->pic_width_in_mbs());
+    EXPECT_EQ(18U, sps->pic_height_in_map_units());
+    EXPECT_EQ(1U, sps->frame_mbs_only_flag());
+    EXPECT_EQ(1U, sps->direct_8x8_inference_flag());
+    EXPECT_EQ(0U, sps->frame_cropping_flag());
+    EXPECT_EQ(1U, sps->vui_parameters_present_flag());
+    EXPECT_EQ(512U, sps->width());
+    EXPECT_EQ(288U, sps->height());
 }
 
 TEST(test_sequence_parameter_set, width1280_height800)
@@ -85,12 +86,13 @@ TEST(test_sequence_parameter_set, width1280_height800)
             0x89, 0x11, 0x50
         };
 
-    petro::sequence_parameter_set sps(data.data(), data.size());
     std::error_code error;
-    sps.parse(error);
+    auto sps =
+        petro::sequence_parameter_set::parse(data.data(), data.size(), error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(1280U, sps.width());
-    EXPECT_EQ(800U, sps.height());
+
+    EXPECT_EQ(1280U, sps->width());
+    EXPECT_EQ(800U, sps->height());
 }
 
 TEST(test_sequence_parameter_set, width1920_height1080)
@@ -104,12 +106,12 @@ TEST(test_sequence_parameter_set, width1920_height1080)
             0x02, 0x00, 0x00, 0x03, 0x00, 0x79, 0x08
         };
 
-    petro::sequence_parameter_set sps(data.data(), data.size());
     std::error_code error;
-    sps.parse(error);
+    auto sps =
+        petro::sequence_parameter_set::parse(data.data(), data.size(), error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(1920U, sps.width());
-    EXPECT_EQ(1080U, sps.height());
+    EXPECT_EQ(1920U, sps->width());
+    EXPECT_EQ(1080U, sps->height());
 }
 
 TEST(test_sequence_parameter_set, width3840_height2160)
@@ -124,12 +126,12 @@ TEST(test_sequence_parameter_set, width3840_height2160)
             0x31, 0x12
         };
 
-    petro::sequence_parameter_set sps(data.data(), data.size());
     std::error_code error;
-    sps.parse(error);
+    auto sps =
+        petro::sequence_parameter_set::parse(data.data(), data.size(), error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(3840U, sps.width());
-    EXPECT_EQ(2160U, sps.height());
+    EXPECT_EQ(3840U, sps->width());
+    EXPECT_EQ(2160U, sps->height());
 }
 
 TEST(test_sequence_parameter_set, width560_height320)
@@ -142,10 +144,10 @@ TEST(test_sequence_parameter_set, width560_height320)
             0x00, 0x3C, 0x8F, 0x16, 0x2E, 0x48
         };
 
-    petro::sequence_parameter_set sps(data.data(), data.size());
     std::error_code error;
-    sps.parse(error);
+    auto sps =
+        petro::sequence_parameter_set::parse(data.data(), data.size(), error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(560U, sps.width());
-    EXPECT_EQ(320U, sps.height());
+    EXPECT_EQ(560U, sps->width());
+    EXPECT_EQ(320U, sps->height());
 }

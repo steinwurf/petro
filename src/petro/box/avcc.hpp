@@ -65,25 +65,21 @@ public:
 
         for (uint8_t i = 0; i < m_num_of_sequence_parameter_sets; ++i)
         {
-            uint16_t sequence_parameter_set_length = 0;
-            m_bs.read(sequence_parameter_set_length, error);
+            uint16_t length = 0;
+            m_bs.read(length, error);
             if (error)
                 return;
 
-            auto sequence_parameter_set_data = m_bs.remaining_data();
-            m_bs.skip(sequence_parameter_set_length, error);
+            auto data = m_bs.remaining_data();
+            m_bs.skip(length, error);
             if (error)
                 return;
-            auto sequence_parameter_set =
-                std::make_shared<petro::sequence_parameter_set>(
-                    sequence_parameter_set_data,
-                    sequence_parameter_set_length);
+            auto sps = sequence_parameter_set::parse(data, length, error);
 
-            sequence_parameter_set->parse(error);
             if (error)
                 return;
 
-            m_sequence_parameter_sets.push_back(sequence_parameter_set);
+            m_sequence_parameter_sets.push_back(sps);
         }
 
         m_bs.read(m_num_of_picture_parameter_sets, error);
@@ -93,25 +89,20 @@ public:
         for (uint8_t i = 0; i < m_num_of_picture_parameter_sets; ++i)
         {
 
-            uint16_t picture_parameter_set_length = 0;
-            m_bs.read(picture_parameter_set_length, error);
+            uint16_t length = 0;
+            m_bs.read(length, error);
             if (error)
                 return;
 
-            auto picture_parameter_set_data = m_bs.remaining_data();
-            m_bs.skip(picture_parameter_set_length, error);
+            auto data = m_bs.remaining_data();
+            m_bs.skip(length, error);
             if (error)
                 return;
-            auto picture_parameter_set =
-                std::make_shared<petro::picture_parameter_set>(
-                    picture_parameter_set_data,
-                    picture_parameter_set_length);
-
-            picture_parameter_set->parse(error);
+            auto pps = picture_parameter_set::parse(data, length, error);
             if (error)
                 return;
 
-            m_picture_parameter_sets.push_back(picture_parameter_set);
+            m_picture_parameter_sets.push_back(pps);
         }
 
         m_bs.skip(m_bs.remaining_size(), error);

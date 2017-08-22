@@ -40,7 +40,7 @@ struct aac_sample_extractor
     /// Sets the file path of the fíle to open.
     void set_file_path(const std::string& file_path);
 
-    /// Returns the file path of the fíle to open.
+    /// Returns the set file path.
     std::string file_path() const;
 
     /// Return the total media duration in microseconds
@@ -76,7 +76,7 @@ struct aac_sample_extractor
     /// Returns the MPEG audio object type
     uint8_t mpeg_audio_object_type() const;
 
-    /// Returns the frequncy index
+    /// Returns the frequency index
     uint32_t frequency_index() const;
 
     /// Returns the channel configuration
