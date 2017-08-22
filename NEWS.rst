@@ -6,6 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+9.0.0
+-----
 * Major: Changed API of ``sequence_parameter_set`` and
   ``picture_parameter_set``. The constructor has been made private, and the
   object can now only be created using the static ``parse`` function.
