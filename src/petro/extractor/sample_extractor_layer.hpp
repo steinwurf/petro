@@ -124,6 +124,7 @@ public:
 
     uint32_t samples() const
     {
+        assert(m_stsz != nullptr);
         return m_stsz->sample_count();
     }
 
