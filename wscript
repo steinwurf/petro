@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 APPNAME = 'petro'
-VERSION = '9.0.0'
+VERSION = '9.1.0'
 
 
 def build(bld):
