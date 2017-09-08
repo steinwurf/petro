@@ -38,6 +38,8 @@ TEST(extractor_test_aac_sample_extractor, test_aac_file)
     extractor.open(error);
     EXPECT_FALSE(bool(error));
 
+    EXPECT_EQ(262U, extractor.samples());
+
     EXPECT_EQ(7U, extractor.adts_header_size());
 
     EXPECT_EQ(2U, extractor.mpeg_audio_object_type());

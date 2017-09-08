@@ -119,7 +119,12 @@ public:
     bool at_end() const
     {
         assert(m_stsz != nullptr);
-        return (m_sample_index >= m_stsz->sample_count());
+        return (m_sample_index >= samples());
+    }
+
+    uint32_t samples() const
+    {
+        return m_stsz->sample_count();
     }
 
     /// Return a pointer to the sample data

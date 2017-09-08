@@ -6,7 +6,7 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Minor: Added `samples` function to extractors to get the number of samples.
 
 9.0.0
 -----

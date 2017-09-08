@@ -111,6 +111,12 @@ uint32_t aac_sample_extractor::sample_index() const
     return m_impl->sample_index();
 }
 
+uint32_t aac_sample_extractor::samples() const
+{
+    assert(m_impl);
+    return m_impl->samples();
+}
+
 void aac_sample_extractor::write_adts_header(uint8_t* data) const
 {
     assert(m_impl);

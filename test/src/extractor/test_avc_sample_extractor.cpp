@@ -37,7 +37,10 @@ uint32_t read_nalu_size(const uint8_t* data, uint8_t length_size)
     return result;
 }
 
-void test_h264_file(const std::string& h264_file, const std::string& mp4_file)
+void test_h264_file(
+    const std::string& h264_file,
+    const std::string& mp4_file,
+    uint32_t expected_samples)
 {
     std::ifstream test_h264(h264_file, std::ios::binary);
     EXPECT_TRUE(test_h264.is_open());
@@ -50,6 +53,8 @@ void test_h264_file(const std::string& h264_file, const std::string& mp4_file)
     std::error_code error;
     extractor.open(error);
     ASSERT_FALSE(bool(error));
+
+    EXPECT_EQ(expected_samples, extractor.samples());
 
     check_sample(test_h264, extractor.sps_data(), extractor.sps_size());
     check_sample(test_h264, extractor.pps_data(), extractor.pps_size());
@@ -79,17 +84,20 @@ void test_h264_file(const std::string& h264_file, const std::string& mp4_file)
 TEST(extractor_test_avc_sample_extractor, test1_h264_file)
 {
     // ~ One sample per chunk, multiple nalus per sample
-    test_h264_file("test1.h264", "test1.mp4");
+    auto samples = 166U;
+    test_h264_file("test1.h264", "test1.mp4", samples);
 }
 
 TEST(extractor_test_avc_sample_extractor, test2_h264_file)
 {
     // No samples
-    test_h264_file("test2.h264", "test2.mp4");
+    auto samples = 0U;
+    test_h264_file("test2.h264", "test2.mp4", samples);
 }
 
 TEST(extractor_test_avc_sample_extractor, test3_h264_file)
 {
     // ~ Multiple sample per chunk, single nalu per sample
-    test_h264_file("test3.h264", "test3.mp4");
+    auto samples = 148U;
+    test_h264_file("test3.h264", "test3.mp4", samples);
 }

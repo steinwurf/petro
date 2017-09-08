@@ -110,6 +110,12 @@ uint32_t avc_sample_extractor::sample_index() const
     return m_impl->sample_index();
 }
 
+uint32_t avc_sample_extractor::samples() const
+{
+    assert(m_impl);
+    return m_impl->samples();
+}
+
 const uint8_t* avc_sample_extractor::pps_data() const
 {
     assert(m_impl);

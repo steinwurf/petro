@@ -67,6 +67,9 @@ struct avc_sample_extractor
     /// Return the current sample index
     uint32_t sample_index() const;
 
+    /// Return the number of samples
+    uint32_t samples() const;
+
     /// Return a pointer to the pps data
     const uint8_t* pps_data() const;
 
