@@ -67,6 +67,9 @@ struct aac_sample_extractor
     /// Return the current sample index
     uint32_t sample_index() const;
 
+    /// Return the number of samples
+    uint32_t samples() const;
+
     /// Write the adts header to the given buffer
     void write_adts_header(uint8_t* data) const;
 
