@@ -44,7 +44,7 @@ public:
             if (error)
                 return;
 
-            m_bs.read(m_track_id, error);
+            m_bs.read<endian::u32>(m_track_id, error);
             if (error)
                 return;
 
@@ -53,7 +53,7 @@ public:
             if (error)
                 return;
 
-            m_bs.read<uint64_t>(m_duration, error);
+            m_bs.read<endian::u64>(m_duration, error);
             if (error)
                 return;
         }
@@ -67,7 +67,7 @@ public:
             if (error)
                 return;
 
-            m_bs.read(m_track_id, error);
+            m_bs.read<endian::u32>(m_track_id, error);
             if (error)
                 return;
 
@@ -77,7 +77,7 @@ public:
                 return;
 
             uint32_t duration_value = 0;
-            m_bs.read<uint32_t>(duration_value, error);
+            m_bs.read<endian::u32>(duration_value, error);
             if (error)
                 return;
             m_duration = duration_value;
@@ -87,11 +87,11 @@ public:
         if (error)
             return;
 
-        m_bs.read(m_layer, error);
+        m_bs.read<endian::i16>(m_layer, error);
         if (error)
             return;
 
-        m_bs.read(m_alternate_group, error);
+        m_bs.read<endian::i16>(m_alternate_group, error);
         if (error)
             return;
 

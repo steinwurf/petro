@@ -42,7 +42,7 @@ public:
             if (error)
                 return;
 
-            m_bs.read(m_data_reference_index, error);
+            m_bs.read<endian::u16>(m_data_reference_index, error);
             if (error)
                 return;
 
@@ -119,11 +119,11 @@ public:
             if (error)
                 return;
 
-            m_bs.read(m_width, error);
+            m_bs.read<endian::u16>(m_width, error);
             if (error)
                 return;
 
-            m_bs.read(m_height, error);
+            m_bs.read<endian::u16>(m_height, error);
             if (error)
                 return;
 
@@ -140,7 +140,7 @@ public:
             if (error)
                 return;
 
-            m_bs.read(m_frame_count, error);
+            m_bs.read<endian::u16>(m_frame_count, error);
             if (error)
                 return;
 
@@ -148,7 +148,7 @@ public:
             if (error)
                 return;
 
-            m_bs.read(m_depth, error);
+            m_bs.read<endian::u16>(m_depth, error);
             if (error)
                 return;
 
@@ -236,11 +236,11 @@ public:
             if (error)
                 return;
 
-            m_bs.read(m_channel_count, error);
+            m_bs.read<endian::u16>(m_channel_count, error);
             if (error)
                 return;
 
-            m_bs.read(m_sample_size, error);
+            m_bs.read<endian::u16>(m_sample_size, error);
             if (error)
                 return;
 
@@ -347,7 +347,7 @@ public:
 
     void parse_full_box_content(std::error_code& error) override
     {
-        m_bs.read(m_entry_count, error);
+        m_bs.read<endian::u32>(m_entry_count, error);
         if (error)
             return;
 

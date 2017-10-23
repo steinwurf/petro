@@ -18,11 +18,12 @@
 
 namespace
 {
-template<class ValueType>
+template<class Type>
 void test_read(
     petro::stream& bs,
-    const std::vector<ValueType>& expected_values)
+    const std::vector<typename Type::type>& expected_values)
 {
+    using ValueType = typename Type::type;
     // check vitals
     EXPECT_EQ(expected_values.size() * sizeof(ValueType), bs.remaining_size());
 
@@ -30,7 +31,7 @@ void test_read(
     {
         ValueType out = 0;
         std::error_code error;
-        bs.read(out, error);
+        bs.read<Type>(out, error);
         ASSERT_FALSE(bool(error));
         EXPECT_EQ(expected_value, out);
     }
@@ -55,7 +56,7 @@ TEST(test_stream, create)
     {
         uint8_t out = 0;
         std::error_code error;
-        bs.read(out, error);
+        bs.read<endian::u8>(out, error);
         ASSERT_FALSE(bool(error));
 
         EXPECT_EQ(content, out);
@@ -96,7 +97,7 @@ TEST(test_stream, read_uint8_t)
     auto expected = data;
 
     auto bs = petro::stream(data.data(), data.size());
-    test_read(bs, expected);
+    test_read<endian::u8>(bs, expected);
 }
 
 TEST(test_stream, read_int16_t)
@@ -120,7 +121,7 @@ TEST(test_stream, read_int16_t)
         };
 
     auto bs = petro::stream(data.data(), data.size());
-    test_read(bs, expected);
+    test_read<endian::i16>(bs, expected);
 }
 
 TEST(test_stream, read_uint16_t)
@@ -144,7 +145,7 @@ TEST(test_stream, read_uint16_t)
         };
 
     auto bs = petro::stream(data.data(), data.size());
-    test_read(bs, expected);
+    test_read<endian::u16>(bs, expected);
 }
 
 TEST(test_stream, read_int32_t)
@@ -174,7 +175,7 @@ TEST(test_stream, read_int32_t)
         };
 
     auto bs = petro::stream(data.data(), data.size());
-    test_read(bs, expected);
+    test_read<endian::i32>(bs, expected);
 }
 
 TEST(test_stream, read_uint32_t)
@@ -202,7 +203,7 @@ TEST(test_stream, read_uint32_t)
         };
 
     auto bs = petro::stream(data.data(), data.size());
-    test_read(bs, expected);
+    test_read<endian::u32>(bs, expected);
 }
 
 TEST(test_stream, read_int64_t)
@@ -232,7 +233,7 @@ TEST(test_stream, read_int64_t)
         };
 
     auto bs = petro::stream(data.data(), data.size());
-    test_read(bs, expected);
+    test_read<endian::i64>(bs, expected);
 }
 
 TEST(test_stream, read_uint64_t)
@@ -262,7 +263,7 @@ TEST(test_stream, read_uint64_t)
         };
 
     auto bs = petro::stream(data.data(), data.size());
-    test_read(bs, expected);
+    test_read<endian::u64>(bs, expected);
 }
 
 TEST(test_stream, remaining_size)
@@ -276,7 +277,7 @@ TEST(test_stream, remaining_size)
         EXPECT_EQ(size - i, bs.remaining_size());
         uint8_t out = 0;
         std::error_code error;
-        bs.read(out, error);
+        bs.read<endian::u8>(out, error);
         ASSERT_FALSE(bool(error));
     }
     EXPECT_EQ(0U, bs.remaining_size());

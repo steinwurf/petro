@@ -39,9 +39,11 @@ public:
         endian::stream_reader<endian::big_endian>(data, size)
     { }
 
-    template<class ValueType>
-    void read(ValueType& value, std::error_code& error)
+    template<class Type>
+    void read(typename Type::type& value, std::error_code& error)
     {
+        using ValueType = typename Type::type;
+
         assert(!error);
         // Make sure there is enough data to read in the underlying buffer
         if (sizeof(ValueType) > remaining_size())
@@ -49,7 +51,7 @@ public:
             error = m_error;
             return;
         }
-        endian::stream_reader<endian::big_endian>::read(value);
+        endian::stream_reader<endian::big_endian>::read<Type>(value);
     }
 
     void read(std::string& string, uint64_t size, std::error_code& error)
@@ -107,7 +109,7 @@ public:
     void read_fixed_point_1616(double& value, std::error_code& error)
     {
         uint32_t data = 0;
-        read(data, error);
+        read<endian::u32>(data, error);
         if (error)
             return;
         value = ((double) data) / (1 << 16);
@@ -115,7 +117,7 @@ public:
     void read_fixed_point_0230(double& value, std::error_code& error)
     {
         uint32_t data = 0;
-        read(data, error);
+        read<endian::u32>(data, error);
         if (error)
             return;
         value = ((double) data) / (1 << 30);
@@ -124,7 +126,7 @@ public:
     void read_fixed_point_88(float& value, std::error_code& error)
     {
         uint16_t data = 0;
-        read(data, error);
+        read<endian::u16>(data, error);
         if (error)
             return;
         value = ((float) data) / (1 << 8);
@@ -133,7 +135,7 @@ public:
     void read_iso639(std::string& value, std::error_code& error)
     {
         uint16_t data = 0;
-        read(data, error);
+        read<endian::u16>(data, error);
         if (error)
             return;
 
@@ -146,7 +148,7 @@ public:
     void read_time32(std::string& value, std::error_code& error)
     {
         uint32_t data = 0;
-        read(data, error);
+        read<endian::u32>(data, error);
         if (error)
             return;
         value = time(data);
@@ -155,7 +157,7 @@ public:
     void read_time64(std::string& value, std::error_code& error)
     {
         uint64_t data = 0;
-        read(data, error);
+        read<endian::u64>(data, error);
         if (error)
             return;
         value = time(data);
@@ -203,7 +205,7 @@ public:
     void read(descriptor::tag& tag, std::error_code& error)
     {
         uint8_t tag_value = 0;
-        read(tag_value, error);
+        read<endian::u8>(tag_value, error);
         if (error)
             return;
 

@@ -29,14 +29,14 @@ public:
 
     void parse_full_box_content(std::error_code& error) override
     {
-        m_bs.read(m_graphics_mode, error);
+        m_bs.read<endian::u16>(m_graphics_mode, error);
         if (error)
             return;
         std::vector<uint16_t> op_color(3);
         for (uint32_t i = 0; i < op_color.size(); ++i)
         {
             uint16_t value = 0;
-            m_bs.read(value, error);
+            m_bs.read<endian::u16>(value, error);
             if (error)
                 return;
             op_color[i] = value;

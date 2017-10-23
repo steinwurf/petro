@@ -31,14 +31,14 @@ public:
     void parse_full_box_content(std::error_code& error) override
     {
         assert(!error);
-        m_bs.read(m_entry_count, error);
+        m_bs.read<endian::u32>(m_entry_count, error);
         if (error)
             return;
 
         for (uint32_t i = 0; i < m_entry_count; ++i)
         {
             uint64_t entry = 0;
-            m_bs.read(entry, error);
+            m_bs.read<endian::u64>(entry, error);
             if (error)
                 return;
             m_entries.push_back(entry);

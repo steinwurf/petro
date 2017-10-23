@@ -40,12 +40,12 @@ public:
             return;
         }
 
-        m_bs.read(m_es_id, error);
+        m_bs.read<endian::u16>(m_es_id, error);
         if (error)
             return;
 
         uint8_t flags = 0;
-        m_bs.read(flags, error);
+        m_bs.read<endian::u8>(flags, error);
         if (error)
             return;
 
@@ -57,7 +57,7 @@ public:
 
         if (stream_dependence_flag)
         {
-            m_bs.read(m_depends_on_esid, error);
+            m_bs.read<endian::u16>(m_depends_on_esid, error);
             if (error)
                 return;
         }
@@ -65,7 +65,7 @@ public:
         if (url_flag)
         {
             uint8_t url_length = 0;
-            m_bs.read(url_length, error);
+            m_bs.read<endian::u8>(url_length, error);
             if (error)
                 return;
             m_bs.read(m_url, url_length, error);
@@ -75,7 +75,7 @@ public:
 
         if (ocr_stream_flag)
         {
-            m_bs.read(m_ocr_es_id, error);
+            m_bs.read<endian::u16>(m_ocr_es_id, error);
             if (error)
                 return;
         }
