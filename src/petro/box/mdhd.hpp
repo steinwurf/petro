@@ -40,11 +40,11 @@ public:
             if (error)
                 return;
 
-            m_bs.read(m_timescale, error);
+            m_bs.read<endian::u32>(m_timescale, error);
             if (error)
                 return;
 
-            m_bs.read(m_duration, error);
+            m_bs.read<endian::u64>(m_duration, error);
             if (error)
                 return;
         }
@@ -58,12 +58,12 @@ public:
             if (error)
                 return;
 
-            m_bs.read(m_timescale, error);
+            m_bs.read<endian::u32>(m_timescale, error);
             if (error)
                 return;
 
             uint32_t duration = 0;
-            m_bs.read<uint32_t>(duration, error);
+            m_bs.read<endian::u32>(duration, error);
             if (error)
                 return;
             m_duration = duration;

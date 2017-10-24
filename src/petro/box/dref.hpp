@@ -32,7 +32,7 @@ public:
     void parse_full_box_content(std::error_code& error) override
     {
         assert(!error);
-        m_bs.read(m_entry_count, error);
+        m_bs.read<endian::u32>(m_entry_count, error);
         if (error)
             return;
         Parser p;

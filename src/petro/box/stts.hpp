@@ -49,7 +49,7 @@ public:
 
     void parse_full_box_content(std::error_code& error) override
     {
-        m_bs.read(m_entry_count, error);
+        m_bs.read<endian::u32>(m_entry_count, error);
         if (error)
             return;
 
@@ -57,12 +57,12 @@ public:
         for (uint32_t i = 0; i < m_entry_count; ++i)
         {
             uint32_t sample_count = 0;
-            m_bs.read(sample_count, error);
+            m_bs.read<endian::u32>(sample_count, error);
             if (error)
                 return;
 
             uint32_t sample_delta = 0;
-            m_bs.read(sample_delta, error);
+            m_bs.read<endian::u32>(sample_delta, error);
             if (error)
                 return;
 

@@ -35,11 +35,11 @@ public:
         if (error)
             return;
 
-        m_bs.read(m_field_size, error);
+        m_bs.read<endian::u8>(m_field_size, error);
         if (error)
             return;
 
-        m_bs.read(m_sample_count, error);
+        m_bs.read<endian::u32>(m_sample_count, error);
         if (error)
             return;
 
@@ -48,7 +48,7 @@ public:
             if (m_field_size == 4)
             {
                 uint8_t data_value = 0;
-                m_bs.read(data_value, error);
+                m_bs.read<endian::u8>(data_value, error);
                 if (error)
                     return;
 
@@ -59,7 +59,7 @@ public:
             else if (m_field_size == 8)
             {
                 uint8_t data_value = 0;
-                m_bs.read(data_value, error);
+                m_bs.read<endian::u8>(data_value, error);
                 if (error)
                     return;
                 m_entry_sizes.push_back(data_value);
@@ -67,7 +67,7 @@ public:
             else if (m_field_size == 16)
             {
                 uint16_t data_value = 0;
-                m_bs.read(data_value, error);
+                m_bs.read<endian::u16>(data_value, error);
                 if (error)
                     return;
                 m_entry_sizes.push_back(data_value);
