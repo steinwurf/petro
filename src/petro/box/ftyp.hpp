@@ -34,7 +34,7 @@ public:
         m_bs.read(m_major_brand, 4, error);
         if (error)
             return;
-        m_bs.read<endian::u32>(m_minor_version, error);
+        m_bs.read<uint32_t>(m_minor_version, error);
         if (error)
             return;
 

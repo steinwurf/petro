@@ -30,19 +30,19 @@ public:
     void parse_full_box_content(std::error_code& error) override
     {
 
-        m_bs.read<endian::u16>(m_max_pdu_size, error);
+        m_bs.read<uint16_t>(m_max_pdu_size, error);
         if (error)
             return;
 
-        m_bs.read<endian::u16>(m_average_pdu_size, error);
+        m_bs.read<uint16_t>(m_average_pdu_size, error);
         if (error)
             return;
 
-        m_bs.read<endian::u32>(m_max_bit_rate, error);
+        m_bs.read<uint32_t>(m_max_bit_rate, error);
         if (error)
             return;
 
-        m_bs.read<endian::u32>(m_average_bit_rate, error);
+        m_bs.read<uint32_t>(m_average_bit_rate, error);
         if (error)
             return;
 

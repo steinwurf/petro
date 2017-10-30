@@ -26,7 +26,7 @@ public:
     void parse_box_content(std::error_code& error) override final
     {
         assert(!error);
-        m_bs.read<endian::u8>(m_version, error);
+        m_bs.read<uint8_t>(m_version, error);
         if (error)
             return;
 

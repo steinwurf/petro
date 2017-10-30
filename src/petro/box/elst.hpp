@@ -54,7 +54,7 @@ public:
 
     void parse_full_box_content(std::error_code& error) override
     {
-        m_bs.read<endian::u32>(m_entry_count, error);
+        m_bs.read<uint32_t>(m_entry_count, error);
         if (error)
             return;
 
@@ -63,19 +63,19 @@ public:
             if (m_version == 1)
             {
                 uint64_t segment_duration = 0;
-                m_bs.read<endian::u64>(segment_duration, error);
+                m_bs.read<uint64_t>(segment_duration, error);
                 if (error)
                     return;
                 int64_t media_time = 0;
-                m_bs.read<endian::i64>(media_time, error);
+                m_bs.read<int64_t>(media_time, error);
                 if (error)
                     return;
                 uint16_t media_rate_integer = 0;
-                m_bs.read<endian::u16>(media_rate_integer, error);
+                m_bs.read<uint16_t>(media_rate_integer, error);
                 if (error)
                     return;
                 uint16_t media_rate_fraction = 0;
-                m_bs.read<endian::u16>(media_rate_fraction, error);
+                m_bs.read<uint16_t>(media_rate_fraction, error);
                 if (error)
                     return;
                 m_entries.push_back(
@@ -89,19 +89,19 @@ public:
             else // m_version == 0
             {
                 uint32_t segment_duration = 0;
-                m_bs.read<endian::u32>(segment_duration, error);
+                m_bs.read<uint32_t>(segment_duration, error);
                 if (error)
                     return;
                 int32_t media_time = 0;
-                m_bs.read<endian::i32>(media_time, error);
+                m_bs.read<int32_t>(media_time, error);
                 if (error)
                     return;
                 uint16_t media_rate_integer = 0;
-                m_bs.read<endian::u16>(media_rate_integer, error);
+                m_bs.read<uint16_t>(media_rate_integer, error);
                 if (error)
                     return;
                 uint16_t media_rate_fraction = 0;
-                m_bs.read<endian::u16>(media_rate_fraction, error);
+                m_bs.read<uint16_t>(media_rate_fraction, error);
                 if (error)
                     return;
                 m_entries.push_back(

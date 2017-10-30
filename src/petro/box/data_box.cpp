@@ -26,7 +26,7 @@ void data_box::parse(std::error_code& error)
     // size is an integer that specifies the number of bytes in this
     // box, including all its fields and contained boxes.
     uint32_t first_size = 0;
-    m_bs.read<endian::u32>(first_size, error);
+    m_bs.read<uint32_t>(first_size, error);
     if (error)
         return;
 
@@ -52,7 +52,7 @@ void data_box::parse(std::error_code& error)
     {
         // if size is 1 then the actual size is in the field
         // largesize;
-        m_bs.read<endian::u64>(size, error);
+        m_bs.read<uint64_t>(size, error);
         if (error)
             return;
     }
