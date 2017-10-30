@@ -6,6 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+11.0.0
+------
 * Major: Upgrade to endian 8.
 
 10.0.0
