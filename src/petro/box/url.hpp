@@ -32,7 +32,7 @@ public:
         while (m_bs.remaining_size() != 0)
         {
             uint8_t c = 0;
-            m_bs.read<endian::u8>(c, error);
+            m_bs.read<uint8_t>(c, error);
             if (error)
                 return;
             m_location += c;

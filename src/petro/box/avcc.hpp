@@ -35,30 +35,30 @@ public:
     void parse_box_content(std::error_code& error) override
     {
         assert(!error);
-        m_bs.read<endian::u8>(m_configuration_version, error);
+        m_bs.read<uint8_t>(m_configuration_version, error);
         if (error)
             return;
 
-        m_bs.read<endian::u8>(m_avc_profile_indication, error);
+        m_bs.read<uint8_t>(m_avc_profile_indication, error);
         if (error)
             return;
 
-        m_bs.read<endian::u8>(m_profile_compatibility, error);
+        m_bs.read<uint8_t>(m_profile_compatibility, error);
         if (error)
             return;
 
-        m_bs.read<endian::u8>(m_avc_level_indication, error);
+        m_bs.read<uint8_t>(m_avc_level_indication, error);
         if (error)
             return;
 
         uint8_t length_size_minus_one_value = 0;
-        m_bs.read<endian::u8>(length_size_minus_one_value, error);
+        m_bs.read<uint8_t>(length_size_minus_one_value, error);
         if (error)
             return;
         m_length_size_minus_one = length_size_minus_one_value & 0x03;
 
         uint8_t num_of_sequence_parameter_sets_value = 0;
-        m_bs.read<endian::u8>(num_of_sequence_parameter_sets_value, error);
+        m_bs.read<uint8_t>(num_of_sequence_parameter_sets_value, error);
         if (error)
             return;
         m_num_of_sequence_parameter_sets = num_of_sequence_parameter_sets_value & 0x1F;
@@ -66,7 +66,7 @@ public:
         for (uint8_t i = 0; i < m_num_of_sequence_parameter_sets; ++i)
         {
             uint16_t length = 0;
-            m_bs.read<endian::u16>(length, error);
+            m_bs.read<uint16_t>(length, error);
             if (error)
                 return;
 
@@ -82,7 +82,7 @@ public:
             m_sequence_parameter_sets.push_back(sps);
         }
 
-        m_bs.read<endian::u8>(m_num_of_picture_parameter_sets, error);
+        m_bs.read<uint8_t>(m_num_of_picture_parameter_sets, error);
         if (error)
             return;
 
@@ -90,7 +90,7 @@ public:
         {
 
             uint16_t length = 0;
-            m_bs.read<endian::u16>(length, error);
+            m_bs.read<uint16_t>(length, error);
             if (error)
                 return;
 

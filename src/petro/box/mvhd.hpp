@@ -41,10 +41,10 @@ public:
             m_bs.read_time64(m_modification_time, error);
             if (error)
                 return;
-            m_bs.read<endian::u32>(m_timescale, error);
+            m_bs.read<uint32_t>(m_timescale, error);
             if (error)
                 return;
-            m_bs.read<endian::u64>(m_duration, error);
+            m_bs.read<uint64_t>(m_duration, error);
             if (error)
                 return;
         }
@@ -56,11 +56,11 @@ public:
             m_bs.read_time32(m_modification_time, error);
             if (error)
                 return;
-            m_bs.read<endian::u32>(m_timescale, error);
+            m_bs.read<uint32_t>(m_timescale, error);
             if (error)
                 return;
             uint32_t duration = 0;
-            m_bs.read<endian::u32>(duration, error);
+            m_bs.read<uint32_t>(duration, error);
             if (error)
                 return;
             m_duration = duration;
@@ -93,7 +93,7 @@ public:
         if (error)
             return;
 
-        m_bs.read<endian::u32>(m_next_track_id, error);
+        m_bs.read<uint32_t>(m_next_track_id, error);
         if (error)
             return;
 

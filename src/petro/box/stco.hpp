@@ -32,13 +32,13 @@ public:
 
     void parse_full_box_content(std::error_code& error) override
     {
-        m_bs.read<endian::u32>(m_entry_count, error);
+        m_bs.read<uint32_t>(m_entry_count, error);
         if (error)
             return;
         for (uint32_t i = 0; i < m_entry_count; ++i)
         {
             uint32_t chunk_offset = 0;
-            m_bs.read<endian::u32>(chunk_offset, error);
+            m_bs.read<uint32_t>(chunk_offset, error);
             if (error)
                 return;
             m_entries.push_back(chunk_offset);

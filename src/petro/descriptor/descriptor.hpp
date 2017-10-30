@@ -37,7 +37,7 @@ public:
         // a three bytes optional extended descriptor type tag string.
         // The tag types are 0x80,0x81,0xFE.
         uint8_t length = 0;
-        m_bs.read<endian::u8>(length, error);
+        m_bs.read<uint8_t>(length, error);
 
         if (length == 0x80 ||
             length == 0x81 ||
@@ -50,7 +50,7 @@ public:
                 return;
 
             // ... and read the descriptor length.
-            m_bs.read<endian::u8>(length, error);
+            m_bs.read<uint8_t>(length, error);
             if (error)
                 return;
         }

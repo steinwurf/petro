@@ -43,7 +43,7 @@ public:
 
     void parse_full_box_content(std::error_code& error) override
     {
-        m_bs.read<endian::u32>(m_entry_count, error);
+        m_bs.read<uint32_t>(m_entry_count, error);
         if (error)
             return;
 
@@ -51,11 +51,11 @@ public:
         {
             uint32_t sample_count = 0;
             uint32_t sample_offset = 0;
-            m_bs.read<endian::u32>(sample_count, error);
+            m_bs.read<uint32_t>(sample_count, error);
             if (error)
                 return;
 
-            m_bs.read<endian::u32>(sample_offset, error);
+            m_bs.read<uint32_t>(sample_offset, error);
             if (error)
                 return;
 

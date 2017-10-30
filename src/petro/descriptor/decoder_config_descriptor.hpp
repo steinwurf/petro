@@ -40,7 +40,7 @@ public:
             return;
         }
 
-        m_bs.read<endian::u8>(m_object_type_id, error);
+        m_bs.read<uint8_t>(m_object_type_id, error);
         if (error)
             return;
 
@@ -49,11 +49,11 @@ public:
         if (error)
             return;
 
-        m_bs.read<endian::u32>(m_max_bitrate, error);
+        m_bs.read<uint32_t>(m_max_bitrate, error);
         if (error)
             return;
 
-        m_bs.read<endian::u32>(m_average_bitrate, error);
+        m_bs.read<uint32_t>(m_average_bitrate, error);
         if (error)
             return;
 
