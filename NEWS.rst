@@ -6,7 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Major: Correct spelling of descriptor/tag enums:
+  ``elemetary_stream`` to ``elementary_stream``, and
+  ``ip_dentification_data_set`` to ``ip_identification_data_set``.
+* Patch: Add virtual destructors to base classes.
 
 11.0.0
 ------

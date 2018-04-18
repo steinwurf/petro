@@ -81,6 +81,9 @@ public:
         return m_bs.size();
     }
 
+    virtual ~descriptor()
+    { }
+
 protected:
 
     stream m_bs;
