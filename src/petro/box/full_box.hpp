@@ -68,6 +68,9 @@ public:
         return error::invalid_full_box;
     }
 
+    virtual ~full_box()
+    { }
+
 protected:
 
     uint8_t m_version;

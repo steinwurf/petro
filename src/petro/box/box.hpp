@@ -40,6 +40,9 @@ public:
 
     virtual std::string describe() const = 0;
 
+    virtual ~box()
+    { }
+
 public:
 
     template<class Child>

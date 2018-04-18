@@ -6,7 +6,7 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Patch: Add virtual destructors to base classes.
 
 11.0.0
 ------

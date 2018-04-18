@@ -39,6 +39,9 @@ public:
 
     std::string describe() const override final;
 
+    virtual ~data_box()
+    { }
+
 protected:
 
     virtual std::string box_describe() const;
