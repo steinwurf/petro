@@ -6,6 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+12.0.0
+------
 * Major: Correct spelling of descriptor/tag enums:
   ``elemetary_stream`` to ``elementary_stream``, and
   ``ip_dentification_data_set`` to ``ip_identification_data_set``.
