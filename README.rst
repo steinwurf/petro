@@ -5,7 +5,7 @@ petro
 .. image:: ./petro.svg
    :height: 200px
    :width: 200px
-   
+
 Overview
 ========
 
