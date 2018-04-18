@@ -34,7 +34,7 @@ public:
     void parse_descriptor_content(std::error_code& error) override
     {
         assert(!error);
-        if (m_tag != tag::elemetary_stream)
+        if (m_tag != tag::elementary_stream)
         {
             error = std::make_error_code(std::errc::not_supported);
             return;
