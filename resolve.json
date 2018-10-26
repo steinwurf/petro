@@ -17,7 +17,7 @@
         "name": "endian",
         "resolver": "git",
         "method": "semver",
-        "major": 9,
+        "major": 10,
         "sources": ["github.com/steinwurf/endian.git"]
     },
     {
