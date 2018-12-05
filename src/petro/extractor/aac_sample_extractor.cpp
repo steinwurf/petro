@@ -35,6 +35,7 @@ aac_sample_extractor::~aac_sample_extractor()
 
 void aac_sample_extractor::open(std::error_code& error)
 {
+    assert(!error);
     assert(m_impl);
     return m_impl->open(error);
 }

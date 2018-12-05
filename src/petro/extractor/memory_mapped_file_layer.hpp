@@ -31,10 +31,9 @@ public:
         {
             m_file.open(m_file_path);
         }
-        catch (boost::filesystem::filesystem_error& e)
+        catch (std::ios::failure& e)
         {
-            error = std::make_error_code(
-                static_cast<std::errc>(e.code().value()));
+            error = std::make_error_code(std::errc::no_such_file_or_directory);
         }
     }
 
