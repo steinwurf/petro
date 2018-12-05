@@ -7,7 +7,7 @@ every change, see the Git log.
 Latest
 ------
 * Patch: Fix bug where opening an extractor with a none existing file would
-  case an exception to be thrown.
+  cause an exception to be thrown.
 
 14.0.0
 ------
