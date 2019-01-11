@@ -80,7 +80,8 @@ Latest
 6.0.0
 -----
 * Major: Removed the ambiguous ``timestamp`` function from extractors.
-* Minor: Added the ``media_duration`` function in ``timestamp_extractor_layer``.
+* Minor: Added the ``media_duration`` function in
+  ``timestamp_extractor_layer``.
 * Minor: Use the total media duration as a loop offset for decoding and
   presentation timestamps in ``looper_layer``.
 * Minor: Changed `avc_sample_extractor` to use the pimpl pattern.
@@ -149,7 +150,8 @@ Latest
 2.0.0
 -----
 * Major: Removed redundant type string when getting specific child.
-* Minor: Added free function to calculate the presentation time in microseconds.
+* Minor: Added free function to calculate the presentation time in
+  microseconds.
 * Minor: Extended ctts and stts API to easier extract compressed data.
 
 1.2.1
@@ -158,7 +160,8 @@ Latest
 
 1.2.0
 -----
-* Minor: Added templated member function for getting children of a certain type.
+* Minor: Added templated member function for getting children of a certain
+  type.
 
 1.1.0
 -----
