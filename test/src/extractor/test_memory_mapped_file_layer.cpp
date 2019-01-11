@@ -23,3 +23,12 @@ TEST(extractor_test_memory_mapped_file_layer, init)
     EXPECT_EQ(711515U, stack.data_size());
     stack.close();
 }
+
+TEST(extractor_test_memory_mapped_file_layer, fail)
+{
+    petro::extractor::memory_mapped_file_layer stack;
+    stack.set_file_path("none_existing.mp4");
+    std::error_code error;
+    stack.open(error);
+    EXPECT_TRUE(bool(error));
+}
