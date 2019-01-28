@@ -74,3 +74,18 @@ TEST(extractor_test_annex_b_writer, test3_h264_file)
     // ~ Multiple sample per chunk, single nalu per sample
     test_h264_file("test3.h264", "test3.mp4");
 }
+
+TEST(extractor_test_annex_b_writer, test_no_file)
+{
+    auto test_filename = "missing";
+    std::ifstream test_aac(test_filename, std::ios::binary);
+    EXPECT_FALSE(test_aac.is_open());
+    EXPECT_FALSE(test_aac.good());
+
+    petro::extractor::annex_b_writer extractor;
+    extractor.set_file_path(test_filename);
+    EXPECT_EQ(test_filename, extractor.file_path());
+    std::error_code error;
+    extractor.open(error);
+    EXPECT_TRUE(bool(error));
+}

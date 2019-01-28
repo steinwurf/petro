@@ -123,3 +123,18 @@ TEST(extractor_test_nalu_extractor, test3_h264_file)
 
     test_h264_file("test3.h264", expected_beginning_of_avc_samples, "test3.mp4");
 }
+
+TEST(extractor_test_nalu_extractor, test_no_file)
+{
+    auto test_filename = "missing";
+    std::ifstream test_aac(test_filename, std::ios::binary);
+    EXPECT_FALSE(test_aac.is_open());
+    EXPECT_FALSE(test_aac.good());
+
+    petro::extractor::nalu_extractor extractor;
+    extractor.set_file_path(test_filename);
+    EXPECT_EQ(test_filename, extractor.file_path());
+    std::error_code error;
+    extractor.open(error);
+    EXPECT_TRUE(bool(error));
+}

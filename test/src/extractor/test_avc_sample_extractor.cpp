@@ -101,3 +101,18 @@ TEST(extractor_test_avc_sample_extractor, test3_h264_file)
     auto samples = 148U;
     test_h264_file("test3.h264", "test3.mp4", samples);
 }
+
+TEST(extractor_test_avc_sample_extractor, test_no_file)
+{
+    auto test_filename = "missing";
+    std::ifstream test_aac(test_filename, std::ios::binary);
+    EXPECT_FALSE(test_aac.is_open());
+    EXPECT_FALSE(test_aac.good());
+
+    petro::extractor::avc_sample_extractor extractor;
+    extractor.set_file_path(test_filename);
+    EXPECT_EQ(test_filename, extractor.file_path());
+    std::error_code error;
+    extractor.open(error);
+    EXPECT_TRUE(bool(error));
+}
