@@ -6,6 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+14.0.1
+------
 * Patch: Fix bug where opening an extractor with a none existing file would
   cause an exception to be thrown.
 
