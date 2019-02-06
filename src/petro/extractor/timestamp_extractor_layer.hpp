@@ -36,16 +36,6 @@ public:
             return;
         }
 
-        auto root = Super::root();
-        auto mvhd = root->template get_child<box::mvhd>();
-        if (mvhd == nullptr)
-        {
-            close();
-            error = petro::error::mvhd_box_missing;
-            return;
-        }
-        m_media_duration = mvhd->duration() * 1000000 / mvhd->timescale();
-
         auto trak = Super::trak();
 
         auto mdhd = trak->template get_child<box::mdhd>();
@@ -73,7 +63,6 @@ public:
     void close()
     {
         m_timescale = 0;
-        m_media_duration = 0;
         m_stts.reset();
         m_ctts.reset();
 
@@ -95,21 +84,12 @@ public:
             m_stts, m_ctts, m_timescale, Super::sample_index());
     }
 
-    /// Return the total media duration in microseconds
-    uint64_t media_duration() const
-    {
-        return m_media_duration;
-    }
-
 private:
 
     uint32_t m_timescale = 0;
 
     std::shared_ptr<const box::stts> m_stts;
     std::shared_ptr<const box::ctts> m_ctts;
-
-    // Total media duration in microseconds
-    uint64_t m_media_duration = 0;
 
 };
 }

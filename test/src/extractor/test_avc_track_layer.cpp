@@ -77,37 +77,35 @@ struct dummy_trak : public petro::box::box
 
 struct dummy_avc1
 {
-    dummy_avc1() :
-        m_trak(std::make_shared<dummy_trak>())
-    { }
-
     template<class Box>
-    const dummy_avcc* get_child() const
+    const std::shared_ptr<dummy_avcc> get_child() const
     {
-        return &m_dummy_avcc;
+        return std::make_shared<dummy_avcc>();
     }
 
     std::shared_ptr<const petro::box::box> get_parent(
         const std::string& type) const
     {
         (void) type;
-        return m_trak;
+        return std::make_shared<dummy_trak>();
     }
 
-    std::shared_ptr<const dummy_trak> m_trak;
-    dummy_avcc m_dummy_avcc;
 };
 
 struct dummy_root
 {
+    dummy_root() :
+        m_dummy_avc1(std::make_shared<dummy_avc1>())
+    {
 
-    const dummy_avc1* get_child(const std::string& type) const
+    }
+    const std::shared_ptr<dummy_avc1> get_child(const std::string& type) const
     {
         (void) type;
-        return &m_dummy_avc1;
+        return m_dummy_avc1;
     }
 
-    dummy_avc1 m_dummy_avc1;
+    std::shared_ptr<dummy_avc1> m_dummy_avc1;
 };
 
 struct dummy_layer
@@ -117,7 +115,7 @@ struct dummy_layer
     stub::function<std::shared_ptr<dummy_root>()> root;
 };
 
-using dummy_stack = petro::extractor::avc_track_layer<dummy_layer>;
+using dummy_stack = petro::extractor::avc_track_layer<dummy_layer, dummy_avcc>;
 }
 
 TEST(extractor_test_avc_track_layer, api)

@@ -72,7 +72,7 @@ public:
         std::string box_describe() const override final
         {
             std::stringstream ss;
-            ss << "  data_reference_index: " << m_data_reference_index;
+            ss << "  data_reference_index: " << m_data_reference_index << std::endl;
             ss << sample_entry_describe() << std::endl;
             return ss.str();
         }

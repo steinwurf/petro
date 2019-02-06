@@ -152,14 +152,14 @@ public:
         return ss.str();
     }
 
-    std::shared_ptr<petro::sequence_parameter_set> sequence_parameter_set(
+    virtual std::shared_ptr<petro::sequence_parameter_set> sequence_parameter_set(
         uint32_t index) const
     {
         assert(index < m_sequence_parameter_sets.size());
         return m_sequence_parameter_sets[index];
     }
 
-    std::shared_ptr<petro::picture_parameter_set> picture_parameter_set(
+    virtual std::shared_ptr<petro::picture_parameter_set> picture_parameter_set(
         uint32_t index) const
     {
         assert(index < m_picture_parameter_sets.size());

@@ -37,24 +37,17 @@ public:
         }
         auto trak = Super::trak();
 
-        std::vector<uint64_t> chunk_offsets;
-
         auto stco = trak->template get_child<box::stco>();
-        if (stco != nullptr)
-        {
-            chunk_offsets = stco->entries();
-        }
-        else
+        if (stco == nullptr)
         {
             auto co64 = trak->template get_child<box::co64>();
             if (co64 == nullptr)
             {
                 close();
-                error = petro::error::co64_box_missing;
+                error = petro::error::stco_box_missing;
+                // or co64 box...
                 return;
             }
-
-            chunk_offsets = co64->entries();
         }
 
         auto stsc = trak->template get_child<box::stsc>();
@@ -74,9 +67,7 @@ public:
         }
 
         reset();
-
-        m_chunk_offsets = chunk_offsets;
-
+        m_trak = trak;
         m_stsc = stsc;
         m_stsz = stsz;
     }
@@ -84,7 +75,7 @@ public:
     /// Close this and the underlying layer
     void close()
     {
-        m_chunk_offsets.clear();
+        m_trak.reset();
         m_stsc.reset();
         m_stsz.reset();
 
@@ -132,7 +123,7 @@ public:
     const uint8_t* sample_data() const
     {
         assert(!at_end());
-        return Super::data() + m_chunk_offsets[m_chunk_index] + m_offset;
+        return Super::data() + chunk_offsets()[m_chunk_index] + m_offset;
     }
 
     /// Return the size of the sample data
@@ -150,6 +141,22 @@ public:
         return m_sample_index;
     }
 
+    const std::vector<uint64_t>& chunk_offsets() const
+    {
+        assert(m_trak != nullptr);
+        auto stco = m_trak->template get_child<box::stco>();
+        if (stco != nullptr)
+        {
+            return stco->entries();
+        }
+        else
+        {
+            auto co64 = m_trak->template get_child<box::co64>();
+            assert(co64 != nullptr);
+            return co64->entries();
+        }
+    }
+
 private:
 
     uint32_t m_offset = 0;
@@ -159,6 +166,7 @@ private:
 
     std::vector<uint64_t> m_chunk_offsets;
 
+    std::shared_ptr<const box::box> m_trak;
     std::shared_ptr<const box::stsc> m_stsc;
     std::shared_ptr<const box::stsz> m_stsz;
 

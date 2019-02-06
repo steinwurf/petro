@@ -5,6 +5,7 @@
 
 #include "avc_sample_extractor.hpp"
 
+#include "media_duration_layer.hpp"
 #include "timestamp_extractor_layer.hpp"
 #include "sample_extractor_layer.hpp"
 #include "avc_track_layer.hpp"
@@ -20,8 +21,9 @@ struct avc_sample_extractor::impl :
     timestamp_extractor_layer<
     sample_extractor_layer<
     avc_track_layer<
+    media_duration_layer<
     parser_layer<
-    memory_mapped_file_layer>>>>
+    memory_mapped_file_layer>>>>>
 { };
 
 avc_sample_extractor::avc_sample_extractor() :

@@ -5,6 +5,7 @@
 
 #include "aac_sample_extractor.hpp"
 
+#include "media_duration_layer.hpp"
 #include "timestamp_extractor_layer.hpp"
 #include "adts_writer_layer.hpp"
 #include "sample_extractor_layer.hpp"
@@ -22,8 +23,9 @@ struct aac_sample_extractor::impl :
     adts_writer_layer<
     sample_extractor_layer<
     aac_track_layer<
+    media_duration_layer<
     parser_layer<
-    memory_mapped_file_layer>>>>>
+    memory_mapped_file_layer>>>>>>
 { };
 
 aac_sample_extractor::aac_sample_extractor() :
