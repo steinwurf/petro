@@ -164,8 +164,6 @@ private:
     uint32_t m_chunk_index = 0;
     uint32_t m_chunk_sample = 0;
 
-    std::vector<uint64_t> m_chunk_offsets;
-
     std::shared_ptr<const box::box> m_trak;
     std::shared_ptr<const box::stsc> m_stsc;
     std::shared_ptr<const box::stsz> m_stsz;
