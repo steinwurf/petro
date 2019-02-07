@@ -101,6 +101,11 @@ std::string data_box::extended_type() const
     return m_extended_type;
 }
 
+const uint8_t* data_box::data() const
+{
+    return m_bs.data();
+}
+
 uint64_t data_box::size() const
 {
     return m_bs.size();
