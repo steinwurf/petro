@@ -18,7 +18,11 @@ namespace extractor
 struct extractor
 {
     /// Open this an the underlying layers
-    virtual void open(std::error_code& error) = 0;
+    virtual void open(
+        const uint8_t* data,
+        uint32_t size,
+        uint32_t track_id,
+        std::error_code& error) = 0;
 
     /// Close this an the underlying layers
     virtual void close() = 0;
@@ -26,11 +30,8 @@ struct extractor
     /// Reset the state of the extractor
     virtual void reset() = 0;
 
-    /// Sets the file path of the fíle to open.
-    virtual void set_file_path(const std::string& file_path) = 0;
-
-    /// Returns the set file path.
-    virtual std::string file_path() const = 0;
+    /// Gets the track id.
+    virtual uint32_t track_id() const = 0;
 
     /// Return the total media duration in microseconds
     virtual uint64_t media_duration() const = 0;
@@ -58,6 +59,13 @@ struct extractor
 
     /// Return the number of samples
     virtual uint32_t samples() const = 0;
+
+    /// Enables looping
+    virtual void enable_looping() = 0;
+    /// Disables looping
+    virtual void disable_looping() = 0;
+    /// Returns the number of times the extractor has looped
+    virtual uint32_t loops() const = 0;
 };
 }
 }

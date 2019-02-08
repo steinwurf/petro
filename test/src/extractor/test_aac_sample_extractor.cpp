@@ -4,6 +4,7 @@
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
 #include <petro/extractor/aac_sample_extractor.hpp>
+#include <petro/extractor/file.hpp>
 
 #include <cstdint>
 #include <vector>
@@ -31,12 +32,16 @@ TEST(extractor_test_aac_sample_extractor, test_aac_file)
     EXPECT_TRUE(test_aac.is_open());
     EXPECT_TRUE(test_aac.good());
 
-    petro::extractor::aac_sample_extractor extractor;
-    extractor.set_file_path("test1.mp4");
-    EXPECT_EQ("test1.mp4", extractor.file_path());
     std::error_code error;
-    extractor.open(error);
-    EXPECT_FALSE(bool(error));
+    petro::extractor::file file;
+    file.open("test1.mp4", error);
+    ASSERT_FALSE(bool(error));
+
+    petro::extractor::aac_sample_extractor extractor;
+    auto track_id = 2; // The track id of the test file's aac trak is 2
+    extractor.open(file.data(), file.size(), track_id, error);
+    SCOPED_TRACE(testing::Message() << error.message());
+    ASSERT_FALSE(bool(error));
 
     EXPECT_EQ(262U, extractor.samples());
 
@@ -62,19 +67,4 @@ TEST(extractor_test_aac_sample_extractor, test_aac_file)
         extractor.advance();
     }
     test_aac.close();
-}
-
-TEST(extractor_test_aac_sample_extractor, test_no_file)
-{
-    auto test_filename = "missing";
-    std::ifstream test_aac(test_filename, std::ios::binary);
-    EXPECT_FALSE(test_aac.is_open());
-    EXPECT_FALSE(test_aac.good());
-
-    petro::extractor::aac_sample_extractor extractor;
-    extractor.set_file_path(test_filename);
-    EXPECT_EQ(test_filename, extractor.file_path());
-    std::error_code error;
-    extractor.open(error);
-    EXPECT_TRUE(bool(error));
 }

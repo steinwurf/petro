@@ -75,10 +75,10 @@ public:
     /// Close this and the underlying layer
     void close()
     {
+        reset();
         m_trak.reset();
         m_stsc.reset();
         m_stsz.reset();
-
         Super::close();
     }
 
@@ -167,7 +167,6 @@ private:
     std::shared_ptr<const box::box> m_trak;
     std::shared_ptr<const box::stsc> m_stsc;
     std::shared_ptr<const box::stsz> m_stsz;
-
 };
 }
 }

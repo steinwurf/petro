@@ -31,19 +31,20 @@ struct avc_sample_extractor : extractor
     ~avc_sample_extractor();
 
     /// Open this an the underlying layers
-    void open(std::error_code& error) override;
+    void open(
+        const uint8_t* data,
+        uint32_t size,
+        uint32_t track_id,
+        std::error_code& error) override;
+
+    /// Gets the track id.
+    uint32_t track_id() const override;
 
     /// Close this an the underlying layers
     void close() override;
 
     /// Reset the state of the extractor
     void reset() override;
-
-    /// Sets the file path of the fíle to open.
-    void set_file_path(const std::string& file_path) override;
-
-    /// Returns the set file path.
-    std::string file_path() const override;
 
     /// Return the total media duration in microseconds
     uint64_t media_duration() const override;
@@ -87,6 +88,21 @@ struct avc_sample_extractor : extractor
     /// Return the size of the length preceded each nalu sample in the h264
     /// sample.
     uint8_t nalu_length_size() const;
+
+    /// Write the nalu header to the given data pointer
+    void write_nalu_header(uint8_t* data) const;
+
+    /// Returns the size of the nalu header
+    uint32_t nalu_header_size() const;
+
+    /// Enables looping
+    void enable_looping() override;
+
+    /// Disables looping
+    void disable_looping() override;
+
+    /// Returns the number of times the extractor has looped
+    uint32_t loops() const override;
 
 private:
 

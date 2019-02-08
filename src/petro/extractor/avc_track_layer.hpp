@@ -34,9 +34,9 @@ public:
             return;
         }
 
-        auto root = Super::root();
+        auto trak = Super::trak();
 
-        auto avc1 = root->get_child("avc1");
+        auto avc1 = trak->get_child("avc1");
         if (avc1 == nullptr)
         {
             Super::close();
@@ -51,23 +51,6 @@ public:
             error = petro::error::avcc_box_missing;
             return;
         }
-
-        auto trak = avc1->get_parent("trak");
-        if (trak == nullptr)
-        {
-            Super::close();
-            error = petro::error::trak_box_missing;
-            return;
-        }
-
-        m_trak = trak;
-    }
-
-    /// Return a shared pointer to the h264 trak
-    std::shared_ptr<const box::box> trak() const
-    {
-        assert(m_trak != nullptr);
-        return m_trak;
     }
 
     /// Return a pointer to the pps data
@@ -108,14 +91,12 @@ public:
     /// Close this and the underlying layer.
     void close()
     {
-        m_trak.reset();
         m_avcc.reset();
         Super::close();
     }
 
 private:
 
-    std::shared_ptr<const box::box> m_trak;
     std::shared_ptr<const AvccBox> m_avcc;
 };
 }

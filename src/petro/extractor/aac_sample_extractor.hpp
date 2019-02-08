@@ -31,7 +31,11 @@ struct aac_sample_extractor : extractor
     ~aac_sample_extractor();
 
     /// Open this an the underlying layers
-    void open(std::error_code& error) override;
+    void open(
+        const uint8_t* data,
+        uint32_t size,
+        uint32_t track_id,
+        std::error_code& error) override;
 
     /// Close this an the underlying layers
     void close() override;
@@ -39,11 +43,8 @@ struct aac_sample_extractor : extractor
     /// Reset the state of the extractor
     void reset() override;
 
-    /// Sets the file path of the fíle to open.
-    void set_file_path(const std::string& file_path) override;
-
-    /// Returns the set file path.
-    std::string file_path() const override;
+    /// Gets the track id.
+    uint32_t track_id() const override;
 
     /// Return the total media duration in microseconds
     uint64_t media_duration() const override;
@@ -87,12 +88,20 @@ struct aac_sample_extractor : extractor
     /// Returns the channel configuration
     uint8_t channel_configuration() const;
 
+    /// Enables looping
+    void enable_looping() override;
+
+    /// Disables looping
+    void disable_looping() override;
+
+    /// Returns the number of times the extractor has looped
+    uint32_t loops() const override;
+
 private:
 
     // Private implemenation
     struct impl;
     std::unique_ptr<impl> m_impl;
 };
-
 }
 }

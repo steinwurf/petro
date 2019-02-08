@@ -11,6 +11,7 @@
 #include "../parser.hpp"
 #include "../box/moov.hpp"
 #include "../box/trak.hpp"
+#include "../box/tkhd.hpp"
 #include "../box/mdia.hpp"
 #include "../box/hdlr.hpp"
 #include "../box/mdhd.hpp"
@@ -54,6 +55,7 @@ public:
             box::moov<parser<
                 box::mvhd,
                 box::trak<parser<
+                    box::tkhd,
                     box::mdia<parser<
                         box::hdlr,
                         box::mdhd,

@@ -62,19 +62,6 @@ struct dummy_avcc
     dummy_parameter_set m_sequence_parameter_set;
 };
 
-struct dummy_trak : public petro::box::box
-{
-    std::string type() const override
-    {
-        return "trak";
-    }
-
-    std::string describe() const override
-    {
-        return "";
-    }
-};
-
 struct dummy_avc1
 {
     template<class Box>
@@ -82,19 +69,11 @@ struct dummy_avc1
     {
         return std::make_shared<dummy_avcc>();
     }
-
-    std::shared_ptr<const petro::box::box> get_parent(
-        const std::string& type) const
-    {
-        (void) type;
-        return std::make_shared<dummy_trak>();
-    }
-
 };
 
-struct dummy_root
+struct dummy_trak
 {
-    dummy_root() :
+    dummy_trak() :
         m_dummy_avc1(std::make_shared<dummy_avc1>())
     {
 
@@ -112,7 +91,7 @@ struct dummy_layer
 {
     stub::function<void(std::error_code)> open;
     stub::function<void()> close;
-    stub::function<std::shared_ptr<dummy_root>()> root;
+    stub::function<std::shared_ptr<dummy_trak>()> trak;
 };
 
 using dummy_stack = petro::extractor::avc_track_layer<dummy_layer, dummy_avcc>;
@@ -123,8 +102,8 @@ TEST(extractor_test_avc_track_layer, api)
     dummy_stack stack;
     dummy_layer& layer = stack;
 
-    auto root = std::make_shared<dummy_root>();
-    layer.root.set_return(root);
+    auto trak = std::make_shared<dummy_trak>();
+    layer.trak.set_return(trak);
 
     std::error_code error;
     stack.open(error);

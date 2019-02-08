@@ -74,9 +74,9 @@ public:
             {
                 type = track_type::aac;
             }
-            else if (type_str == "avcC")
+            else if (type_str == "avc1")
             {
-                type = track_type::h264;
+                type = track_type::avc;
             }
             result.push_back({tkhd->track_id(), type});
         }

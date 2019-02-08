@@ -8,10 +8,13 @@
 #include "media_duration_layer.hpp"
 #include "timestamp_extractor_layer.hpp"
 #include "adts_writer_layer.hpp"
+#include "looper_layer.hpp"
 #include "sample_extractor_layer.hpp"
 #include "aac_track_layer.hpp"
 #include "parser_layer.hpp"
-#include "memory_mapped_file_layer.hpp"
+#include "data_layer.hpp"
+#include "track_layer.hpp"
+
 
 namespace petro
 {
@@ -19,33 +22,44 @@ namespace extractor
 {
 /// stack for extracting avc samples
 struct aac_sample_extractor::impl :
-    timestamp_extractor_layer<
     adts_writer_layer<
-    sample_extractor_layer<
     aac_track_layer<
+    looper_layer<
+    timestamp_extractor_layer<
+    sample_extractor_layer<
+    track_layer<
     media_duration_layer<
     parser_layer<
-    memory_mapped_file_layer>>>>>>
+    data_layer>>>>>>>>
 { };
 
-aac_sample_extractor::aac_sample_extractor() :
-    m_impl(new aac_sample_extractor::impl())
+aac_sample_extractor::aac_sample_extractor()
 { }
 
 aac_sample_extractor::~aac_sample_extractor()
 { }
 
-void aac_sample_extractor::open(std::error_code& error)
+void aac_sample_extractor::open(
+    const uint8_t* data,
+    uint32_t size,
+    uint32_t track_id,
+    std::error_code& error)
 {
     assert(!error);
-    assert(m_impl);
-    return m_impl->open(error);
+    auto impl = std::unique_ptr<aac_sample_extractor::impl>(
+        new aac_sample_extractor::impl());
+    impl->set_buffer(data, size);
+    impl->set_track_id(track_id);
+    impl->open(error);
+    if (!error)
+        m_impl = std::move(impl);
 }
 
 void aac_sample_extractor::close()
 {
     assert(m_impl);
-    return m_impl->close();
+    m_impl->close();
+    m_impl.reset();
 }
 
 void aac_sample_extractor::reset()
@@ -54,16 +68,10 @@ void aac_sample_extractor::reset()
     return m_impl->reset();
 }
 
-void aac_sample_extractor::set_file_path(const std::string& file_path)
+uint32_t aac_sample_extractor::track_id() const
 {
     assert(m_impl);
-    return m_impl->set_file_path(file_path);
-}
-
-std::string aac_sample_extractor::file_path() const
-{
-    assert(m_impl);
-    return m_impl->file_path();
+    return m_impl->track_id();
 }
 
 uint64_t aac_sample_extractor::media_duration() const
@@ -148,6 +156,24 @@ uint8_t aac_sample_extractor::channel_configuration() const
 {
     assert(m_impl);
     return m_impl->channel_configuration();
+}
+
+void aac_sample_extractor::enable_looping()
+{
+    assert(m_impl);
+    return m_impl->enable_looping();
+}
+
+void aac_sample_extractor::disable_looping()
+{
+    assert(m_impl);
+    return m_impl->disable_looping();
+}
+
+uint32_t aac_sample_extractor::loops() const
+{
+    assert(m_impl);
+    return m_impl->loops();
 }
 
 }

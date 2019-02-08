@@ -13,7 +13,7 @@ enum class track_type
 {
     unknown,
     aac,
-    h264
+    avc
 };
 }
 }

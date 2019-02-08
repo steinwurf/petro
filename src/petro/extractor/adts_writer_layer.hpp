@@ -18,7 +18,7 @@ class adts_writer_layer : public Super
 public:
 
     /// Uses values from the underlying layers to construct and write an
-    /// adts header to the given pointer.
+    /// Audio Data Transport Stream (ADTS) header to the given pointer.
     void write_adts_header(uint8_t* data) const
     {
         // unchangeable
