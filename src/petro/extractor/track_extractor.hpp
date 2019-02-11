@@ -14,6 +14,7 @@
 #include "../box/trak.hpp"
 #include "../box/tkhd.hpp"
 #include "../box/mdia.hpp"
+#include "../box/hdlr.hpp"
 #include "../box/minf.hpp"
 #include "../box/stbl.hpp"
 #include "../box/stsd.hpp"
@@ -33,7 +34,7 @@ public:
         box::trak<parser<
         box::tkhd,
         box::mdia<parser<
-        box::hdlr,
+        box::hdlr, // needed for esds extraction
         box::minf<parser<
         box::stbl<parser<
         box::stsd>>>>>>>>>>>;

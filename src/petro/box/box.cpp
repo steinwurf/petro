@@ -5,17 +5,6 @@
 
 #include "box.hpp"
 
-
-
-
-
-
-#include <iostream>
-
-
-
-
-
 namespace petro
 {
 namespace box
@@ -68,7 +57,6 @@ std::shared_ptr<const box> box::get_child(const std::string& type) const
         {
             return child;
         }
-
     }
     return nullptr;
 }

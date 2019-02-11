@@ -5,15 +5,15 @@
 
 #include "aac_sample_extractor.hpp"
 
-#include "media_duration_layer.hpp"
-#include "timestamp_extractor_layer.hpp"
 #include "adts_writer_layer.hpp"
-#include "looper_layer.hpp"
-#include "sample_extractor_layer.hpp"
 #include "aac_track_layer.hpp"
+#include "looper_layer.hpp"
+#include "timestamp_extractor_layer.hpp"
+#include "sample_extractor_layer.hpp"
+#include "track_layer.hpp"
+#include "media_duration_layer.hpp"
 #include "parser_layer.hpp"
 #include "data_layer.hpp"
-#include "track_layer.hpp"
 
 
 namespace petro

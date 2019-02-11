@@ -47,7 +47,9 @@ int main(int argc, char* argv[])
         std::cout << "Available tracks:" << '\n';
         for (auto track : track_extractor.tracks())
         {
-            std::cout << "- Track " << track.id << ": " << petro::extractor::track_type_to_string(track.type) << std::endl;
+            std::cout << "- Track " << track.id << ": "
+                      << petro::extractor::track_type_to_string(track.type)
+                      << std::endl;
         }
         return 1;
     }
