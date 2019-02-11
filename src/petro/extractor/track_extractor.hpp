@@ -30,14 +30,14 @@ class track_extractor
 public:
 
     using track_parser = parser<
-        box::moov<parser<
-        box::trak<parser<
-        box::tkhd,
-        box::mdia<parser<
-        box::hdlr, // needed for esds extraction
-        box::minf<parser<
-        box::stbl<parser<
-        box::stsd>>>>>>>>>>>;
+                         box::moov<parser<
+                         box::trak<parser<
+                         box::tkhd,
+                         box::mdia<parser<
+                         box::hdlr, // needed for esds extraction
+                         box::minf<parser<
+                         box::stbl<parser<
+                         box::stsd>>>>>>>>>>>;
 
     struct track
     {

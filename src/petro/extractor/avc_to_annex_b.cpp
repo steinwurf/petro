@@ -28,7 +28,8 @@ uint32_t read_bytes(uint8_t bytes, const uint8_t* data)
 }
 
 /// Updates the state of this layer.
-std::vector<std::pair<const uint8_t*, uint64_t>> avc_to_annex_b(const uint8_t* data, uint64_t size, const uint32_t nalu_length_size)
+std::vector<std::pair<const uint8_t*, uint64_t>> avc_to_annex_b(
+    const uint8_t* data, uint64_t size, const uint32_t nalu_length_size)
 {
     std::vector<std::pair<const uint8_t*, uint64_t>> result;
     while (size != 0)

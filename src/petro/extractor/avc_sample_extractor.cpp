@@ -39,10 +39,10 @@ avc_sample_extractor::~avc_sample_extractor()
 { }
 
 void avc_sample_extractor::open(
-        const uint8_t* data,
-        uint64_t size,
-        uint32_t track_id,
-        std::error_code& error)
+    const uint8_t* data,
+    uint64_t size,
+    uint32_t track_id,
+    std::error_code& error)
 {
     assert(!error);
     auto impl = std::unique_ptr<avc_sample_extractor::impl>(

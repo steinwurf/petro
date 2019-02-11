@@ -27,7 +27,8 @@ TEST(extractor_test_track_extractor, init)
     ASSERT_FALSE(bool(error));
 
     auto tracks = extractor.tracks();
-    std::vector<petro::extractor::track_extractor::track> expected_tracks = {
+    std::vector<petro::extractor::track_extractor::track> expected_tracks =
+    {
         { 1, petro::extractor::track_type::avc1 },
         { 2, petro::extractor::track_type::aac }
     };
@@ -36,7 +37,7 @@ TEST(extractor_test_track_extractor, init)
     for (auto track : tracks)
     {
         ss << "- Track " << track.id << ": "
-            << petro::extractor::track_type_to_string(track.type) << '\n';
+           << petro::extractor::track_type_to_string(track.type) << '\n';
     }
     SCOPED_TRACE(testing::Message() << "Available tracks:\n" << ss.str());
     ASSERT_EQ(expected_tracks.size(), tracks.size());
