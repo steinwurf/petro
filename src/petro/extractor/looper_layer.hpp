@@ -32,6 +32,12 @@ public:
         m_loop = false;
     }
 
+    /// Returns the number of times the extractor has looped
+    uint32_t loops() const
+    {
+        return m_loops;
+    }
+
     /// Returns the sample's decoding timestamp with the loop offset
     uint64_t decoding_timestamp() const
     {
@@ -60,12 +66,6 @@ public:
         }
     }
 
-    /// Returns the number of times the extractor has looped
-    uint32_t loops() const
-    {
-        return m_loops;
-    }
-
     /// Resets the extractor.
     void reset()
     {
@@ -76,7 +76,7 @@ public:
 
 private:
 
-    bool m_loop = true;
+    bool m_loop = false;
     uint64_t m_loop_offset = 0;
     uint32_t m_loops = 0;
 

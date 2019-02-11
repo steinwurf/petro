@@ -4,6 +4,7 @@
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
 #include <petro/extractor/avc_sample_extractor.hpp>
+#include <petro/extractor/file.hpp>
 
 #include <cstdint>
 #include <vector>
@@ -46,12 +47,14 @@ void test_h264_file(
     EXPECT_TRUE(test_h264.is_open());
     EXPECT_TRUE(test_h264.good());
 
-    petro::extractor::avc_sample_extractor extractor;
-    extractor.set_file_path(mp4_file);
-    EXPECT_EQ(mp4_file, extractor.file_path());
-
     std::error_code error;
-    extractor.open(error);
+    petro::extractor::file file;
+    file.open(mp4_file, error);
+    ASSERT_FALSE(bool(error));
+
+    petro::extractor::avc_sample_extractor extractor;
+    auto track_id = 1; // The track id of the test file's h264 trak is 2
+    extractor.open(file.data(), file.size(), track_id, error);
     ASSERT_FALSE(bool(error));
 
     EXPECT_EQ(expected_samples, extractor.samples());
@@ -100,19 +103,4 @@ TEST(extractor_test_avc_sample_extractor, test3_h264_file)
     // ~ Multiple sample per chunk, single nalu per sample
     auto samples = 148U;
     test_h264_file("test3.h264", "test3.mp4", samples);
-}
-
-TEST(extractor_test_avc_sample_extractor, test_no_file)
-{
-    auto test_filename = "missing";
-    std::ifstream test_aac(test_filename, std::ios::binary);
-    EXPECT_FALSE(test_aac.is_open());
-    EXPECT_FALSE(test_aac.good());
-
-    petro::extractor::avc_sample_extractor extractor;
-    extractor.set_file_path(test_filename);
-    EXPECT_EQ(test_filename, extractor.file_path());
-    std::error_code error;
-    extractor.open(error);
-    EXPECT_TRUE(bool(error));
 }

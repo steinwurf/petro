@@ -45,6 +45,7 @@ TEST(extractor_test_looper_layer, looping)
 {
     extractor_stack extractor;
     dummy_extractor& layer = extractor;
+    extractor.enable_looping();
     layer.decoding_timestamp.set_return(1);
     layer.presentation_timestamp.set_return(1);
     layer.media_duration.set_return(2);

@@ -46,10 +46,22 @@ public:
 public:
 
     template<class Child>
+    std::vector<std::shared_ptr<const Child>> get_children() const
+    {
+        std::vector<std::shared_ptr<const Child>> result;
+        for (auto child : get_children(Child::TYPE))
+        {
+            auto specific_child = std::dynamic_pointer_cast<const Child>(child);
+            assert(specific_child != nullptr);
+            result.push_back(specific_child);
+        }
+        return result;
+    }
+
+    template<class Child>
     std::shared_ptr<const Child> get_child() const
     {
-        return std::dynamic_pointer_cast<const Child>(
-            get_child(Child::TYPE));
+        return std::dynamic_pointer_cast<const Child>(get_child(Child::TYPE));
     }
 
 protected:

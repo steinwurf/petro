@@ -11,6 +11,7 @@
 #include "../parser.hpp"
 #include "../box/moov.hpp"
 #include "../box/trak.hpp"
+#include "../box/tkhd.hpp"
 #include "../box/mdia.hpp"
 #include "../box/hdlr.hpp"
 #include "../box/mdhd.hpp"
@@ -39,6 +40,28 @@ class parser_layer : public Super
 {
 public:
 
+    using extractor_parser =
+        parser<
+        box::moov<parser<
+        box::mvhd,
+        box::trak<parser<
+        box::tkhd,
+        box::mdia<parser<
+        box::hdlr,
+        box::mdhd,
+        box::minf<parser<
+        box::stbl<parser<
+        box::stco,
+        box::stsc,
+        box::stsd,
+        box::co64,
+        box::ctts,
+        box::stts,
+        box::stsz
+        >>>>>>>>>>>;
+
+public:
+
     /// Open this and the underlying layer, returns false upon failure.
     void open(std::error_code& error)
     {
@@ -50,28 +73,7 @@ public:
             return;
         }
 
-        parser<
-            box::moov<parser<
-                box::mvhd,
-                box::trak<parser<
-                    box::mdia<parser<
-                        box::hdlr,
-                        box::mdhd,
-                        box::minf<parser<
-                            box::stbl<parser<
-                                box::stco,
-                                box::stsc,
-                                box::stsd,
-                                box::co64,
-                                box::ctts,
-                                box::stts,
-                                box::stsz
-                            >>
-                        >>
-                    >>
-                >>
-            >>
-        > parser;
+        extractor_parser parser;
 
         auto root = std::make_shared<petro::box::root>();
         parser.parse(Super::data(), Super::data_size(), root, error);

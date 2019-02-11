@@ -5,11 +5,15 @@
 
 #include "avc_sample_extractor.hpp"
 
+#include "nalu_header_writer_layer.hpp"
+#include "avc_track_layer.hpp"
+#include "looper_layer.hpp"
 #include "timestamp_extractor_layer.hpp"
 #include "sample_extractor_layer.hpp"
-#include "avc_track_layer.hpp"
+#include "media_duration_layer.hpp"
+#include "track_layer.hpp"
 #include "parser_layer.hpp"
-#include "memory_mapped_file_layer.hpp"
+#include "data_layer.hpp"
 
 namespace petro
 {
@@ -17,49 +21,56 @@ namespace extractor
 {
 /// stack for extracting avc samples
 struct avc_sample_extractor::impl :
+    nalu_header_writer_layer<
+    avc_track_layer<
+    looper_layer<
     timestamp_extractor_layer<
     sample_extractor_layer<
-    avc_track_layer<
+    track_layer<
+    media_duration_layer<
     parser_layer<
-    memory_mapped_file_layer>>>>
+    data_layer>>>>>>>>
 { };
 
-avc_sample_extractor::avc_sample_extractor() :
-    m_impl(new avc_sample_extractor::impl())
+avc_sample_extractor::avc_sample_extractor()
 { }
 
 avc_sample_extractor::~avc_sample_extractor()
 { }
 
-void avc_sample_extractor::open(std::error_code& error)
+void avc_sample_extractor::open(
+    const uint8_t* data,
+    uint64_t size,
+    uint32_t track_id,
+    std::error_code& error)
+{
+    assert(!error);
+    auto impl = std::unique_ptr<avc_sample_extractor::impl>(
+        new avc_sample_extractor::impl());
+    impl->set_buffer(data, size);
+    impl->set_track_id(track_id);
+    impl->open(error);
+    if (!error)
+        m_impl = std::move(impl);
+}
+
+uint32_t avc_sample_extractor::track_id() const
 {
     assert(m_impl);
-    assert(!error);
-    m_impl->open(error);
+    return m_impl->track_id();
 }
 
 void avc_sample_extractor::close()
 {
     assert(m_impl);
-    return m_impl->close();
+    m_impl->close();
+    m_impl.reset();
 }
 
 void avc_sample_extractor::reset()
 {
     assert(m_impl);
     return m_impl->reset();
-}
-
-void avc_sample_extractor::set_file_path(const std::string& file_path)
-{
-    assert(m_impl);
-    return m_impl->set_file_path(file_path);
-}
-
-std::string avc_sample_extractor::file_path() const
-{
-    assert(m_impl);
-    return m_impl->file_path();
 }
 
 uint64_t avc_sample_extractor::media_duration() const
@@ -146,5 +157,36 @@ uint8_t avc_sample_extractor::nalu_length_size() const
     return m_impl->nalu_length_size();
 }
 
+/// Write the nalu header to the given data pointer
+void avc_sample_extractor::write_nalu_header(uint8_t* data) const
+{
+    assert(m_impl);
+    return m_impl->write_nalu_header(data);
+}
+
+/// Returns the size of the nalu header
+uint32_t avc_sample_extractor::nalu_header_size() const
+{
+    assert(m_impl);
+    return m_impl->nalu_header_size();
+}
+
+void avc_sample_extractor::enable_looping()
+{
+    assert(m_impl);
+    return m_impl->enable_looping();
+}
+
+void avc_sample_extractor::disable_looping()
+{
+    assert(m_impl);
+    return m_impl->disable_looping();
+}
+
+uint32_t avc_sample_extractor::loops() const
+{
+    assert(m_impl);
+    return m_impl->loops();
+}
 }
 }

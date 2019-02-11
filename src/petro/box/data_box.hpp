@@ -33,6 +33,8 @@ public:
 
     std::string extended_type() const;
 
+    const uint8_t* data() const;
+
     uint64_t size() const;
 
     void set_parent(std::weak_ptr<box> parent);

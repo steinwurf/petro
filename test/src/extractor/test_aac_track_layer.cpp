@@ -15,25 +15,10 @@
 
 namespace
 {
-struct dummy_trak : public petro::box::box
-{
-    std::string type() const override
-    {
-        return "trak";
-    }
-
-    std::string describe() const override
-    {
-        return "";
-    }
-};
-
 struct dummy_mp4a : public petro::box::box
 {
-    dummy_mp4a(std::shared_ptr<petro::box::box> parent)
-    {
-        m_parent = parent;
-    }
+    dummy_mp4a()
+    { }
 
     std::string type() const override
     {
@@ -46,9 +31,9 @@ struct dummy_mp4a : public petro::box::box
     }
 };
 
-struct dummy_root
+struct dummy_trak
 {
-    dummy_root(std::shared_ptr<dummy_mp4a> mp4a) :
+    dummy_trak(std::shared_ptr<dummy_mp4a> mp4a) :
         m_dummy_mp4a(mp4a)
     { }
 
@@ -67,7 +52,7 @@ struct dummy_layer
 {
     stub::function<void(std::error_code)> open;
     stub::function<void()> close;
-    stub::function<std::shared_ptr<dummy_root>()> root;
+    stub::function<std::shared_ptr<dummy_trak>()> trak;
 };
 
 using dummy_stack = petro::extractor::aac_track_layer<dummy_layer>;
@@ -78,8 +63,7 @@ TEST(extractor_test_aac_track_layer, api)
     dummy_stack stack;
     dummy_layer& layer = stack;
 
-    auto trak = std::make_shared<dummy_trak>();
-    auto mp4a = std::make_shared<dummy_mp4a>(trak);
+    auto mp4a = std::make_shared<dummy_mp4a>();
 
     std::vector<uint8_t> esds_data =
         {
@@ -103,9 +87,9 @@ TEST(extractor_test_aac_track_layer, api)
 
     mp4a->add_child(esds);
 
-    auto root = std::make_shared<dummy_root>(mp4a);
+    auto trak = std::make_shared<dummy_trak>(mp4a);
 
-    layer.root.set_return(root);
+    layer.trak.set_return(trak);
 
     stack.open(error);
     ASSERT_FALSE(bool(error));
@@ -113,7 +97,6 @@ TEST(extractor_test_aac_track_layer, api)
     EXPECT_EQ(2U, stack.mpeg_audio_object_type());
     EXPECT_EQ(3U, stack.frequency_index());
     EXPECT_EQ(2U, stack.channel_configuration());
-    EXPECT_EQ("trak", stack.trak()->type());
 
     stack.close();
     EXPECT_EQ(1U, layer.close.calls());

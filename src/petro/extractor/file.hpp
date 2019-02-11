@@ -17,37 +17,25 @@ namespace petro
 namespace extractor
 {
 /// Provides the stack with data, and acts as the final layer.
-class memory_mapped_file_layer
+class file
 {
 public:
 
     /// Opens the file. Remember to set the file path before calling this.
     /// Returns true if successful.
-    void open(std::error_code& error)
+    void open(const std::string& file_path, std::error_code& error)
     {
-        assert(!m_file_path.empty());
+        assert(!error);
+        assert(!file_path.empty());
         assert(!m_file.is_open());
         try
         {
-            m_file.open(m_file_path);
+            m_file.open(file_path);
         }
         catch (std::ios::failure& e)
         {
             error = std::make_error_code(std::errc::no_such_file_or_directory);
         }
-    }
-
-    /// Sets the file path of the fíle to open.
-    void set_file_path(const std::string& file_path)
-    {
-        assert(!m_file.is_open());
-        m_file_path = file_path;
-    }
-
-    /// Returns the set file path.
-    std::string file_path() const
-    {
-        return m_file_path;
     }
 
     /// Closes the file.
@@ -64,7 +52,7 @@ public:
     }
 
     /// Returns the size of the file
-    uint64_t data_size() const
+    uint64_t size() const
     {
         assert(m_file.is_open());
         return m_file.size();
@@ -73,7 +61,6 @@ public:
 private:
 
     boost::iostreams::mapped_file_source m_file;
-    std::string m_file_path;
 };
 }
 }

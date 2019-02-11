@@ -33,20 +33,10 @@ public:
             return;
         }
 
-        auto root = Super::root();
-
-        auto mp4a = root->get_child("mp4a");
+        auto mp4a = Super::trak()->get_child("mp4a");
         if (mp4a == nullptr)
         {
             error = petro::error::mp4a_box_missing;
-            Super::close();
-            return;
-        }
-
-        auto trak = mp4a->get_parent("trak");
-        if (trak == nullptr)
-        {
-            error = petro::error::trak_box_missing;
             Super::close();
             return;
         }
@@ -58,8 +48,6 @@ public:
             Super::close();
             return;
         }
-
-        m_trak = trak;
 
         auto descriptor =
             esds->descriptor()->
@@ -81,18 +69,10 @@ public:
     /// close this and the underlying layer
     void close()
     {
-        m_trak.reset();
         m_mpeg_audio_object_type = 0;
         m_frequency_index = 0;
         m_channel_configuration = 0;
         Super::close();
-    }
-
-    /// Returns a shared pointer to the AAC trak box.
-    std::shared_ptr<const box::box> trak() const
-    {
-        assert(m_trak != nullptr);
-        return m_trak;
     }
 
     /// Returns the MPEG audio object type
@@ -114,8 +94,6 @@ public:
     }
 
 private:
-
-    std::shared_ptr<const box::box> m_trak;
 
     uint8_t m_mpeg_audio_object_type = 0;
     uint32_t m_frequency_index = 0;

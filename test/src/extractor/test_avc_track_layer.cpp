@@ -62,62 +62,39 @@ struct dummy_avcc
     dummy_parameter_set m_sequence_parameter_set;
 };
 
-struct dummy_trak : public petro::box::box
-{
-    std::string type() const override
-    {
-        return "trak";
-    }
-
-    std::string describe() const override
-    {
-        return "";
-    }
-};
-
 struct dummy_avc1
 {
-    dummy_avc1() :
-        m_trak(std::make_shared<dummy_trak>())
-    { }
-
     template<class Box>
-    const dummy_avcc* get_child() const
+    const std::shared_ptr<dummy_avcc> get_child() const
     {
-        return &m_dummy_avcc;
+        return std::make_shared<dummy_avcc>();
     }
-
-    std::shared_ptr<const petro::box::box> get_parent(
-        const std::string& type) const
-    {
-        (void) type;
-        return m_trak;
-    }
-
-    std::shared_ptr<const dummy_trak> m_trak;
-    dummy_avcc m_dummy_avcc;
 };
 
-struct dummy_root
+struct dummy_trak
 {
+    dummy_trak() :
+        m_dummy_avc1(std::make_shared<dummy_avc1>())
+    {
 
-    const dummy_avc1* get_child(const std::string& type) const
+    }
+    const std::shared_ptr<dummy_avc1> get_child(const std::string& type) const
     {
         (void) type;
-        return &m_dummy_avc1;
+        return m_dummy_avc1;
     }
 
-    dummy_avc1 m_dummy_avc1;
+    std::shared_ptr<dummy_avc1> m_dummy_avc1;
 };
 
 struct dummy_layer
 {
     stub::function<void(std::error_code)> open;
     stub::function<void()> close;
-    stub::function<std::shared_ptr<dummy_root>()> root;
+    stub::function<std::shared_ptr<dummy_trak>()> trak;
 };
 
-using dummy_stack = petro::extractor::avc_track_layer<dummy_layer>;
+using dummy_stack = petro::extractor::avc_track_layer<dummy_layer, dummy_avcc>;
 }
 
 TEST(extractor_test_avc_track_layer, api)
@@ -125,8 +102,8 @@ TEST(extractor_test_avc_track_layer, api)
     dummy_stack stack;
     dummy_layer& layer = stack;
 
-    auto root = std::make_shared<dummy_root>();
-    layer.root.set_return(root);
+    auto trak = std::make_shared<dummy_trak>();
+    layer.trak.set_return(trak);
 
     std::error_code error;
     stack.open(error);
