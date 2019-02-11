@@ -35,7 +35,7 @@ TEST(extractor_test_avc_to_annex_b, init)
 
     EXPECT_EQ(5U, samples.size());
     auto sum_size = std::accumulate(samples.begin(), samples.end(), 0U,
-        [](auto accumlate, auto s){ return accumlate + s.second; });
+        [](uint64_t accumlate, auto s){ return accumlate + s.second; });
     auto expected_sum_size = sample_size - (samples.size() * nalu_size_length);
     EXPECT_EQ(expected_sum_size, sum_size);
     test_mp4.close();
