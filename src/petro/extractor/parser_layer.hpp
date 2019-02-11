@@ -93,7 +93,6 @@ public:
     /// Return a shared pointer to the root box
     std::shared_ptr<box::box> root() const
     {
-        std::cout << "got root" << std::endl;
         assert(m_root != nullptr);
         return m_root;
     }

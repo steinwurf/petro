@@ -5,6 +5,17 @@
 
 #include "box.hpp"
 
+
+
+
+
+
+#include <iostream>
+
+
+
+
+
 namespace petro
 {
 namespace box
@@ -36,8 +47,7 @@ std::shared_ptr<box> box::get_parent(const std::string& type) const
     return parent->get_parent(type);
 }
 
-std::shared_ptr<const box> box::get_child(const std::string& type)
-const
+std::shared_ptr<const box> box::get_child(const std::string& type) const
 {
     std::queue<std::shared_ptr<const box>> queue;
     auto child = shared_from_this();
@@ -58,6 +68,7 @@ const
         {
             return child;
         }
+
     }
     return nullptr;
 }

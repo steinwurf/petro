@@ -33,6 +33,7 @@ public:
         box::trak<parser<
         box::tkhd,
         box::mdia<parser<
+        box::hdlr,
         box::minf<parser<
         box::stbl<parser<
         box::stsd>>>>>>>>>>>;
@@ -68,17 +69,19 @@ public:
         {
             auto trak = tkhd->parent();
             auto stsd = trak->template get_child<box::stsd>();
-            auto type_str = stsd->children().at(0)->type();
+            auto booxy = stsd->children().at(0);
+            auto type_str = booxy->type();
 
             auto type = petro::extractor::track_type::unknown;
             if (type_str == "mp4a")
             {
                 type = petro::extractor::track_type::unknown_audio;
-                auto esds = stsd->template get_child<box::esds>();
+                auto esds = booxy->template get_child<box::esds>();
                 if (esds != nullptr)
                 {
                     auto config_descriptor =
                         esds->descriptor()->decoder_config_descriptor();
+
                     if (config_descriptor->object_type_id() == 0x40)
                     {
                         type = track_type::aac;
