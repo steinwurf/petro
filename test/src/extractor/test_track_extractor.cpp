@@ -28,10 +28,10 @@ TEST(extractor_test_track_extractor, init)
 
     auto tracks = extractor.tracks();
     std::vector<petro::extractor::track_extractor::track> expected_tracks =
-    {
-        { 1, petro::extractor::track_type::avc1 },
-        { 2, petro::extractor::track_type::aac }
-    };
+        {
+            { 1, petro::extractor::track_type::avc1 },
+            { 2, petro::extractor::track_type::aac }
+        };
 
     std::stringstream ss;
     for (auto track : tracks)
