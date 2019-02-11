@@ -25,6 +25,7 @@ public:
     /// Returns true if successful.
     void open(const std::string& file_path, std::error_code& error)
     {
+        assert(!error);
         assert(!file_path.empty());
         assert(!m_file.is_open());
         try

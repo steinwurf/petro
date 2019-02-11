@@ -8,6 +8,8 @@
 #include <vector>
 #include <string>
 
+#include <petro/extractor/track_type_to_string.hpp>
+#include <petro/extractor/track_extractor.hpp>
 #include <petro/extractor/aac_sample_extractor.hpp>
 #include <petro/extractor/file.hpp>
 
@@ -39,6 +41,14 @@ int main(int argc, char* argv[])
         std::cerr << "Error. Unable to extract aac from: "
                   << filename << std::endl
                   << "Error message: " << error.message() << std::endl;
+        std::error_code error;
+        petro::extractor::track_extractor track_extractor;
+        track_extractor.open(file.data(), file.size(), error);
+        std::cout << "Available tracks:" << '\n';
+        for (auto track : track_extractor.tracks())
+        {
+            std::cout << "- Track " << track.id << ": " << petro::extractor::track_type_to_string(track.type) << std::endl;
+        }
         return 1;
     }
 

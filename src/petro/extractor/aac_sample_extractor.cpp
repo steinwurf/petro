@@ -41,7 +41,7 @@ aac_sample_extractor::~aac_sample_extractor()
 
 void aac_sample_extractor::open(
     const uint8_t* data,
-    uint32_t size,
+    uint64_t size,
     uint32_t track_id,
     std::error_code& error)
 {

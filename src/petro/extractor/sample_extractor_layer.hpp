@@ -35,8 +35,8 @@ public:
             Super::close();
             return;
         }
-        auto trak = Super::trak();
 
+        auto trak = Super::trak();
         auto stco = trak->template get_child<box::stco>();
         if (stco == nullptr)
         {

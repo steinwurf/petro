@@ -28,6 +28,15 @@ class track_extractor
 {
 public:
 
+    using track_parser = parser<
+        box::moov<parser<
+        box::trak<parser<
+        box::tkhd,
+        box::mdia<parser<
+        box::minf<parser<
+        box::stbl<parser<
+        box::stsd>>>>>>>>>>>;
+
     struct track
     {
         uint32_t id;
@@ -38,16 +47,8 @@ public:
 
     void open(const uint8_t* data, uint64_t size, std::error_code& error)
     {
-        parser<
-            box::moov<parser<
-            box::trak<parser<
-            box::tkhd,
-            box::mdia<parser<
-            box::minf<parser<
-            box::stbl<parser<
-            box::stsd
-            >>>>>>>>>>
-        > parser;
+        assert(!error);
+        track_parser parser;
         auto root = std::make_shared<petro::box::root>();
         parser.parse(data, size, root, error);
         if (!error)
@@ -72,11 +73,29 @@ public:
             auto type = petro::extractor::track_type::unknown;
             if (type_str == "mp4a")
             {
-                type = track_type::aac;
+                type = petro::extractor::track_type::unknown_audio;
+                auto esds = stsd->template get_child<box::esds>();
+                if (esds != nullptr)
+                {
+                    auto config_descriptor =
+                        esds->descriptor()->decoder_config_descriptor();
+                    if (config_descriptor->object_type_id() == 0x40)
+                    {
+                        type = track_type::aac;
+                    }
+                }
             }
             else if (type_str == "avc1")
             {
-                type = track_type::avc;
+                type = track_type::avc1;
+            }
+            else if (type_str == "hvc1")
+            {
+                type = track_type::hvc1;
+            }
+            else if (type_str == "text")
+            {
+                type = track_type::text;
             }
             result.push_back({tkhd->track_id(), type});
         }

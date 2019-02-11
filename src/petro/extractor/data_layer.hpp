@@ -22,7 +22,12 @@ public:
     /// this.
     void open(std::error_code& error)
     {
-        (void) error;
+        assert(!error);
+        if (error)
+        {
+            return;
+        }
+
         assert(m_data != nullptr);
         assert(m_size > 0);
     }

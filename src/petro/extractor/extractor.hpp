@@ -20,7 +20,7 @@ struct extractor
     /// Open this an the underlying layers
     virtual void open(
         const uint8_t* data,
-        uint32_t size,
+        uint64_t size,
         uint32_t track_id,
         std::error_code& error) = 0;
 

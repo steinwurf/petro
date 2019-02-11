@@ -33,7 +33,6 @@ public:
             return;
         }
 
-
         auto mp4a = Super::trak()->get_child("mp4a");
         if (mp4a == nullptr)
         {

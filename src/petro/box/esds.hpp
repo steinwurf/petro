@@ -89,9 +89,11 @@ public:
 
         indent = "      ";
 
-        ss << indent << "object_type_id: "
-           << (uint32_t)decoder_config_descriptor->object_type_id()
-           << std::endl;
+        ss << indent << "object_type_id: ";
+        ss << std::hex << std::showbase;
+        ss << (uint32_t)decoder_config_descriptor->object_type_id();
+        ss << std::noshowbase << std::dec;
+        ss << std::endl;
 
         ss << indent << "max_bitrate: "
            << decoder_config_descriptor->max_bitrate() << std::endl;

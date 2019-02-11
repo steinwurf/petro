@@ -26,7 +26,14 @@ public:
     /// this.
     void open(std::error_code& error)
     {
+        assert(!error);
         Super::open(error);
+        if (error)
+        {
+            Super::close();
+            return;
+        }
+
         assert(m_track_id);
 
         for (auto tkhd : Super::root()->template get_children<box::tkhd>())
