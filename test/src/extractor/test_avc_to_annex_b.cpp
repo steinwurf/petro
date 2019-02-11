@@ -37,8 +37,9 @@ TEST(extractor_test_avc_to_annex_b, init)
     uint64_t sum_size = 0;
     for (auto s : samples)
         sum_size += s.second;
+    uint64_t expected_sum_size = sample_size - (samples.size() * nalu_size_length);
     (void) sum_size;
-    // uint64_t expected_sum_size = sample_size - (samples.size() * nalu_size_length);
+    (void) expected_sum_size;
     // EXPECT_EQ(expected_sum_size, sum_size);
     test_mp4.close();
 }
