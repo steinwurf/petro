@@ -7,6 +7,23 @@ every change, see the Git log.
 Latest
 ------
 * tbd
+* Minor: Added templated version of ``box::get_children``.
+* Minor: Added ``data_box::data()``.
+* Minor: Added ``extractor`` abstract class.
+* Major: Changed ``extractor`` ``open`` from ``open(error)`` to
+  ``open(data, size, track_id, error)``.
+* Major: Changed extractor to now also need the track id of the track they
+  should extract. Use the newly added ``track_extractor`` to get appropriate
+  id.
+* Minor: Added looping API to ``extractor``.
+* Minor: Added ``write_nalu_header`` and ``nalu_header_size`` to
+  ``write_nalu_header``.
+* Major: Removed ``annex_b_writer``, ``nalu_extractor`` and
+  ``avc_sample_access_layer`` ``avc_to_annex_b`` and addition to the
+  ``avc_sample_extractor`` should be used instead.
+* Major: Replaced ``memory_mapped_file_layer`` with ``extractor::file`` and
+  ``data_layer``.
+* Major: Loop layer no disabled by default.
 
 14.0.1
 ------
