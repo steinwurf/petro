@@ -9,7 +9,7 @@ namespace petro
 {
 namespace extractor
 {
-/// Enumeration of different nalu types, we use a bit of macro
+/// Enumeration of different track types, we use a bit of macro
 /// uglyness to makes this easy. PHK says this is ok so if you have a
 /// problem with it - take it up with him :)
 ///
