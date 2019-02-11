@@ -85,6 +85,7 @@ public:
     /// sample.
     uint8_t nalu_length_size() const
     {
+        assert(m_avcc != nullptr);
         return m_avcc->length_size();
     }
 

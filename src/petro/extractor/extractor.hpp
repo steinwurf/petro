@@ -62,8 +62,10 @@ struct extractor
 
     /// Enables looping
     virtual void enable_looping() = 0;
+
     /// Disables looping
     virtual void disable_looping() = 0;
+
     /// Returns the number of times the extractor has looped
     virtual uint32_t loops() const = 0;
 };

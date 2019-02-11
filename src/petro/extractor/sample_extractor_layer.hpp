@@ -123,7 +123,7 @@ public:
     const uint8_t* sample_data() const
     {
         assert(!at_end());
-        return Super::data() + chunk_offsets()[m_chunk_index] + m_offset;
+        return Super::data() + chunk_offset() + m_offset;
     }
 
     /// Return the size of the sample data
@@ -141,19 +141,19 @@ public:
         return m_sample_index;
     }
 
-    const std::vector<uint64_t>& chunk_offsets() const
+    uint64_t chunk_offset() const
     {
         assert(m_trak != nullptr);
         auto stco = m_trak->template get_child<box::stco>();
         if (stco != nullptr)
         {
-            return stco->entries();
+            return stco->chunk_offset(m_chunk_index);
         }
         else
         {
             auto co64 = m_trak->template get_child<box::co64>();
             assert(co64 != nullptr);
-            return co64->entries();
+            return co64->chunk_offset(m_chunk_index);
         }
     }
 
