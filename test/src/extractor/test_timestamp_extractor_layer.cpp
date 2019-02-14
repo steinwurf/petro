@@ -126,12 +126,12 @@ TEST(extractor_test_timestamp_extractor_layer, api)
 
 namespace
 {
-    using timestamp_extractor =
-        petro::extractor::timestamp_extractor_layer<
-        petro::extractor::sample_extractor_layer<
-        petro::extractor::track_layer<
-        petro::extractor::parser_layer<
-        petro::extractor::data_layer>>>>;
+using timestamp_extractor =
+    petro::extractor::timestamp_extractor_layer<
+    petro::extractor::sample_extractor_layer<
+    petro::extractor::track_layer<
+    petro::extractor::parser_layer<
+    petro::extractor::data_layer>>>>;
 
 void test_timestamps(
     timestamp_extractor& extractor,
