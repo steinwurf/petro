@@ -79,7 +79,6 @@ private:
     bool m_loop = false;
     uint64_t m_loop_offset = 0;
     uint32_t m_loops = 0;
-
 };
 }
 }
