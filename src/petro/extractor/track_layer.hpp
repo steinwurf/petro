@@ -54,6 +54,7 @@ public:
 
     void set_track_id(uint32_t track_id)
     {
+        assert(m_trak == nullptr);
         m_track_id = track_id;
     }
 
