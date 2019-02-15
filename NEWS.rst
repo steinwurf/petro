@@ -6,6 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+15.0.1
+------
 * Patch: Added missing virtual destructor in ``extractor`` interface.
 
 15.0.0
