@@ -7,6 +7,9 @@ every change, see the Git log.
 Latest
 ------
 * tbd
+
+15.0.0
+------
 * Minor: Added templated version of ``box::get_children``.
 * Minor: Added ``data_box::data()``.
 * Minor: Added ``extractor`` abstract class.
