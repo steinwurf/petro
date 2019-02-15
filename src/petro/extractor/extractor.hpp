@@ -68,6 +68,9 @@ struct extractor
 
     /// Returns the number of times the extractor has looped
     virtual uint32_t loops() const = 0;
+
+    virtual ~extractor()
+    { }
 };
 }
 }
