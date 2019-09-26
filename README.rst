@@ -2,12 +2,12 @@
 petro
 =====
 
+.. image:: https://travis-ci.org/steinwurf/petro.svg?branch=master
+    :target: https://travis-ci.org/steinwurf/petro
+
 .. image:: ./petro.svg
    :height: 200px
    :width: 200px
-
-Overview
-========
 
 petro is an mp4 parser which allows you to extract all kinds of information.
 
