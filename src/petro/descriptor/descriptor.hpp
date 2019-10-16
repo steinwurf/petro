@@ -38,6 +38,8 @@ public:
         // The tag types are 0x80,0x81,0xFE.
         uint8_t length = 0;
         m_bs.read<uint8_t>(length, error);
+        if (error)
+            return;
 
         if (length == 0x80 ||
             length == 0x81 ||
