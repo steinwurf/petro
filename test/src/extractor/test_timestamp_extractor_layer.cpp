@@ -4,12 +4,12 @@
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
 #include <petro/extractor/timestamp_extractor_layer.hpp>
-
 #include <petro/extractor/sample_extractor_layer.hpp>
 #include <petro/extractor/track_layer.hpp>
 #include <petro/extractor/parser_layer.hpp>
 #include <petro/extractor/data_layer.hpp>
-#include <petro/extractor/file.hpp>
+
+#include <boost/iostreams/device/mapped_file.hpp>
 
 #include <stub/function.hpp>
 
@@ -162,16 +162,16 @@ void test_timestamps(
 
 TEST(extractor_test_timestamp_extractor_layer, output_test1)
 {
-    std::error_code error;
-    petro::extractor::file file;
-    file.open("test1.mp4", error);
-    ASSERT_FALSE(bool(error));
+    boost::iostreams::mapped_file_source file;
+    file.open("test1.mp4");
+
     timestamp_extractor extractor;
     extractor.set_track_id(1);
-    extractor.set_buffer(file.data(), file.size());
+    extractor.set_buffer((uint8_t*)file.data(), file.size());
+
+    std::error_code error;
     extractor.open(error);
     ASSERT_FALSE(bool(error));
-
     std::vector<uint64_t> expected_timestamps =
         {
             33333, 66666, 100000, 133333, 166666, 200000, 233333, 266666,
@@ -207,13 +207,13 @@ TEST(extractor_test_timestamp_extractor_layer, output_test1)
 
 TEST(extractor_test_timestamp_extractor_layer, output_test3)
 {
-    std::error_code error;
-    petro::extractor::file file;
-    file.open("test3.mp4", error);
-    ASSERT_FALSE(bool(error));
+    boost::iostreams::mapped_file_source file;
+    file.open("test3.mp4");
+
     timestamp_extractor extractor;
     extractor.set_track_id(1);
-    extractor.set_buffer(file.data(), file.size());
+    extractor.set_buffer((uint8_t*)file.data(), file.size());
+    std::error_code error;
     extractor.open(error);
     ASSERT_FALSE(bool(error));
 

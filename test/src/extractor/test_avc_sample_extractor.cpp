@@ -4,7 +4,8 @@
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
 #include <petro/extractor/avc_sample_extractor.hpp>
-#include <petro/extractor/file.hpp>
+
+#include <boost/iostreams/device/mapped_file.hpp>
 
 #include <cstdint>
 #include <vector>
@@ -47,14 +48,13 @@ void test_h264_file(
     EXPECT_TRUE(test_h264.is_open());
     EXPECT_TRUE(test_h264.good());
 
-    std::error_code error;
-    petro::extractor::file file;
-    file.open(mp4_file, error);
-    ASSERT_FALSE(bool(error));
+    boost::iostreams::mapped_file_source file;
+    file.open(mp4_file);
 
     petro::extractor::avc_sample_extractor extractor;
     auto track_id = 1; // The track id of the test file's h264 trak is 2
-    extractor.open(file.data(), file.size(), track_id, error);
+    std::error_code error;
+    extractor.open((uint8_t*)file.data(), file.size(), track_id, error);
     ASSERT_FALSE(bool(error));
 
     EXPECT_EQ(expected_samples, extractor.samples());

@@ -5,7 +5,8 @@
 
 #include <petro/extractor/track_extractor.hpp>
 #include <petro/extractor/track_type_to_string.hpp>
-#include <petro/extractor/file.hpp>
+
+#include <boost/iostreams/device/mapped_file.hpp>
 
 #include <cstdint>
 #include <vector>
@@ -15,14 +16,13 @@
 
 TEST(extractor_test_track_extractor, init)
 {
-    std::error_code error;
-    petro::extractor::file file;
-    file.open("test1.mp4", error);
-    ASSERT_FALSE(bool(error));
+    boost::iostreams::mapped_file_source file;
+    file.open("test1.mp4");
 
     petro::extractor::track_extractor extractor;
 
-    extractor.open(file.data(), file.size(), error);
+    std::error_code error;
+    extractor.open((uint8_t*)file.data(), file.size(), error);
     SCOPED_TRACE(testing::Message() << error.message());
     ASSERT_FALSE(bool(error));
 
