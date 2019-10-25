@@ -6,6 +6,7 @@ every change, see the Git log.
 
 Latest
 ------
+* Minor: Added cmake.
 * Major: Remove boost as external (i.e., non-internal dependency).
 * Major: Removed the ``extractor::file`` helper class.
   Use ``boost::memory_mapped_file`` directly instead.

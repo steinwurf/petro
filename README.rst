@@ -30,3 +30,16 @@ Configure with -fPIC to enable building a shared lib::
 
 The `-fPIC` flag is needed to build a shared library read more about that here:
 http://stackoverflow.com/a/19768349
+
+Use as Dependency in CMake
+--------------------------
+
+To depend on this project when using the CMake build system, add the following
+in your CMake build script:
+
+::
+
+   add_subdirectory("/path/to/petro" petro)
+   target_link_libraries(<my_target> steinwurf::petro)
+
+Where ``<my_target>`` is replaced by your target.
