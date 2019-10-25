@@ -11,7 +11,8 @@
 #include <petro/extractor/track_type_to_string.hpp>
 #include <petro/extractor/track_extractor.hpp>
 #include <petro/extractor/aac_sample_extractor.hpp>
-#include <petro/extractor/file.hpp>
+
+#include <boost/iostreams/device/mapped_file.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -24,18 +25,21 @@ int main(int argc, char* argv[])
 
     auto filename = std::string(argv[1]);
 
-    petro::extractor::file file;
-
-    std::error_code error;
-    file.open(filename, error);
-    if (error)
+    boost::iostreams::mapped_file_source file;
+    try
+    {
+        file.open(filename);
+    }
+    catch (std::ios::failure& e)
     {
         std::cerr << "File not found: " << filename << std::endl;
         return 1;
     }
     petro::extractor::aac_sample_extractor extractor;
     uint32_t track_id = strtol(argv[2], NULL, 10);
-    extractor.open(file.data(), file.size(), track_id, error);
+
+    std::error_code error;
+    extractor.open((uint8_t*)file.data(), file.size(), track_id, error);
     if (error)
     {
         std::cerr << "Error. Unable to extract aac from: "
@@ -43,7 +47,7 @@ int main(int argc, char* argv[])
                   << "Error message: " << error.message() << std::endl;
         std::error_code error;
         petro::extractor::track_extractor track_extractor;
-        track_extractor.open(file.data(), file.size(), error);
+        track_extractor.open((uint8_t*)file.data(), file.size(), error);
         std::cout << "Available tracks:" << '\n';
         for (auto track : track_extractor.tracks())
         {

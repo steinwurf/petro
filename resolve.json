@@ -7,18 +7,19 @@
         "sources": ["github.com/steinwurf/waf-tools.git"]
     },
     {
-        "name": "boost",
-        "resolver": "git",
-        "method": "semver",
-        "major": 3,
-        "sources": ["github.com/steinwurf/boost.git"]
-    },
-    {
         "name": "endian",
         "resolver": "git",
         "method": "semver",
         "major": 10,
         "sources": ["github.com/steinwurf/endian.git"]
+    },
+    {
+        "name": "boost",
+        "internal": true,
+        "resolver": "git",
+        "method": "semver",
+        "major": 3,
+        "sources": ["github.com/steinwurf/boost.git"]
     },
     {
         "name": "gtest",

@@ -4,7 +4,8 @@
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
 #include <petro/extractor/aac_sample_extractor.hpp>
-#include <petro/extractor/file.hpp>
+
+#include <boost/iostreams/device/mapped_file.hpp>
 
 #include <cstdint>
 #include <vector>
@@ -32,14 +33,13 @@ TEST(extractor_test_aac_sample_extractor, test_aac_file)
     EXPECT_TRUE(test_aac.is_open());
     EXPECT_TRUE(test_aac.good());
 
-    std::error_code error;
-    petro::extractor::file file;
-    file.open("test1.mp4", error);
-    ASSERT_FALSE(bool(error));
+    boost::iostreams::mapped_file_source file;
+    file.open("test1.mp4");
 
     petro::extractor::aac_sample_extractor extractor;
     auto track_id = 2; // The track id of the test file's aac trak is 2
-    extractor.open(file.data(), file.size(), track_id, error);
+    std::error_code error;
+    extractor.open((uint8_t*)file.data(), file.size(), track_id, error);
     SCOPED_TRACE(testing::Message() << error.message());
     ASSERT_FALSE(bool(error));
 

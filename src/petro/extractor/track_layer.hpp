@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <cassert>
 #include <system_error>
-#include <boost/optional.hpp>
 
 #include "../box/tkhd.hpp"
 
@@ -34,11 +33,11 @@ public:
             return;
         }
 
-        assert(m_track_id);
+        assert(m_track_id_set);
 
         for (auto tkhd : Super::root()->template get_children<box::tkhd>())
         {
-            if (tkhd->track_id() == *m_track_id)
+            if (tkhd->track_id() == m_track_id)
                 m_trak = tkhd->parent();
         }
         if (m_trak == nullptr)
@@ -48,13 +47,14 @@ public:
     void close()
     {
         Super::close();
-        m_track_id = boost::none;
+        m_track_id_set = false;
         m_trak = nullptr;
     }
 
     void set_track_id(uint32_t track_id)
     {
         assert(m_trak == nullptr);
+        m_track_id_set = true;
         m_track_id = track_id;
     }
 
@@ -67,13 +67,14 @@ public:
 
     uint32_t track_id() const
     {
-        assert(m_track_id);
-        return *m_track_id;
+        assert(m_track_id_set);
+        return m_track_id;
     }
 
 private:
 
-    boost::optional<uint32_t> m_track_id = boost::none;
+    bool m_track_id_set = false;
+    uint32_t m_track_id = 0;
     std::shared_ptr<const box::box> m_trak = nullptr;
 };
 }
