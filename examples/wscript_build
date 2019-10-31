@@ -4,14 +4,14 @@
 bld.program(features='cxx',
             source='complete_parser.cpp',
             target='complete_parser',
-            use=['petro'])
+            use=['boost_iostreams', 'petro'])
 
 bld.program(features='cxx',
             source='mp4_to_h264.cpp',
             target='mp4_to_h264',
-            use=['petro'])
+            use=['boost_iostreams', 'petro'])
 
 bld.program(features='cxx',
             source='mp4_to_aac.cpp',
             target='mp4_to_aac',
-            use=['petro'])
+            use=['boost_iostreams', 'petro'])

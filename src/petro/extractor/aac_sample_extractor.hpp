@@ -73,6 +73,15 @@ struct aac_sample_extractor : extractor
     /// Return the number of samples
     uint32_t samples() const override;
 
+    /// Enables looping
+    void enable_looping() override;
+
+    /// Disables looping
+    void disable_looping() override;
+
+    /// Returns the number of times the extractor has looped
+    uint32_t loops() const override;
+
     /// Write the adts header to the given buffer
     void write_adts_header(uint8_t* data) const;
 
@@ -87,15 +96,6 @@ struct aac_sample_extractor : extractor
 
     /// Returns the channel configuration
     uint8_t channel_configuration() const;
-
-    /// Enables looping
-    void enable_looping() override;
-
-    /// Disables looping
-    void disable_looping() override;
-
-    /// Returns the number of times the extractor has looped
-    uint32_t loops() const override;
 
 private:
 
