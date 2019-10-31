@@ -6,6 +6,10 @@ every change, see the Git log.
 
 Latest
 ------
+* tbd
+
+16.0.0
+------
 * Minor: Added cmake.
 * Major: Remove boost as external (i.e., non-internal dependency).
 * Major: Removed the ``extractor::file`` helper class.
