@@ -127,6 +127,24 @@ uint32_t avc_sample_extractor::samples() const
     return m_impl->samples();
 }
 
+void avc_sample_extractor::enable_looping()
+{
+    assert(m_impl);
+    return m_impl->enable_looping();
+}
+
+void avc_sample_extractor::disable_looping()
+{
+    assert(m_impl);
+    return m_impl->disable_looping();
+}
+
+uint32_t avc_sample_extractor::loops() const
+{
+    assert(m_impl);
+    return m_impl->loops();
+}
+
 const uint8_t* avc_sample_extractor::pps_data() const
 {
     assert(m_impl);
@@ -169,24 +187,6 @@ uint32_t avc_sample_extractor::nalu_header_size() const
 {
     assert(m_impl);
     return m_impl->nalu_header_size();
-}
-
-void avc_sample_extractor::enable_looping()
-{
-    assert(m_impl);
-    return m_impl->enable_looping();
-}
-
-void avc_sample_extractor::disable_looping()
-{
-    assert(m_impl);
-    return m_impl->disable_looping();
-}
-
-uint32_t avc_sample_extractor::loops() const
-{
-    assert(m_impl);
-    return m_impl->loops();
 }
 }
 }

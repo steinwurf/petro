@@ -1,8 +1,7 @@
 #! /usr/bin/env python
 # encoding: utf-8
 
-use_flags = [
-    'boost_includes', 'boost_iostreams', 'endian_includes']
+use_flags = ['endian_includes']
 
 bld.stlib(
     features='cxx',

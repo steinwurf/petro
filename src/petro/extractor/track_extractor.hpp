@@ -53,20 +53,11 @@ public:
         track_parser parser;
         auto root = std::make_shared<petro::box::root>();
         parser.parse(data, size, root, error);
-        if (!error)
-            m_root = root;
-    }
+        if (error)
+            return;
 
-    void close()
-    {
-        m_root = nullptr;
-    }
-
-    std::vector<track> tracks() const
-    {
-        assert(m_root != nullptr);
-        std::vector<track> result;
-        for (auto tkhd : m_root->template get_children<box::tkhd>())
+        m_tracks.clear();
+        for (auto tkhd : root->template get_children<box::tkhd>())
         {
             auto trak = tkhd->parent();
             auto stsd = trak->template get_child<box::stsd>();
@@ -101,14 +92,23 @@ public:
             {
                 type = track_type::text;
             }
-            result.push_back({tkhd->track_id(), type});
+            m_tracks.push_back({tkhd->track_id(), type});
         }
-        return result;
+    }
+
+    void close()
+    {
+        m_tracks.clear();
+    }
+
+    std::vector<track> tracks() const
+    {
+        return m_tracks;
     }
 
 protected:
 
-    std::shared_ptr<petro::box::root> m_root;
+    std::vector<track> m_tracks;
 };
 }
 }

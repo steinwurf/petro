@@ -1,19 +1,19 @@
-cmake_minimum_required (VERSION 3.12)
+cmake_minimum_required(VERSION 3.10)
 project(petro)
 
 if(NOT DEFINED STEINWURF_RESOLVE)
-    set(STEINWURF_RESOLVE TRUE)
     message(STATUS "Resolving dependencies...")
     execute_process(
         COMMAND python waf resolve
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    set(STEINWURF_RESOLVE "${CMAKE_CURRENT_SOURCE_DIR}/resolve_symlinks")
 endif()
 
 file(GLOB_RECURSE petro_sources ./src/*.cpp)
 add_library(petro STATIC ${petro_sources})
 add_library(steinwurf::petro ALIAS petro)
 
-add_subdirectory("${CMAKE_SOURCE_DIR}/resolve_symlinks/endian" endian)
+add_subdirectory("${STEINWURF_RESOLVE}/endian" endian)
 
 target_link_libraries(petro
     PRIVATE steinwurf::endian)
