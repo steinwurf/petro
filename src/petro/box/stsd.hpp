@@ -316,7 +316,7 @@ public:
 
         void parse_sample_entry(std::error_code& error) override
         {
-            m_data.resize(m_bs.remaining_size());
+            m_data.resize((std::size_t)m_bs.remaining_size());
             m_bs.read(m_data.data(), m_data.size(), error);
             if (error)
                 return;

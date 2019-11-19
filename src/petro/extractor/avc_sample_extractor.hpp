@@ -77,13 +77,13 @@ struct avc_sample_extractor : extractor
     const uint8_t* pps_data() const;
 
     /// Return the size of the pps data
-    uint32_t pps_size() const;
+    uint64_t pps_size() const;
 
     /// Return a pointer to the sps data
     const uint8_t* sps_data() const;
 
     /// Return the size of the sps data
-    uint32_t sps_size() const;
+    uint64_t sps_size() const;
 
     /// Return the size of the length preceded each nalu sample in the h264
     /// sample.
