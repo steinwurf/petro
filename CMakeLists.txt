@@ -13,7 +13,9 @@ file(GLOB_RECURSE petro_sources ./src/*.cpp)
 add_library(petro STATIC ${petro_sources})
 add_library(steinwurf::petro ALIAS petro)
 
-add_subdirectory("${STEINWURF_RESOLVE}/endian" endian)
+if (NOT TARGET endian)
+  add_subdirectory("${STEINWURF_RESOLVE}/endian" endian)
+endif()
 
 target_link_libraries(petro
     PRIVATE steinwurf::endian)
