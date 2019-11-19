@@ -59,7 +59,7 @@ def build(properties):
 
 def run_tests(properties):
     command = [sys.executable, 'waf', '-v', '--run_tests']
-    run_cmd = None
+    run_cmd = '%s'
 
     if properties.get('valgrind_run'):
         run_cmd = 'valgrind --error-exitcode=1 %s'
