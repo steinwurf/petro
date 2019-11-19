@@ -34,7 +34,7 @@ class bit_stream
 {
 public:
 
-    bit_stream(const uint8_t* data, uint32_t size) :
+    bit_stream(const uint8_t* data, uint64_t size) :
         m_data(data),
         m_size(size),
         m_bit_offset(0)
@@ -79,7 +79,7 @@ public:
     }
 
     template<class ValueType>
-    void read_bits(ValueType& out, uint32_t bits, std::error_code& error)
+    void read_bits(ValueType& out, uint64_t bits, std::error_code& error)
     {
         static_assert(std::is_integral<ValueType>::value, "integer required");
         static_assert(!std::is_same<ValueType, bool>::value, "bool disallowed");

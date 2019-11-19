@@ -78,7 +78,7 @@ public:
     }
 
     /// The total size in bytes used by this descriptor
-    uint32_t size()
+    uint64_t size()
     {
         return m_bs.size();
     }
