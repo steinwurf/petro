@@ -18,7 +18,8 @@ if (NOT TARGET endian)
 endif()
 
 if(CMAKE_C_COMPILER_ID MATCHES "MSVC")
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+file(GLOB_RECURSE stream_cpp ./src/stream.cpp)
+set_source_files_properties(${stream_cpp} PROPERTIES COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS)
 endif()
 
 target_link_libraries(petro
