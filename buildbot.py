@@ -11,10 +11,10 @@ from datetime import datetime
 project_name = 'petro'
 
 
-def run_command(args):
+def run_command(args, env_ext={}):
     print("Running: {}".format(args))
     sys.stdout.flush()
-    subprocess.check_call(args)
+    subprocess.check_call(args, env=dict(os.environ.copy(), **env_ext))
 
 
 def get_tool_options(properties):
@@ -59,7 +59,7 @@ def build(properties):
 
 def run_tests(properties):
     command = [sys.executable, 'waf', '-v', '--run_tests']
-    run_cmd = '%s'
+    run_cmd = None
 
     if properties.get('valgrind_run'):
         run_cmd = 'valgrind --error-exitcode=1 %s'
@@ -122,6 +122,8 @@ def main():
         install(properties)
     elif cmd == 'cmake':
         cmake(properties)
+    elif cmd == 'run_benchmarks':
+        run_benchmarks(properties)
     else:
         print("Unknown command: {}".format(cmd))
 

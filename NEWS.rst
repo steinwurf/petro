@@ -6,7 +6,7 @@ every change, see the Git log.
 
 Latest
 ------
-* tbd
+* Patch: Added add_subdirectory guard in cmake.
 
 16.0.0
 ------
