@@ -17,6 +17,10 @@ if (NOT TARGET endian)
   add_subdirectory("${STEINWURF_RESOLVE}/endian" endian)
 endif()
 
+if(CMAKE_C_COMPILER_ID MATCHES "MSVC")
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
+
 target_link_libraries(petro
     PRIVATE steinwurf::endian)
 
