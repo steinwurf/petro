@@ -61,7 +61,7 @@ public:
     }
 
     /// Return the size of the pps data
-    uint32_t pps_size() const
+    uint64_t pps_size() const
     {
         assert(m_avcc != nullptr);
         return m_avcc->picture_parameter_set(0)->size();
@@ -75,7 +75,7 @@ public:
     }
 
     /// Return the size of the sps data
-    uint32_t sps_size() const
+    uint64_t sps_size() const
     {
         assert(m_avcc != nullptr);
         return m_avcc->sequence_parameter_set(0)->size();

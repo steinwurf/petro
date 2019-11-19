@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <sstream>
+
 #include "stream.hpp"
 
 namespace petro

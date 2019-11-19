@@ -6,6 +6,8 @@ every change, see the Git log.
 
 Latest
 ------
+* Patch: Changed some size parameters and return values to ``uint64_t`` instead
+  of ``uint32_t``.
 * Patch: Added add_subdirectory guard in cmake.
 
 16.0.0

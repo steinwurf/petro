@@ -33,7 +33,7 @@ public:
 
 private:
 
-    picture_parameter_set(const uint8_t* data, uint32_t size) :
+    picture_parameter_set(const uint8_t* data, uint64_t size) :
         m_bs(data, size)
     { }
 

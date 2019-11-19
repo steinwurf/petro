@@ -151,7 +151,7 @@ const uint8_t* avc_sample_extractor::pps_data() const
     return m_impl->pps_data();
 }
 
-uint32_t avc_sample_extractor::pps_size() const
+uint64_t avc_sample_extractor::pps_size() const
 {
     assert(m_impl);
     return m_impl->pps_size();
@@ -163,7 +163,7 @@ const uint8_t* avc_sample_extractor::sps_data() const
     return m_impl->sps_data();
 }
 
-uint32_t avc_sample_extractor::sps_size() const
+uint64_t avc_sample_extractor::sps_size() const
 {
     assert(m_impl);
     return m_impl->sps_size();
