@@ -54,7 +54,7 @@ public:
 
     void read(std::string& string, uint64_t size, std::error_code& error)
     {
-        string.resize(size);
+        string.resize((std::size_t)size);
         read((uint8_t*)string.data(), size, error);
     }
 
