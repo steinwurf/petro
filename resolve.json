@@ -4,22 +4,28 @@
         "resolver": "git",
         "method": "semver",
         "major": 4,
-        "sources": ["github.com/steinwurf/waf-tools.git"]
+        "sources": [
+            "github.com/steinwurf/waf-tools.git"
+        ]
     },
     {
         "name": "endian",
         "resolver": "git",
         "method": "semver",
         "major": 10,
-        "sources": ["github.com/steinwurf/endian.git"]
+        "sources": [
+            "github.com/steinwurf/endian.git"
+        ]
     },
     {
         "name": "boost",
         "internal": true,
         "resolver": "git",
         "method": "semver",
-        "major": 3,
-        "sources": ["github.com/steinwurf/boost.git"]
+        "major": 4,
+        "sources": [
+            "github.com/steinwurf/boost.git"
+        ]
     },
     {
         "name": "gtest",
@@ -27,7 +33,9 @@
         "resolver": "git",
         "method": "semver",
         "major": 4,
-        "sources": ["github.com/steinwurf/gtest.git"]
+        "sources": [
+            "github.com/steinwurf/gtest.git"
+        ]
     },
     {
         "name": "stub",
@@ -35,6 +43,8 @@
         "resolver": "git",
         "method": "semver",
         "major": 6,
-        "sources": ["github.com/steinwurf/stub.git"]
+        "sources": [
+            "github.com/steinwurf/stub.git"
+        ]
     }
 ]
