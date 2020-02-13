@@ -8,6 +8,10 @@ Latest
 ------
 * tbd
 
+16.1.0
+------
+* Minor: Upgrade to boost 4
+
 16.0.1
 ------
 * Patch: Changed some size parameters and return values to ``uint64_t`` instead
