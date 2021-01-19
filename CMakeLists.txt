@@ -29,7 +29,6 @@ target_compile_features(petro PUBLIC cxx_std_14)
 
 target_include_directories(petro INTERFACE src)
 
-
 install(DIRECTORY ./src/petro
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include
         FILES_MATCHING PATTERN *.hpp)
