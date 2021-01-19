@@ -9,6 +9,7 @@ if(NOT DEFINED STEINWURF_RESOLVE)
     set(STEINWURF_RESOLVE "${CMAKE_CURRENT_SOURCE_DIR}/resolve_symlinks")
 endif()
 
+file(GLOB petro_headers ./src/petro/*.hpp)
 file(GLOB_RECURSE petro_sources ./src/*.cpp)
 add_library(petro STATIC ${petro_sources})
 add_library(steinwurf::petro ALIAS petro)
@@ -28,3 +29,6 @@ target_link_libraries(petro
 target_compile_features(petro PUBLIC cxx_std_14)
 
 target_include_directories(petro INTERFACE src)
+
+install(FILES ${petro_headers} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/petro)
+install(FILES $<TARGET_FILE:petro> DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
