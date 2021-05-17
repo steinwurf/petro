@@ -5,15 +5,15 @@
 
 #pragma once
 
-#include <cstdint>
-#include <string>
 #include <cassert>
-#include <vector>
+#include <cstdint>
 #include <memory>
+#include <string>
+#include <vector>
 
-#include "data_box.hpp"
-#include "../sequence_parameter_set.hpp"
 #include "../picture_parameter_set.hpp"
+#include "../sequence_parameter_set.hpp"
+#include "data_box.hpp"
 
 namespace petro
 {
@@ -23,14 +23,12 @@ namespace box
 class avcc : public data_box
 {
 public:
-
     static const std::string TYPE;
 
 public:
-
-    avcc(const uint8_t* data, uint64_t size) :
-        data_box(data, size)
-    { }
+    avcc(const uint8_t* data, uint64_t size) : data_box(data, size)
+    {
+    }
 
     void parse_box_content(std::error_code& error) override
     {
@@ -61,7 +59,8 @@ public:
         m_bs.read<uint8_t>(num_of_sequence_parameter_sets_value, error);
         if (error)
             return;
-        m_num_of_sequence_parameter_sets = num_of_sequence_parameter_sets_value & 0x1F;
+        m_num_of_sequence_parameter_sets =
+            num_of_sequence_parameter_sets_value & 0x1F;
 
         for (uint8_t i = 0; i < m_num_of_sequence_parameter_sets; ++i)
         {
@@ -134,7 +133,7 @@ public:
         ss << "  length_size_minus_one: " << (uint32_t)m_length_size_minus_one
            << std::endl;
         ss << "  num_of_sequence_parameter_sets: "
-           << (uint32_t) m_num_of_sequence_parameter_sets << std::endl;
+           << (uint32_t)m_num_of_sequence_parameter_sets << std::endl;
 
         ss << "  sequence_parameter_sets:" << std::endl;
         for (const auto& sps : m_sequence_parameter_sets)
@@ -143,7 +142,7 @@ public:
         }
 
         ss << "  num_of_picture_parameter_sets: "
-           << (uint32_t) m_num_of_picture_parameter_sets << std::endl;
+           << (uint32_t)m_num_of_picture_parameter_sets << std::endl;
         ss << "  picture_parameter_sets:" << std::endl;
         for (const auto& pps : m_picture_parameter_sets)
         {
@@ -152,15 +151,15 @@ public:
         return ss.str();
     }
 
-    std::shared_ptr<petro::sequence_parameter_set> sequence_parameter_set(
-        uint32_t index) const
+    std::shared_ptr<petro::sequence_parameter_set>
+    sequence_parameter_set(uint32_t index) const
     {
         assert(index < m_sequence_parameter_sets.size());
         return m_sequence_parameter_sets[index];
     }
 
-    std::shared_ptr<petro::picture_parameter_set> picture_parameter_set(
-        uint32_t index) const
+    std::shared_ptr<petro::picture_parameter_set>
+    picture_parameter_set(uint32_t index) const
     {
         assert(index < m_picture_parameter_sets.size());
         return m_picture_parameter_sets[index];
@@ -172,7 +171,6 @@ public:
     }
 
 private:
-
     /// always 1, if not, the decoder should not decode the stream.
     uint8_t m_configuration_version;
 
@@ -196,7 +194,7 @@ private:
 
     /// the SPSs
     std::vector<std::shared_ptr<petro::sequence_parameter_set>>
-    m_sequence_parameter_sets;
+        m_sequence_parameter_sets;
 
     /// the number of PPS that are used as the initial set of PPSs for
     /// decoding the AVC elementary stream
@@ -204,7 +202,7 @@ private:
 
     /// the SPSs
     std::vector<std::shared_ptr<petro::picture_parameter_set>>
-    m_picture_parameter_sets;
+        m_picture_parameter_sets;
 };
 
 }

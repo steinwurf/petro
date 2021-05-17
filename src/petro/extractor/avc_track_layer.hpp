@@ -5,12 +5,12 @@
 
 #pragma once
 
-#include <cstdint>
 #include <cassert>
+#include <cstdint>
 #include <memory>
 
-#include "../box/data_box.hpp"
 #include "../box/avcc.hpp"
+#include "../box/data_box.hpp"
 
 namespace petro
 {
@@ -18,11 +18,10 @@ namespace extractor
 {
 /// This layer exposes information about the avc track. This information is
 /// used by the sample extractor layer to extract the avc samples.
-template<class Super, class AvccBox=box::avcc>
+template <class Super, class AvccBox = box::avcc>
 class avc_track_layer : public Super
 {
 public:
-
     /// Open this and the underlying layer, returns false upon failure.
     void open(std::error_code& error)
     {
@@ -97,7 +96,6 @@ public:
     }
 
 private:
-
     std::shared_ptr<const AvccBox> m_avcc;
 };
 }

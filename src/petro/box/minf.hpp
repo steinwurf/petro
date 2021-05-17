@@ -5,9 +5,9 @@
 
 #pragma once
 
+#include <cassert>
 #include <cstdint>
 #include <string>
-#include <cassert>
 
 #include "data_box.hpp"
 
@@ -16,28 +16,24 @@ namespace petro
 namespace box
 {
 /// media information container
-template<class Parser>
+template <class Parser>
 class minf : public data_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-
-    minf(const uint8_t* data, uint64_t size) :
-        data_box(data, size)
-    { }
+    minf(const uint8_t* data, uint64_t size) : data_box(data, size)
+    {
+    }
 
     void parse_box_content(std::error_code& error) override
     {
         assert(!error);
         Parser p;
-        p.parse(
-            m_bs.remaining_data(),
-            m_bs.remaining_size(),
-            shared_from_this(), error);
+        p.parse(m_bs.remaining_data(), m_bs.remaining_size(),
+                shared_from_this(), error);
         if (error)
             return;
 
@@ -57,7 +53,7 @@ public:
     }
 };
 
-template<class Parser>
+template <class Parser>
 const std::string minf<Parser>::TYPE = "minf";
 }
 }

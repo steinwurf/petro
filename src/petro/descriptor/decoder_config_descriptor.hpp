@@ -9,8 +9,8 @@
 #include <memory>
 #include <vector>
 
-#include "descriptor.hpp"
 #include "decoder_specific_info_descriptor.hpp"
+#include "descriptor.hpp"
 
 namespace petro
 {
@@ -20,16 +20,14 @@ class decoder_config_descriptor : public descriptor
 {
 
 public:
-
     using decoder_specific_info_descriptor_type =
         std::shared_ptr<petro::descriptor::decoder_specific_info_descriptor>;
 
 public:
-
-
     decoder_config_descriptor(const uint8_t* data, uint64_t size) :
         descriptor(data, size)
-    { }
+    {
+    }
 
     void parse_descriptor_content(std::error_code& error) override
     {
@@ -61,9 +59,9 @@ public:
         if (m_bs.remaining_size() == 0)
             return;
 
-        m_decoder_specific_info_descriptor =
-            std::make_shared<decoder_specific_info_descriptor_type::element_type>(
-                m_bs.remaining_data(), m_bs.remaining_size());
+        m_decoder_specific_info_descriptor = std::make_shared<
+            decoder_specific_info_descriptor_type::element_type>(
+            m_bs.remaining_data(), m_bs.remaining_size());
         m_decoder_specific_info_descriptor->parse(error);
         if (error)
             return;
@@ -74,8 +72,8 @@ public:
         while (m_bs.remaining_size() != 0)
         {
             auto profile_level_indication_index_descriptor =
-                std::make_shared<descriptor>(
-                    m_bs.remaining_data(), m_bs.remaining_size());
+                std::make_shared<descriptor>(m_bs.remaining_data(),
+                                             m_bs.remaining_size());
             m_decoder_specific_info_descriptor->parse(error);
             if (error)
                 return;
@@ -120,13 +118,12 @@ public:
     }
 
 private:
-
     uint8_t m_object_type_id = 0;
     uint32_t m_max_bitrate = 0;
     uint32_t m_average_bitrate = 0;
     decoder_specific_info_descriptor_type m_decoder_specific_info_descriptor;
     std::vector<std::shared_ptr<descriptor>>
-    m_profile_level_indication_index_descriptors;
+        m_profile_level_indication_index_descriptors;
 };
 }
 }

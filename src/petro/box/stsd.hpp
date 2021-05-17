@@ -9,11 +9,11 @@
 #include <cstdint>
 #include <string>
 
+#include "../parser.hpp"
 #include "avcc.hpp"
 #include "esds.hpp"
 #include "full_box.hpp"
 #include "hdlr.hpp"
-#include "../parser.hpp"
 
 namespace petro
 {
@@ -23,15 +23,13 @@ namespace box
 class stsd : public full_box
 {
 public:
-
     class sample_entry : public data_box
     {
 
     public:
-
-        sample_entry(const uint8_t* data, uint64_t size) :
-            data_box(data, size)
-        { }
+        sample_entry(const uint8_t* data, uint64_t size) : data_box(data, size)
+        {
+        }
 
         void parse_box_content(std::error_code& error) override final
         {
@@ -72,7 +70,8 @@ public:
         std::string box_describe() const override final
         {
             std::stringstream ss;
-            ss << "  data_reference_index: " << m_data_reference_index << std::endl;
+            ss << "  data_reference_index: " << m_data_reference_index
+               << std::endl;
             ss << sample_entry_describe() << std::endl;
             return ss.str();
         }
@@ -82,10 +81,7 @@ public:
             return "";
         }
 
-
-
     private:
-
         /// an integer that contains the index of the data reference to use
         /// to retrieve data associated with samples that use this sample
         /// description. Data references are stored in dref boxes. The index
@@ -97,10 +93,10 @@ public:
     {
 
     public:
-
         visual_sample_entry(const uint8_t* data, uint64_t size) :
             sample_entry(data, size)
-        { }
+        {
+        }
 
         void parse_sample_entry(std::error_code& error) override
         {
@@ -164,10 +160,8 @@ public:
             }
 
             parser<avcc> p;
-            p.parse(
-                m_bs.remaining_data(),
-                m_bs.remaining_size(),
-                shared_from_this(), error);
+            p.parse(m_bs.remaining_data(), m_bs.remaining_size(),
+                    shared_from_this(), error);
             if (error)
                 return;
 
@@ -192,7 +186,6 @@ public:
         }
 
     private:
-
         /// are the maximum visual width and height of the stream described
         /// by this sample description, in pixels
         uint16_t m_width;
@@ -224,10 +217,10 @@ public:
     {
 
     public:
-
         audio_sample_entry(const uint8_t* data, uint64_t size) :
             sample_entry(data, size)
-        { }
+        {
+        }
 
         void parse_sample_entry(std::error_code& error) override
         {
@@ -266,10 +259,8 @@ public:
             }
 
             parser<esds> p;
-            p.parse(
-                m_bs.remaining_data(),
-                m_bs.remaining_size(),
-                shared_from_this(), error);
+            p.parse(m_bs.remaining_data(), m_bs.remaining_size(),
+                    shared_from_this(), error);
             if (error)
                 return;
 
@@ -293,7 +284,6 @@ public:
         }
 
     private:
-
         /// either 1 (mono) or 2 (stereo)
         uint16_t m_channel_count;
 
@@ -309,10 +299,10 @@ public:
     {
 
     public:
-
         hint_sample_entry(const uint8_t* data, uint64_t size) :
             sample_entry(data, size)
-        { }
+        {
+        }
 
         void parse_sample_entry(std::error_code& error) override
         {
@@ -331,19 +321,16 @@ public:
         }
 
     private:
-
         std::vector<uint8_t> m_data;
     };
 
 public:
-
     static const std::string TYPE;
 
 public:
-
-    stsd(const uint8_t* data, uint64_t size) :
-        full_box(data, size)
-    { }
+    stsd(const uint8_t* data, uint64_t size) : full_box(data, size)
+    {
+    }
 
     void parse_full_box_content(std::error_code& error) override
     {
@@ -374,26 +361,22 @@ public:
             if (handler_type == "vide") // for video tracks
             {
                 entry = std::make_shared<visual_sample_entry>(
-                    m_bs.remaining_data(),
-                    m_bs.remaining_size());
+                    m_bs.remaining_data(), m_bs.remaining_size());
             }
             else if (handler_type == "soun") // for audio tracks
             {
                 entry = std::make_shared<audio_sample_entry>(
-                    m_bs.remaining_data(),
-                    m_bs.remaining_size());
+                    m_bs.remaining_data(), m_bs.remaining_size());
             }
             else if (handler_type == "hint")
             {
                 entry = std::make_shared<hint_sample_entry>(
-                    m_bs.remaining_data(),
-                    m_bs.remaining_size());
+                    m_bs.remaining_data(), m_bs.remaining_size());
             }
             else
             {
-                entry = std::make_shared<sample_entry>(
-                    m_bs.remaining_data(),
-                    m_bs.remaining_size());
+                entry = std::make_shared<sample_entry>(m_bs.remaining_data(),
+                                                       m_bs.remaining_size());
             }
 
             entry->set_parent(shared_from_this());
@@ -430,7 +413,6 @@ public:
     }
 
 private:
-
     /// an integer that gives the number of entries
     uint32_t m_entry_count;
 };

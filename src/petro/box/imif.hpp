@@ -19,13 +19,12 @@ class imif : public data_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-    imif(const uint8_t* data, uint64_t size) :
-        data_box(data, size)
-    { }
+    imif(const uint8_t* data, uint64_t size) : data_box(data, size)
+    {
+    }
 
     error box_error_code() const override
     {

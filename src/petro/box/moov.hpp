@@ -16,28 +16,24 @@ namespace petro
 namespace box
 {
 /// container for all the metadata
-template<class Parser>
+template <class Parser>
 class moov : public data_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-
-    moov(const uint8_t* data, uint64_t size) :
-        data_box(data, size)
-    { }
+    moov(const uint8_t* data, uint64_t size) : data_box(data, size)
+    {
+    }
 
     void parse_box_content(std::error_code& error) override
     {
         assert(!error);
         Parser p;
-        p.parse(
-            m_bs.remaining_data(),
-            m_bs.remaining_size(),
-            shared_from_this(), error);
+        p.parse(m_bs.remaining_data(), m_bs.remaining_size(),
+                shared_from_this(), error);
         if (error)
             return;
 
@@ -57,7 +53,7 @@ public:
     }
 };
 
-template<class Parser>
+template <class Parser>
 const std::string moov<Parser>::TYPE = "moov";
 }
 }

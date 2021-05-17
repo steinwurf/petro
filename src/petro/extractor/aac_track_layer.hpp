@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <cstdint>
 #include <cassert>
+#include <cstdint>
 
 #include "../box/data_box.hpp"
 #include "../box/esds.hpp"
@@ -17,11 +17,10 @@ namespace extractor
 {
 /// This layer exposes information about the aac track. This information is
 /// used by the sample extractor layer to extract the aac samples.
-template<class Super>
+template <class Super>
 class aac_track_layer : public Super
 {
 public:
-
     /// open this and the underlying layer, returns false upon failure.
     void open(std::error_code& error)
     {
@@ -49,10 +48,9 @@ public:
             return;
         }
 
-        auto descriptor =
-            esds->descriptor()->
-            decoder_config_descriptor()->
-            decoder_specific_info_descriptor();
+        auto descriptor = esds->descriptor()
+                              ->decoder_config_descriptor()
+                              ->decoder_specific_info_descriptor();
 
         if (descriptor == nullptr)
         {
@@ -94,7 +92,6 @@ public:
     }
 
 private:
-
     uint8_t m_mpeg_audio_object_type = 0;
     uint32_t m_frequency_index = 0;
     uint8_t m_channel_configuration = 0;

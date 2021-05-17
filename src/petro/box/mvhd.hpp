@@ -5,13 +5,13 @@
 
 #pragma once
 
-#include <cstdint>
-#include <string>
-#include <sstream>
 #include <cassert>
+#include <cstdint>
+#include <sstream>
+#include <string>
 
-#include "full_box.hpp"
 #include "../matrix.hpp"
+#include "full_box.hpp"
 
 namespace petro
 {
@@ -22,14 +22,12 @@ class mvhd : public full_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-
-    mvhd(const uint8_t* data, uint64_t size) :
-        full_box(data, size)
-    { }
+    mvhd(const uint8_t* data, uint64_t size) : full_box(data, size)
+    {
+    }
 
     void parse_full_box_content(std::error_code& error) override
     {
@@ -166,9 +164,7 @@ public:
         return m_next_track_id;
     }
 
-
 private:
-
     /// an integer that declares the creation time of the presentation
     /// (in seconds since midnight, Jan. 1, 1904, in UTC time)
     std::string m_creation_time;
@@ -208,7 +204,6 @@ private:
     /// all 1s (32-bit maxint), and a new media track is to be added, then a
     /// search must be made in the file for a unused track identifier.
     uint32_t m_next_track_id;
-
 };
 }
 }

@@ -3,15 +3,15 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <string>
 #include <vector>
 
-#include <petro/extractor/track_type_to_string.hpp>
-#include <petro/extractor/track_extractor.hpp>
-#include <petro/extractor/avc_to_annex_b.hpp>
 #include <petro/extractor/avc_sample_extractor.hpp>
+#include <petro/extractor/avc_to_annex_b.hpp>
+#include <petro/extractor/track_extractor.hpp>
+#include <petro/extractor/track_type_to_string.hpp>
 
 #include <boost/iostreams/device/mapped_file.hpp>
 
@@ -43,8 +43,8 @@ int main(int argc, char* argv[])
     extractor.open((uint8_t*)file.data(), file.size(), track_id, error);
     if (error)
     {
-        std::cerr << "Error. Unable to extract h264 from: "
-                  << filename << std::endl
+        std::cerr << "Error. Unable to extract h264 from: " << filename
+                  << std::endl
                   << "Error message: " << error.message() << std::endl;
         std::error_code error;
         petro::extractor::track_extractor track_extractor;
@@ -76,8 +76,7 @@ int main(int argc, char* argv[])
     while (!extractor.at_end())
     {
         auto nalus = petro::extractor::avc_to_annex_b(
-            extractor.sample_data(),
-            extractor.sample_size(),
+            extractor.sample_data(), extractor.sample_size(),
             extractor.nalu_length_size());
         for (auto nalu : nalus)
         {

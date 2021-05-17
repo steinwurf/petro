@@ -3,14 +3,14 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <iostream>
 #include <fstream>
-#include <vector>
+#include <iostream>
 #include <string>
+#include <vector>
 
-#include <petro/extractor/track_type_to_string.hpp>
-#include <petro/extractor/track_extractor.hpp>
 #include <petro/extractor/aac_sample_extractor.hpp>
+#include <petro/extractor/track_extractor.hpp>
+#include <petro/extractor/track_type_to_string.hpp>
 
 #include <boost/iostreams/device/mapped_file.hpp>
 
@@ -42,8 +42,8 @@ int main(int argc, char* argv[])
     extractor.open((uint8_t*)file.data(), file.size(), track_id, error);
     if (error)
     {
-        std::cerr << "Error. Unable to extract aac from: "
-                  << filename << std::endl
+        std::cerr << "Error. Unable to extract aac from: " << filename
+                  << std::endl
                   << "Error message: " << error.message() << std::endl;
         std::error_code error;
         petro::extractor::track_extractor track_extractor;

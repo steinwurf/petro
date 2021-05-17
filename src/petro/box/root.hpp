@@ -19,7 +19,6 @@ namespace box
 class root : public box
 {
 public:
-
     std::string type() const override
     {
         return "root";

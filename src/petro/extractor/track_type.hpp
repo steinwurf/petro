@@ -16,7 +16,7 @@ namespace extractor
 /// http://phk.freebsd.dk/time/20141116.html
 enum class track_type
 {
-#define PETRO_TRACK_TYPE_TAG(id,msg) id,
+#define PETRO_TRACK_TYPE_TAG(id, msg) id,
 #include "track_type_tags.hpp"
 #undef PETRO_TRACK_TYPE_TAG
 };

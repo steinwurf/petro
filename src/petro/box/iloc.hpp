@@ -19,13 +19,12 @@ class iloc : public data_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-    iloc(const uint8_t* data, uint64_t size) :
-        data_box(data, size)
-    { }
+    iloc(const uint8_t* data, uint64_t size) : data_box(data, size)
+    {
+    }
 
     error box_error_code() const override
     {

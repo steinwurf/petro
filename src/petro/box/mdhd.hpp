@@ -19,14 +19,12 @@ class mdhd : public full_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-
-    mdhd(const uint8_t* data, uint64_t size) :
-        full_box(data, size)
-    { }
+    mdhd(const uint8_t* data, uint64_t size) : full_box(data, size)
+    {
+    }
 
     void parse_full_box_content(std::error_code& error) override
     {
@@ -136,7 +134,6 @@ public:
     }
 
 private:
-
     /// an integer that declares the creation time of the media in this
     /// track (in seconds since midnight, Jan. 1, 1904, in UTC time)
     std::string m_creation_time;

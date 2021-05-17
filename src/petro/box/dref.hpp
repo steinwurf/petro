@@ -17,17 +17,16 @@ namespace petro
 namespace box
 {
 /// data reference box, declares source(s) of media data in track
-template<class Parser>
+template <class Parser>
 class dref : public full_box
 {
 public:
-
     static const std::string TYPE;
 
 public:
-    dref(const uint8_t* data, uint64_t size) :
-        full_box(data, size)
-    { }
+    dref(const uint8_t* data, uint64_t size) : full_box(data, size)
+    {
+    }
 
     void parse_full_box_content(std::error_code& error) override
     {
@@ -43,11 +42,8 @@ public:
                 error = box_error_code();
                 return;
             }
-            auto box = p.parse_box(
-                m_bs.remaining_data(),
-                m_bs.remaining_size(),
-                shared_from_this(),
-                error);
+            auto box = p.parse_box(m_bs.remaining_data(), m_bs.remaining_size(),
+                                   shared_from_this(), error);
 
             if (error)
                 return;
@@ -76,12 +72,11 @@ public:
     }
 
 private:
-
     /// an integer that counts the actual entries
     uint32_t m_entry_count;
 };
 
-template<class Parser>
+template <class Parser>
 const std::string dref<Parser>::TYPE = "dref";
 }
 }

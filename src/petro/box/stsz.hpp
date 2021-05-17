@@ -5,11 +5,11 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cassert>
 #include <cstdint>
-#include <string>
 #include <memory>
-#include <algorithm>
+#include <string>
 
 #include "full_box.hpp"
 
@@ -22,14 +22,12 @@ class stsz : public full_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-
-    stsz(const uint8_t* data, uint64_t size) :
-        full_box(data, size)
-    { }
+    stsz(const uint8_t* data, uint64_t size) : full_box(data, size)
+    {
+    }
 
     void parse_full_box_content(std::error_code& error) override
     {
@@ -83,7 +81,7 @@ public:
             {
                 ss << seperator;
                 ss << "(" << m_entries[i] << ")";
-                seperator =  ", ";
+                seperator = ", ";
             }
             if (m_entries.size() > max_print)
                 ss << "...";

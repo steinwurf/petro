@@ -19,13 +19,12 @@ class stsh : public data_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-    stsh(const uint8_t* data, uint64_t size) :
-        data_box(data, size)
-    { }
+    stsh(const uint8_t* data, uint64_t size) : data_box(data, size)
+    {
+    }
 
     error box_error_code() const override
     {

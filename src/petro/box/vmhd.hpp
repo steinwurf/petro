@@ -19,13 +19,12 @@ class vmhd : public full_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-    vmhd(const uint8_t* data, uint64_t size) :
-        full_box(data, size)
-    { }
+    vmhd(const uint8_t* data, uint64_t size) : full_box(data, size)
+    {
+    }
 
     void parse_full_box_content(std::error_code& error) override
     {
@@ -63,10 +62,8 @@ public:
         assert(m_op_color.size() != 0);
         std::stringstream ss;
         ss << "  graphics_mode: " << m_graphics_mode << std::endl;
-        ss << "  op_color: #" <<
-           (uint32_t)m_op_color[0] <<
-           (uint32_t)m_op_color[1] <<
-           (uint32_t)m_op_color[2] << std::endl;
+        ss << "  op_color: #" << (uint32_t)m_op_color[0]
+           << (uint32_t)m_op_color[1] << (uint32_t)m_op_color[2] << std::endl;
         return ss.str();
     }
 

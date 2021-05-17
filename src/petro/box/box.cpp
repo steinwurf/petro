@@ -61,8 +61,8 @@ std::shared_ptr<const box> box::get_child(const std::string& type) const
     return nullptr;
 }
 
-std::vector<std::shared_ptr<const box>> box::get_children(
-    const std::string& type) const
+std::vector<std::shared_ptr<const box>>
+box::get_children(const std::string& type) const
 {
     std::vector<std::shared_ptr<const box>> result;
     std::queue<std::shared_ptr<const box>> queue;

@@ -15,11 +15,10 @@ namespace extractor
 /// Note this only works if the extraction only uses the timestamp function
 /// for timestamps, or not at all, i.e., the looping will fail if the
 /// extraction utilizes the decoding_timestamp or presentatino_timestamp.
-template<class Super>
+template <class Super>
 class looper_layer : public Super
 {
 public:
-
     /// Enables looping
     void enable_looping()
     {
@@ -75,7 +74,6 @@ public:
     }
 
 private:
-
     bool m_loop = false;
     uint64_t m_loop_offset = 0;
     uint32_t m_loops = 0;

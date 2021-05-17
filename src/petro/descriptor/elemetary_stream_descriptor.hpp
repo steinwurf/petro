@@ -10,9 +10,9 @@
 #include <memory>
 #include <vector>
 
-#include "tag.hpp"
-#include "descriptor.hpp"
 #include "decoder_config_descriptor.hpp"
+#include "descriptor.hpp"
+#include "tag.hpp"
 
 namespace petro
 {
@@ -21,15 +21,14 @@ namespace descriptor
 class elemetary_stream_descriptor : public descriptor
 {
 public:
-
     using decoder_config_descriptor_type =
         std::shared_ptr<petro::descriptor::decoder_config_descriptor>;
 
 public:
-
     elemetary_stream_descriptor(const uint8_t* data, uint64_t size) :
         descriptor(data, size)
-    { }
+    {
+    }
 
     void parse_descriptor_content(std::error_code& error) override
     {
@@ -93,9 +92,8 @@ public:
         if (m_bs.remaining_size() == 0)
             return;
 
-        m_sl_config_descriptor =
-            std::make_shared<descriptor>(
-                m_bs.remaining_data(), m_bs.remaining_size());
+        m_sl_config_descriptor = std::make_shared<descriptor>(
+            m_bs.remaining_data(), m_bs.remaining_size());
         m_sl_config_descriptor->parse(error);
         if (error)
             return;
@@ -143,7 +141,6 @@ public:
     }
 
 private:
-
     uint16_t m_es_id = 0;
     uint8_t m_byte_stream_priority = 0;
     uint16_t m_depends_on_esid = 0;

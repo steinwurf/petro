@@ -5,12 +5,12 @@
 
 #pragma once
 
-#include <memory>
-#include <string>
 #include <cstdint>
-#include <vector>
-#include <sstream>
+#include <memory>
 #include <queue>
+#include <sstream>
+#include <string>
+#include <vector>
 
 #include <endian/big_endian.hpp>
 #include <endian/stream_reader.hpp>
@@ -22,7 +22,6 @@ namespace box
 class box : public std::enable_shared_from_this<box>
 {
 public:
-
     virtual std::string type() const = 0;
 
     const std::vector<std::shared_ptr<box>> children() const;
@@ -35,17 +34,17 @@ public:
 
     std::shared_ptr<const box> get_child(const std::string& type) const;
 
-    std::vector<std::shared_ptr<const box>> get_children(
-        const std::string& type) const;
+    std::vector<std::shared_ptr<const box>>
+    get_children(const std::string& type) const;
 
     virtual std::string describe() const = 0;
 
     virtual ~box()
-    { }
+    {
+    }
 
 public:
-
-    template<class Child>
+    template <class Child>
     std::vector<std::shared_ptr<const Child>> get_children() const
     {
         std::vector<std::shared_ptr<const Child>> result;
@@ -58,14 +57,13 @@ public:
         return result;
     }
 
-    template<class Child>
+    template <class Child>
     std::shared_ptr<const Child> get_child() const
     {
         return std::dynamic_pointer_cast<const Child>(get_child(Child::TYPE));
     }
 
 protected:
-
     std::weak_ptr<box> m_parent;
     std::vector<std::shared_ptr<box>> m_children;
 };

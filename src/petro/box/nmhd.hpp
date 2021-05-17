@@ -19,13 +19,12 @@ class nmhd : public full_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-    nmhd(const uint8_t* data, uint64_t size) :
-        full_box(data, size)
-    { }
+    nmhd(const uint8_t* data, uint64_t size) : full_box(data, size)
+    {
+    }
 
     error box_error_code() const override
     {

@@ -7,8 +7,8 @@
 
 #include <cassert>
 #include <cstdint>
-#include <string>
 #include <memory>
+#include <string>
 
 #include "full_box.hpp"
 
@@ -21,14 +21,12 @@ class stco : public full_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-
-    stco(const uint8_t* data, uint64_t size) :
-        full_box(data, size)
-    { }
+    stco(const uint8_t* data, uint64_t size) : full_box(data, size)
+    {
+    }
 
     void parse_full_box_content(std::error_code& error) override
     {
@@ -72,7 +70,7 @@ public:
             auto entry = m_entries[i];
             ss << seperator;
             ss << "(" << entry << ")";
-            seperator =  ", ";
+            seperator = ", ";
         }
         if (m_entries.size() > max_print)
             ss << "...";
@@ -90,16 +88,13 @@ public:
         return m_entry_count;
     }
 
-
     uint64_t chunk_offset(uint32_t chunk_index) const
     {
         assert(chunk_index < m_entry_count);
         return m_entries[chunk_index];
     }
 
-
 private:
-
     /// an integer that gives the number of entries in the following table
     uint32_t m_entry_count;
 
@@ -107,7 +102,6 @@ private:
     /// the chunk_offset is a 32 bit integer that gives the offset of the
     /// start of a chunk into its containing media file.
     std::vector<uint64_t> m_entries;
-
 };
 }
 }

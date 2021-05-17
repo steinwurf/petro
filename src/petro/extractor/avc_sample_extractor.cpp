@@ -5,44 +5,38 @@
 
 #include "avc_sample_extractor.hpp"
 
-#include "nalu_header_writer_layer.hpp"
 #include "avc_track_layer.hpp"
-#include "looper_layer.hpp"
-#include "timestamp_extractor_layer.hpp"
-#include "sample_extractor_layer.hpp"
-#include "media_duration_layer.hpp"
-#include "track_layer.hpp"
-#include "parser_layer.hpp"
 #include "data_layer.hpp"
+#include "looper_layer.hpp"
+#include "media_duration_layer.hpp"
+#include "nalu_header_writer_layer.hpp"
+#include "parser_layer.hpp"
+#include "sample_extractor_layer.hpp"
+#include "timestamp_extractor_layer.hpp"
+#include "track_layer.hpp"
 
 namespace petro
 {
 namespace extractor
 {
 /// stack for extracting avc samples
-struct avc_sample_extractor::impl :
-    nalu_header_writer_layer<
-    avc_track_layer<
-    looper_layer<
-    timestamp_extractor_layer<
-    sample_extractor_layer<
-    track_layer<
-    media_duration_layer<
-    parser_layer<
-    data_layer>>>>>>>>
-{ };
+struct avc_sample_extractor::impl
+    : nalu_header_writer_layer<avc_track_layer<
+          looper_layer<timestamp_extractor_layer<sample_extractor_layer<
+              track_layer<media_duration_layer<parser_layer<data_layer>>>>>>>>
+{
+};
 
 avc_sample_extractor::avc_sample_extractor()
-{ }
+{
+}
 
 avc_sample_extractor::~avc_sample_extractor()
-{ }
+{
+}
 
-void avc_sample_extractor::open(
-    const uint8_t* data,
-    uint64_t size,
-    uint32_t track_id,
-    std::error_code& error)
+void avc_sample_extractor::open(const uint8_t* data, uint64_t size,
+                                uint32_t track_id, std::error_code& error)
 {
     assert(!error);
     auto impl = std::unique_ptr<avc_sample_extractor::impl>(

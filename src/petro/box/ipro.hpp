@@ -5,9 +5,9 @@
 
 #pragma once
 
+#include <cassert>
 #include <cstdint>
 #include <string>
-#include <cassert>
 
 #include "data_box.hpp"
 
@@ -16,18 +16,17 @@ namespace petro
 namespace box
 {
 /// item protection
-template<class Parser>
+template <class Parser>
 class ipro : public data_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-    ipro(const uint8_t* data, uint64_t size) :
-        data_box(data, size)
-    { }
+    ipro(const uint8_t* data, uint64_t size) : data_box(data, size)
+    {
+    }
 
     error box_error_code() const override
     {
@@ -43,10 +42,8 @@ public:
     {
         assert(!error);
         Parser p;
-        p.parse(
-            m_bs.remaining_data(),
-            m_bs.remaining_size(),
-            shared_from_this(), error);
+        p.parse(m_bs.remaining_data(), m_bs.remaining_size(),
+                shared_from_this(), error);
         if (error)
             return;
 
@@ -56,7 +53,7 @@ public:
     }
 };
 
-template<class Parser>
+template <class Parser>
 const std::string ipro<Parser>::TYPE = "ipro";
 }
 }

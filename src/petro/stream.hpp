@@ -11,9 +11,9 @@
 #include <endian/big_endian.hpp>
 #include <endian/stream_reader.hpp>
 
+#include "descriptor/tag.hpp"
 #include "error.hpp"
 #include "matrix.hpp"
-#include "descriptor/tag.hpp"
 
 namespace petro
 {
@@ -28,10 +28,9 @@ public:
     using endian::stream_reader<endian::big_endian>::remaining_data;
 
 public:
-
     stream(const uint8_t* data, uint64_t size);
 
-    template<class ValueType>
+    template <class ValueType>
     void read(ValueType& value, std::error_code& error)
     {
         assert(!error);
@@ -55,7 +54,6 @@ public:
     void set_error_code(petro::error error);
 
 public:
-
     void read_type(std::string& type, std::error_code& error);
 
     void read_fixed_point_1616(double& value, std::error_code& error);
@@ -75,11 +73,9 @@ public:
     void read(descriptor::tag& tag, std::error_code& error);
 
 private:
-
     std::string time(uint64_t data);
 
 private:
-
     petro::error m_error = petro::error::invalid_stream_read;
 };
 }

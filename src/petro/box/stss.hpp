@@ -20,13 +20,12 @@ class stss : public full_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-    stss(const uint8_t* data, uint64_t size) :
-        full_box(data, size)
-    { }
+    stss(const uint8_t* data, uint64_t size) : full_box(data, size)
+    {
+    }
 
     void parse_full_box_content(std::error_code& error) override
     {
@@ -70,7 +69,7 @@ public:
             auto entry = m_entries[i];
             ss << seperator;
             ss << "(" << entry << ")";
-            seperator =  ", ";
+            seperator = ", ";
         }
         if (m_entries.size() > max_print)
             ss << "...";
@@ -86,13 +85,12 @@ public:
     bool is_sample_random_access_point(uint32_t sample_index) const
     {
         auto sample_number = sample_index + 1;
-        auto result = std::find(
-            m_entries.begin(), m_entries.end(), sample_number);
+        auto result =
+            std::find(m_entries.begin(), m_entries.end(), sample_number);
         return result != m_entries.end();
     }
 
 private:
-
     /// an integer that gives the number of entries in the following table.
     /// If entry_count is zero, there are no random access points within
     /// the stream and the following table is empty.

@@ -20,13 +20,12 @@ class stz2 : public full_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-    stz2(const uint8_t* data, uint64_t size) :
-        full_box(data, size)
-    { }
+    stz2(const uint8_t* data, uint64_t size) : full_box(data, size)
+    {
+    }
 
     void parse_full_box_content(std::error_code& error) override
     {
@@ -108,7 +107,7 @@ public:
         {
             ss << seperator;
             ss << "(" << m_entry_sizes[i] << ")";
-            seperator =  ", ";
+            seperator = ", ";
         }
         if (m_entry_sizes.size() > max_print)
             ss << "...";

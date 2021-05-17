@@ -20,7 +20,6 @@ class stts : public full_box
 {
 
 public:
-
     struct entry_type
     {
         /// an integer that counts the number of consecutive samples that
@@ -38,14 +37,12 @@ public:
     };
 
 public:
-
     static const std::string TYPE;
 
 public:
-
-    stts(const uint8_t* data, uint64_t size) :
-        full_box(data, size)
-    { }
+    stts(const uint8_t* data, uint64_t size) : full_box(data, size)
+    {
+    }
 
     void parse_full_box_content(std::error_code& error) override
     {
@@ -66,20 +63,12 @@ public:
             if (error)
                 return;
 
-            m_entries.push_back(entry_type
-            {
-                sample_count,
-                sample_delta
-            });
+            m_entries.push_back(entry_type{sample_count, sample_delta});
 
             for (uint32_t i = 0; i < sample_count; ++i)
             {
                 decoding_time += sample_delta;
-                m_samples.push_back(sample
-                {
-                    decoding_time,
-                    sample_delta
-                });
+                m_samples.push_back(sample{decoding_time, sample_delta});
             }
         }
 
@@ -110,9 +99,9 @@ public:
         {
             auto entry = m_entries[i];
             ss << seperator;
-            ss << "(" << entry.sample_count << ", "
-               << entry.sample_delta << ")";
-            seperator =  ", ";
+            ss << "(" << entry.sample_count << ", " << entry.sample_delta
+               << ")";
+            seperator = ", ";
         }
         if (m_entries.size() > max_print)
             ss << "...";
@@ -138,7 +127,6 @@ public:
     }
 
 private:
-
     /// an integer that counts the actual entries
     uint32_t m_entry_count;
 

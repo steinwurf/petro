@@ -8,8 +8,8 @@
 #include <cstdint>
 #include <string>
 
-#include "full_box.hpp"
 #include "../matrix.hpp"
+#include "full_box.hpp"
 
 namespace petro
 {
@@ -20,13 +20,12 @@ class tkhd : public full_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-    tkhd(const uint8_t* data, uint64_t size) :
-        full_box(data, size)
-    { }
+    tkhd(const uint8_t* data, uint64_t size) : full_box(data, size)
+    {
+    }
 
     void parse_full_box_content(std::error_code& error) override
     {
@@ -57,7 +56,7 @@ public:
             if (error)
                 return;
         }
-        else  // m_version == 0
+        else // m_version == 0
         {
             m_bs.read_time32(m_creation_time, error);
             if (error)
@@ -216,7 +215,6 @@ public:
     }
 
 private:
-
     /// indicates that the track is enabled.
     bool m_track_enabled;
 

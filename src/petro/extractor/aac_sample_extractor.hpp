@@ -31,11 +31,8 @@ struct aac_sample_extractor : extractor
     ~aac_sample_extractor();
 
     /// Open this an the underlying layers
-    void open(
-        const uint8_t* data,
-        uint64_t size,
-        uint32_t track_id,
-        std::error_code& error) override;
+    void open(const uint8_t* data, uint64_t size, uint32_t track_id,
+              std::error_code& error) override;
 
     /// Close this an the underlying layers
     void close() override;
@@ -98,7 +95,6 @@ struct aac_sample_extractor : extractor
     uint8_t channel_configuration() const;
 
 private:
-
     // Private implemenation
     struct impl;
     std::unique_ptr<impl> m_impl;

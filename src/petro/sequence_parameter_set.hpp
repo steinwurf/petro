@@ -7,9 +7,9 @@
 
 #include <cstdint>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <vector>
-#include <memory>
 
 #include "bit_stream.hpp"
 
@@ -19,9 +19,8 @@ namespace petro
 class sequence_parameter_set
 {
 public:
-
-    static std::shared_ptr<sequence_parameter_set> parse(
-        const uint8_t* data, uint64_t size, std::error_code& error)
+    static std::shared_ptr<sequence_parameter_set>
+    parse(const uint8_t* data, uint64_t size, std::error_code& error)
     {
         std::shared_ptr<sequence_parameter_set> sps(
             new sequence_parameter_set(data, size));
@@ -33,10 +32,10 @@ public:
     }
 
 private:
-
     sequence_parameter_set(const uint8_t* data, uint64_t size) :
         m_bs(data, size)
-    { }
+    {
+    }
 
     void parse(std::error_code& error)
     {
@@ -107,21 +106,20 @@ private:
         if (error)
             return;
 
-        m_bs.read_unsigned_exponential_golomb_code(
-            m_seq_parameter_set_id, error);
+        m_bs.read_unsigned_exponential_golomb_code(m_seq_parameter_set_id,
+                                                   error);
         if (error)
             return;
 
-
-        if (m_profile_idc == 44 || m_profile_idc == 83 ||
-            m_profile_idc == 86 || m_profile_idc == 100 ||
-            m_profile_idc == 110 || m_profile_idc == 118 ||
-            m_profile_idc == 122 || m_profile_idc == 128 ||
-            m_profile_idc == 134 || m_profile_idc == 138 ||
-            m_profile_idc == 139 || m_profile_idc == 244)
+        if (m_profile_idc == 44 || m_profile_idc == 83 || m_profile_idc == 86 ||
+            m_profile_idc == 100 || m_profile_idc == 110 ||
+            m_profile_idc == 118 || m_profile_idc == 122 ||
+            m_profile_idc == 128 || m_profile_idc == 134 ||
+            m_profile_idc == 138 || m_profile_idc == 139 ||
+            m_profile_idc == 244)
         {
-            m_bs.read_unsigned_exponential_golomb_code(
-                m_chroma_format_idc, error);
+            m_bs.read_unsigned_exponential_golomb_code(m_chroma_format_idc,
+                                                       error);
             if (error)
                 return;
 
@@ -130,7 +128,6 @@ private:
                 m_bs.read_bit(m_separate_colour_plane_flag, error);
                 if (error)
                     return;
-
             }
 
             m_bs.read_unsigned_exponential_golomb_code(m_bit_depth_luma, error);
@@ -138,8 +135,8 @@ private:
                 return;
 
             m_bit_depth_luma += 8;
-            m_bs.read_unsigned_exponential_golomb_code(
-                m_bit_depth_chroma, error);
+            m_bs.read_unsigned_exponential_golomb_code(m_bit_depth_chroma,
+                                                       error);
             if (error)
                 return;
 
@@ -152,7 +149,6 @@ private:
             m_bs.read_bit(m_seq_scaling_matrix_present_flag, error);
             if (error)
                 return;
-
 
             if (m_seq_scaling_matrix_present_flag)
             {
@@ -236,15 +232,14 @@ private:
             if (error)
                 return;
 
-            for (uint32_t i = 0;
-                 i < m_num_ref_frames_in_pic_order_cnt_cycle; i++)
+            for (uint32_t i = 0; i < m_num_ref_frames_in_pic_order_cnt_cycle;
+                 i++)
             {
                 int32_t offset_for_ref_frame = 0;
-                m_bs.read_signed_exponential_golomb_code(
-                    offset_for_ref_frame, error);
+                m_bs.read_signed_exponential_golomb_code(offset_for_ref_frame,
+                                                         error);
                 if (error)
                     return;
-
             }
         }
 
@@ -256,15 +251,14 @@ private:
         if (error)
             return;
 
-
         m_bs.read_unsigned_exponential_golomb_code(m_pic_width_in_mbs, error);
         if (error)
             return;
 
         m_pic_width_in_mbs += 1;
 
-        m_bs.read_unsigned_exponential_golomb_code(
-            m_pic_height_in_map_units, error);
+        m_bs.read_unsigned_exponential_golomb_code(m_pic_height_in_map_units,
+                                                   error);
         if (error)
             return;
 
@@ -279,7 +273,6 @@ private:
             m_bs.read_bit(m_mb_adaptive_frame_field_flag, error);
             if (error)
                 return;
-
         }
         m_bs.read_bit(m_direct_8x8_inference_flag, error);
         if (error)
@@ -289,11 +282,10 @@ private:
         if (error)
             return;
 
-
         if (m_frame_cropping_flag)
         {
-            m_bs.read_unsigned_exponential_golomb_code(
-                m_frame_crop_left_offset, error);
+            m_bs.read_unsigned_exponential_golomb_code(m_frame_crop_left_offset,
+                                                       error);
             if (error)
                 return;
 
@@ -302,8 +294,8 @@ private:
             if (error)
                 return;
 
-            m_bs.read_unsigned_exponential_golomb_code(
-                m_frame_crop_top_offset, error);
+            m_bs.read_unsigned_exponential_golomb_code(m_frame_crop_top_offset,
+                                                       error);
             if (error)
                 return;
 
@@ -311,32 +303,25 @@ private:
                 m_frame_crop_bottom_offset, error);
             if (error)
                 return;
-
         }
         m_bs.read_bit(m_vui_parameters_present_flag, error);
         if (error)
             return;
 
-
         uint32_t pic_width_in_samples = m_pic_width_in_mbs * 16;
-        m_width =
-            pic_width_in_samples -
-            (m_frame_crop_left_offset * 2) -
-            (m_frame_crop_right_offset * 2);
+        m_width = pic_width_in_samples - (m_frame_crop_left_offset * 2) -
+                  (m_frame_crop_right_offset * 2);
 
         // height of each decoded picture in units of macroblocks
         uint32_t pic_height_in_mbs =
             m_pic_height_in_map_units * (2 - m_frame_mbs_only_flag);
 
         uint32_t pic_height_in_samples = pic_height_in_mbs * 16;
-        m_height =
-            pic_height_in_samples -
-            (m_frame_crop_top_offset * 2) -
-            (m_frame_crop_bottom_offset * 2);
+        m_height = pic_height_in_samples - (m_frame_crop_top_offset * 2) -
+                   (m_frame_crop_bottom_offset * 2);
     }
 
 public:
-
     uint32_t width() const
     {
         return m_width;
@@ -547,7 +532,6 @@ public:
     }
 
 private:
-
     bit_stream m_bs;
 
     uint32_t m_height;
