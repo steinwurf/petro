@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/imif.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/imif.hpp>
 
 #include <gtest/gtest.h>
 
@@ -15,13 +15,9 @@
 
 TEST(box_test_imif, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x00,
-            'i', 'm', 'i', 'f'
-        };
-    auto imif_box = std::make_shared<petro::box::imif>(
-        buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer = {0x00, 0x00, 0x00, 0x00, 'i', 'm', 'i', 'f'};
+    auto imif_box =
+        std::make_shared<petro::box::imif>(buffer.data(), buffer.size());
 
     std::error_code error;
     imif_box->parse(error);

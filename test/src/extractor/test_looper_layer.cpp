@@ -5,8 +5,8 @@
 
 #include <petro/extractor/looper_layer.hpp>
 
-#include <stub/function.hpp>
 #include <gtest/gtest.h>
+#include <stub/function.hpp>
 
 namespace
 {

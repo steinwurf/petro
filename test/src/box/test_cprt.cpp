@@ -15,13 +15,9 @@
 
 TEST(box_test_cprt, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x00,
-            'c', 'p', 'r', 't'
-        };
-    auto cprt_box = std::make_shared<petro::box::cprt>(
-        buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer = {0x00, 0x00, 0x00, 0x00, 'c', 'p', 'r', 't'};
+    auto cprt_box =
+        std::make_shared<petro::box::cprt>(buffer.data(), buffer.size());
 
     std::error_code error;
     cprt_box->parse(error);

@@ -8,8 +8,8 @@
 #include <boost/iostreams/device/mapped_file.hpp>
 
 #include <cstdint>
-#include <vector>
 #include <fstream>
+#include <vector>
 
 #include <gtest/gtest.h>
 
@@ -39,10 +39,8 @@ uint32_t read_nalu_size(const uint8_t* data, uint8_t length_size)
     return result;
 }
 
-void test_h264_file(
-    const std::string& h264_file,
-    const std::string& mp4_file,
-    uint32_t expected_samples)
+void test_h264_file(const std::string& h264_file, const std::string& mp4_file,
+                    uint32_t expected_samples)
 {
     std::ifstream test_h264(h264_file, std::ios::binary);
     EXPECT_TRUE(test_h264.is_open());

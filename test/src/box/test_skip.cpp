@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/skip.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/skip.hpp>
 
 #include <gtest/gtest.h>
 
@@ -15,13 +15,9 @@
 
 TEST(box_test_skip, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x00,
-            's', 'k', 'i', 'p'
-        };
-    auto skip_box = std::make_shared<petro::box::skip>(
-        buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer = {0x00, 0x00, 0x00, 0x00, 's', 'k', 'i', 'p'};
+    auto skip_box =
+        std::make_shared<petro::box::skip>(buffer.data(), buffer.size());
 
     std::error_code error;
     skip_box->parse(error);

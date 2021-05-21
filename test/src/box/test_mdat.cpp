@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/mdat.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/mdat.hpp>
 
 #include <gtest/gtest.h>
 
@@ -15,13 +15,9 @@
 
 TEST(box_test_mdat, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x00,
-            'm', 'd', 'a', 't'
-        };
-    auto mdat_box = std::make_shared<petro::box::mdat>(
-        buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer = {0x00, 0x00, 0x00, 0x00, 'm', 'd', 'a', 't'};
+    auto mdat_box =
+        std::make_shared<petro::box::mdat>(buffer.data(), buffer.size());
 
     std::error_code error;
     mdat_box->parse(error);

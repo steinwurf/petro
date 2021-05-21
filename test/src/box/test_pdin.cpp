@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/pdin.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/pdin.hpp>
 
 #include <gtest/gtest.h>
 
@@ -15,13 +15,9 @@
 
 TEST(box_test_pdin, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x00,
-            'p', 'd', 'i', 'n'
-        };
-    auto pdin_box = std::make_shared<petro::box::pdin>(
-        buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer = {0x00, 0x00, 0x00, 0x00, 'p', 'd', 'i', 'n'};
+    auto pdin_box =
+        std::make_shared<petro::box::pdin>(buffer.data(), buffer.size());
 
     std::error_code error;
     pdin_box->parse(error);

@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/ftyp.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/ftyp.hpp>
 
 #include <gtest/gtest.h>
 
@@ -15,16 +15,11 @@
 
 TEST(box_test_ftyp, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x00,
-            'f', 't', 'y', 'p',
-            0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00
-        };
-    auto ftyp_box = std::make_shared<petro::box::ftyp>(
-        buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer = {0x00, 0x00, 0x00, 0x00, 'f',  't',  'y',
+                                   'p',  0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                   0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    auto ftyp_box =
+        std::make_shared<petro::box::ftyp>(buffer.data(), buffer.size());
 
     std::error_code error;
     ftyp_box->parse(error);

@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/trun.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/trun.hpp>
 
 #include <gtest/gtest.h>
 
@@ -15,13 +15,9 @@
 
 TEST(box_test_trun, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x00,
-            't', 'r', 'u', 'n'
-        };
-    auto trun_box = std::make_shared<petro::box::trun>(
-        buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer = {0x00, 0x00, 0x00, 0x00, 't', 'r', 'u', 'n'};
+    auto trun_box =
+        std::make_shared<petro::box::trun>(buffer.data(), buffer.size());
 
     std::error_code error;
     trun_box->parse(error);

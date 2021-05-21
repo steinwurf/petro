@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/tref.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/tref.hpp>
 
 #include <gtest/gtest.h>
 
@@ -15,13 +15,9 @@
 
 TEST(box_test_tref, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x00,
-            't', 'r', 'e', 'f'
-        };
-    auto tref_box = std::make_shared<petro::box::tref>(
-        buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer = {0x00, 0x00, 0x00, 0x00, 't', 'r', 'e', 'f'};
+    auto tref_box =
+        std::make_shared<petro::box::tref>(buffer.data(), buffer.size());
 
     std::error_code error;
     tref_box->parse(error);

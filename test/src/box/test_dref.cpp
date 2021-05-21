@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/dref.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/dref.hpp>
 #include <petro/parser.hpp>
 
 #include <gtest/gtest.h>
@@ -16,16 +16,10 @@
 
 TEST(box_test_dref, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x18,
-            'd', 'r', 'e', 'f',
-            0x00,
-            0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x01,
-            0x00, 0x00, 0x00, 0x08,
-            0x00, 0x00, 0x00, 0x00,
-        };
+    std::vector<uint8_t> buffer = {
+        0x00, 0x00, 0x00, 0x18, 'd',  'r',  'e',  'f',  0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00,
+    };
 
     auto dref_box = std::make_shared<petro::box::dref<petro::parser<>>>(
         buffer.data(), buffer.size());

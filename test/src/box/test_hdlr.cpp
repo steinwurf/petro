@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/hdlr.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/hdlr.hpp>
 
 #include <gtest/gtest.h>
 
@@ -15,19 +15,12 @@
 
 TEST(box_test_hdlr, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x00,
-            'h', 'd', 'l', 'r',
-            0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00
-        };
-    auto hdlr_box = std::make_shared<petro::box::hdlr>(
-        buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer = {
+        0x00, 0x00, 0x00, 0x00, 'h',  'd',  'l',  'r',  0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    auto hdlr_box =
+        std::make_shared<petro::box::hdlr>(buffer.data(), buffer.size());
 
     std::error_code error;
     hdlr_box->parse(error);

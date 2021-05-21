@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/ipro.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/ipro.hpp>
 #include <petro/parser.hpp>
 
 #include <gtest/gtest.h>
@@ -16,13 +16,10 @@
 
 TEST(box_test_ipro, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x10,
-            'i', 'p', 'r', 'o',
-            0x00, 0x00, 0x00, 0x08,
-            0x00, 0x00, 0x00, 0x00,
-        };
+    std::vector<uint8_t> buffer = {
+        0x00, 0x00, 0x00, 0x10, 'i',  'p',  'r',  'o',
+        0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00,
+    };
     auto ipro_box = std::make_shared<petro::box::ipro<petro::parser<>>>(
         buffer.data(), buffer.size());
 

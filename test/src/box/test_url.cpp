@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/url.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/url.hpp>
 
 #include <gtest/gtest.h>
 
@@ -15,14 +15,10 @@
 
 TEST(box_test_url, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x00,
-            'u', 'r', 'l', ' ',
-            0x00, 0x00, 0x00, 0x00
-        };
-    auto url_box = std::make_shared<petro::box::url>(
-        buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer = {0x00, 0x00, 0x00, 0x00, 'u',  'r',
+                                   'l',  ' ',  0x00, 0x00, 0x00, 0x00};
+    auto url_box =
+        std::make_shared<petro::box::url>(buffer.data(), buffer.size());
 
     std::error_code error;
     url_box->parse(error);

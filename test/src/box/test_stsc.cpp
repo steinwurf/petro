@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/stsc.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/stsc.hpp>
 
 #include <gtest/gtest.h>
 
@@ -15,15 +15,11 @@
 
 TEST(box_test_stsc, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x00,
-            's', 't', 's', 'c',
-            0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00
-        };
-    auto stsc_box = std::make_shared<petro::box::stsc>(
-        buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer = {0x00, 0x00, 0x00, 0x00, 's',  't',
+                                   's',  'c',  0x00, 0x00, 0x00, 0x00,
+                                   0x00, 0x00, 0x00, 0x00};
+    auto stsc_box =
+        std::make_shared<petro::box::stsc>(buffer.data(), buffer.size());
 
     std::error_code error;
     stsc_box->parse(error);

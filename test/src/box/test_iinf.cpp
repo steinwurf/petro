@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/iinf.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/iinf.hpp>
 
 #include <gtest/gtest.h>
 
@@ -15,13 +15,9 @@
 
 TEST(box_test_iinf, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x00,
-            'i', 'i', 'n', 'f'
-        };
-    auto iinf_box = std::make_shared<petro::box::iinf>(
-        buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer = {0x00, 0x00, 0x00, 0x00, 'i', 'i', 'n', 'f'};
+    auto iinf_box =
+        std::make_shared<petro::box::iinf>(buffer.data(), buffer.size());
 
     std::error_code error;
     iinf_box->parse(error);

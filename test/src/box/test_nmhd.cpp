@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/nmhd.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/nmhd.hpp>
 
 #include <gtest/gtest.h>
 
@@ -15,14 +15,10 @@
 
 TEST(box_test_nmhd, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x00,
-            'n', 'm', 'h', 'd',
-            0x00, 0x00, 0x00, 0x00
-        };
-    auto nmhd_box = std::make_shared<petro::box::nmhd>(
-        buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer = {0x00, 0x00, 0x00, 0x00, 'n',  'm',
+                                   'h',  'd',  0x00, 0x00, 0x00, 0x00};
+    auto nmhd_box =
+        std::make_shared<petro::box::nmhd>(buffer.data(), buffer.size());
 
     std::error_code error;
     nmhd_box->parse(error);

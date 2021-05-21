@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/trex.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/trex.hpp>
 
 #include <gtest/gtest.h>
 
@@ -15,13 +15,9 @@
 
 TEST(box_test_trex, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x00,
-            't', 'r', 'e', 'x'
-        };
-    auto trex_box = std::make_shared<petro::box::trex>(
-        buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer = {0x00, 0x00, 0x00, 0x00, 't', 'r', 'e', 'x'};
+    auto trex_box =
+        std::make_shared<petro::box::trex>(buffer.data(), buffer.size());
 
     std::error_code error;
     trex_box->parse(error);
