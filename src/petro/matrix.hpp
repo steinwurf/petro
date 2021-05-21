@@ -7,8 +7,6 @@
 
 #include <sstream>
 
-#include "stream.hpp"
-
 namespace petro
 {
 /// specify a transformation of video images for presentation
