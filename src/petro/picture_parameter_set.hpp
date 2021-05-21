@@ -38,6 +38,7 @@ private:
     void parse(std::error_code& error)
     {
         assert(!error);
+        (void)error;
     }
 
 public:
