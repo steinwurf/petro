@@ -10,7 +10,6 @@
 
 #include <gtest/gtest.h>
 
-
 TEST(test_bit_stream, test_documentation)
 {
     /// Bit reader for reading packed bits.
@@ -28,10 +27,9 @@ TEST(test_bit_stream, test_documentation)
     /// 00100100 00010000
     /// [ 2 ][ 4 ][ 2][0]
     ///
-    std::vector<uint8_t> data
-    {
-        0x24, //00100100
-        0x10, //00010000
+    std::vector<uint8_t> data{
+        0x24, // 00100100
+        0x10, // 00010000
     };
 
     petro::bit_stream bits(data.data(), data.size());
@@ -56,17 +54,14 @@ TEST(test_bit_stream, test_documentation)
     EXPECT_EQ(0U, v);
 }
 
-
-
 TEST(test_bit_stream, read_bit)
 {
-    std::vector<uint8_t> data
-    {
-        0x00, //0000 0000
-        0xFF, //1111 1111
-        0xF0, //1111 0000
-        0x0F, //0000 1111
-        0xA5, //1010 0101
+    std::vector<uint8_t> data{
+        0x00, // 0000 0000
+        0xFF, // 1111 1111
+        0xF0, // 1111 0000
+        0x0F, // 0000 1111
+        0xA5, // 1010 0101
     };
 
     petro::bit_stream bits(data.data(), data.size());
@@ -228,13 +223,12 @@ TEST(test_bit_stream, read_bit)
 
 TEST(test_bit_stream, read_bits_3)
 {
-    std::vector<uint8_t> data
-    {
-        0x00, //0000 0000
-        0xFF, //1111 1111
-        0xF0, //1111 0000
-        0x0F, //0000 1111
-        0x36  //0011 0110
+    std::vector<uint8_t> data{
+        0x00, // 0000 0000
+        0xFF, // 1111 1111
+        0xF0, // 1111 0000
+        0x0F, // 0000 1111
+        0x36  // 0011 0110
     };
 
     petro::bit_stream bits(data.data(), data.size());
@@ -336,14 +330,13 @@ TEST(test_bit_stream, read_bits_3)
 
 TEST(test_bit_stream, read_bits_4)
 {
-    std::vector<uint8_t> data
-    {
-        0x00, //0000 0000
-        0xFF, //1111 1111
-        0xF0, //1111 0000
-        0x0F, //0000 1111
-        0x36, //0011 0110
-        0xAA  //1010 1010
+    std::vector<uint8_t> data{
+        0x00, // 0000 0000
+        0xFF, // 1111 1111
+        0xF0, // 1111 0000
+        0x0F, // 0000 1111
+        0x36, // 0011 0110
+        0xAA  // 1010 1010
     };
 
     petro::bit_stream bits(data.data(), data.size());
@@ -427,13 +420,12 @@ TEST(test_bit_stream, read_bits_4)
 
 TEST(test_bit_stream, read_bits_5)
 {
-    std::vector<uint8_t> data
-    {
-        0x00, //0000 0000
-        0xFF, //1111 1111
-        0xF0, //1111 0000
-        0x0F, //0000 1111
-        0x36  //0011 0110
+    std::vector<uint8_t> data{
+        0x00, // 0000 0000
+        0xFF, // 1111 1111
+        0xF0, // 1111 0000
+        0x0F, // 0000 1111
+        0x36  // 0011 0110
     };
 
     petro::bit_stream bits(data.data(), data.size());
@@ -443,11 +435,11 @@ TEST(test_bit_stream, read_bits_5)
 
     bits.read_bits(v, 5, error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(0U, v);  // 0000 0
+    EXPECT_EQ(0U, v); // 0000 0
 
     bits.read_bits(v, 5, error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(3U, v);  // 000 11
+    EXPECT_EQ(3U, v); // 000 11
 
     bits.read_bits(v, 5, error);
     ASSERT_FALSE(bool(error));
@@ -459,11 +451,11 @@ TEST(test_bit_stream, read_bits_5)
 
     bits.read_bits(v, 5, error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(0U, v);  // 0000 0
+    EXPECT_EQ(0U, v); // 0000 0
 
     bits.read_bits(v, 5, error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(3U, v);  // 000 11
+    EXPECT_EQ(3U, v); // 000 11
 
     bits.read_bits(v, 5, error);
     ASSERT_FALSE(bool(error));
@@ -476,14 +468,13 @@ TEST(test_bit_stream, read_bits_5)
 
 TEST(test_bit_stream, read_bits_6)
 {
-    std::vector<uint8_t> data
-    {
-        0x00, //0000 0000
-        0xFF, //1111 1111
-        0xF0, //1111 0000
-        0x0F, //0000 1111
-        0x36, //0011 0110
-        0x30  //0011 0000
+    std::vector<uint8_t> data{
+        0x00, // 0000 0000
+        0xFF, // 1111 1111
+        0xF0, // 1111 0000
+        0x0F, // 0000 1111
+        0x36, // 0011 0110
+        0x30  // 0011 0000
     };
 
     petro::bit_stream bits(data.data(), data.size());
@@ -493,7 +484,7 @@ TEST(test_bit_stream, read_bits_6)
 
     bits.read_bits(v, 6, error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(0U, v);  // 0000 00
+    EXPECT_EQ(0U, v); // 0000 00
 
     bits.read_bits(v, 6, error);
     ASSERT_FALSE(bool(error));
@@ -509,7 +500,7 @@ TEST(test_bit_stream, read_bits_6)
 
     bits.read_bits(v, 6, error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(3U, v);  // 0000 11
+    EXPECT_EQ(3U, v); // 0000 11
 
     bits.read_bits(v, 6, error);
     ASSERT_FALSE(bool(error));
@@ -526,15 +517,14 @@ TEST(test_bit_stream, read_bits_6)
 
 TEST(test_bit_stream, read_bits_7)
 {
-    std::vector<uint8_t> data
-    {
-        0x00, //0000 0000
-        0xFF, //1111 1111
-        0xF0, //1111 0000
-        0x0F, //0000 1111
-        0x36, //0011 0110
-        0x30, //0011 0000
-        0xDA  //1101 1010
+    std::vector<uint8_t> data{
+        0x00, // 0000 0000
+        0xFF, // 1111 1111
+        0xF0, // 1111 0000
+        0x0F, // 0000 1111
+        0x36, // 0011 0110
+        0x30, // 0011 0000
+        0xDA  // 1101 1010
     };
 
     petro::bit_stream bits(data.data(), data.size());
@@ -544,11 +534,11 @@ TEST(test_bit_stream, read_bits_7)
 
     bits.read_bits(v, 7, error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(0U, v);   //  0000 000
+    EXPECT_EQ(0U, v); //  0000 000
 
     bits.read_bits(v, 7, error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(63U, v);  // 0 1111 11
+    EXPECT_EQ(63U, v); // 0 1111 11
 
     bits.read_bits(v, 7, error);
     ASSERT_FALSE(bool(error));
@@ -556,7 +546,7 @@ TEST(test_bit_stream, read_bits_7)
 
     bits.read_bits(v, 7, error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(0U, v);   // 000 0000
+    EXPECT_EQ(0U, v); // 000 0000
 
     bits.read_bits(v, 7, error);
     ASSERT_FALSE(bool(error));
@@ -564,28 +554,27 @@ TEST(test_bit_stream, read_bits_7)
 
     bits.read_bits(v, 7, error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(88U, v);  // 1 0110 00
+    EXPECT_EQ(88U, v); // 1 0110 00
 
     bits.read_bits(v, 7, error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(97U, v);  // 11 0000 1
+    EXPECT_EQ(97U, v); // 11 0000 1
 
     bits.read_bits(v, 7, error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(90U, v);  // 101 1010
+    EXPECT_EQ(90U, v); // 101 1010
 }
 
 TEST(test_bit_stream, read_bits_8)
 {
-    std::vector<uint8_t> data
-    {
-        0x00, //0000 0000
-        0xFF, //1111 1111
-        0xF0, //1111 0000
-        0x0F, //0000 1111
-        0x36, //0011 0110
-        0x30, //0011 0000
-        0xDA  //1101 1010
+    std::vector<uint8_t> data{
+        0x00, // 0000 0000
+        0xFF, // 1111 1111
+        0xF0, // 1111 0000
+        0x0F, // 0000 1111
+        0x36, // 0011 0110
+        0x30, // 0011 0000
+        0xDA  // 1101 1010
     };
 
     petro::bit_stream bits(data.data(), data.size());
@@ -595,11 +584,11 @@ TEST(test_bit_stream, read_bits_8)
 
     bits.read_bits(v, 1, error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(0U, v);     // 0
+    EXPECT_EQ(0U, v); // 0
 
     bits.read_bits(v, 8, error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(1U, v);   // 000 0000 1
+    EXPECT_EQ(1U, v); // 000 0000 1
 
     bits.read_bits(v, 8, error);
     ASSERT_FALSE(bool(error));
@@ -611,7 +600,7 @@ TEST(test_bit_stream, read_bits_8)
 
     bits.read_bits(v, 8, error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(30U, v);  // 000 1111 0
+    EXPECT_EQ(30U, v); // 000 1111 0
 
     bits.read_bits(v, 8, error);
     ASSERT_FALSE(bool(error));
@@ -619,17 +608,17 @@ TEST(test_bit_stream, read_bits_8)
 
     bits.read_bits(v, 8, error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(97U, v);  // 011 0000 1
+    EXPECT_EQ(97U, v); // 011 0000 1
 
     bits.read_bits(v, 3, error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(5U, v);   // 101
+    EXPECT_EQ(5U, v); // 101
 
     bits.read_bits(v, 2, error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(2U, v);   // 10
+    EXPECT_EQ(2U, v); // 10
 
     bits.read_bits(v, 2, error);
     ASSERT_FALSE(bool(error));
-    EXPECT_EQ(2U, v);   // 10
+    EXPECT_EQ(2U, v); // 10
 }
