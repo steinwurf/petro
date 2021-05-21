@@ -5,10 +5,10 @@
 
 #include <petro/extractor/sample_extractor_layer.hpp>
 
-#include <petro/box/stsc.hpp>
-#include <petro/box/stsz.hpp>
 #include <petro/box/co64.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/stsc.hpp>
+#include <petro/box/stsz.hpp>
 
 #include <stub/function.hpp>
 
@@ -34,7 +34,7 @@ struct dummy_layer
     stub::function<void(std::error_code)> open;
     stub::function<void()> close;
     stub::function<std::shared_ptr<const petro::box::box>()> trak;
-    stub::function<const uint8_t* ()> data;
+    stub::function<const uint8_t*()> data;
 };
 
 using dummy_stack = petro::extractor::sample_extractor_layer<dummy_layer>;
@@ -53,20 +53,19 @@ TEST(extractor_test_sample_extractor_layer, init)
 
     // This buffer is made up, to create a dummy stsc box. please see
     // stsc.hpp for information related to this.
-    std::vector<uint8_t> stsc_buffer =
-        {
-            0x00, 0x00, 0x00, 0x1C, // box size
-            's', 't', 's', 'c', // box type
-            0x00, // full_box version
-            0x00, 0x00, 0x00, // full_box flag
-            0x00, 0x00, 0x00, 0x01, // stsc entry count 1
-            0x00, 0x00, 0x00, 0x01, // stsc entry first_chunk
-            0x00, 0x00, 0x00, 0x01, // stsc entry samples_per_chunk
-            0x00, 0x00, 0x00, 0x01, // stsc entry sample_description_index
-        };
+    std::vector<uint8_t> stsc_buffer = {
+        0x00, 0x00, 0x00, 0x1C, // box size
+        's',  't',  's',  'c',  // box type
+        0x00,                   // full_box version
+        0x00, 0x00, 0x00,       // full_box flag
+        0x00, 0x00, 0x00, 0x01, // stsc entry count 1
+        0x00, 0x00, 0x00, 0x01, // stsc entry first_chunk
+        0x00, 0x00, 0x00, 0x01, // stsc entry samples_per_chunk
+        0x00, 0x00, 0x00, 0x01, // stsc entry sample_description_index
+    };
 
-    auto stsc = std::make_shared<petro::box::stsc>(
-        stsc_buffer.data(), stsc_buffer.size());
+    auto stsc = std::make_shared<petro::box::stsc>(stsc_buffer.data(),
+                                                   stsc_buffer.size());
 
     std::error_code error;
     stsc->parse(error);
@@ -81,18 +80,17 @@ TEST(extractor_test_sample_extractor_layer, init)
     uint8_t sample_size = 42;
     // This buffer is made up, to create a dummy stsz box. please see
     // stsz.hpp for information related to this.
-    std::vector<uint8_t> stsz_buffer =
-        {
-            0x00, 0x00, 0x00, 0x14, // box size
-            's', 't', 's', 'z', // box type
-            0x00, // full_box version
-            0x00, 0x00, 0x00, // full_box flag
-            0x00, 0x00, 0x00, sample_size, // stsz sample size
-            0x00, 0x00, 0x00, 0x02, // stsz sample count
-        };
+    std::vector<uint8_t> stsz_buffer = {
+        0x00, 0x00, 0x00, 0x14,        // box size
+        's',  't',  's',  'z',         // box type
+        0x00,                          // full_box version
+        0x00, 0x00, 0x00,              // full_box flag
+        0x00, 0x00, 0x00, sample_size, // stsz sample size
+        0x00, 0x00, 0x00, 0x02,        // stsz sample count
+    };
 
-    auto stsz = std::make_shared<petro::box::stsz>(
-        stsz_buffer.data(), stsz_buffer.size());
+    auto stsz = std::make_shared<petro::box::stsz>(stsz_buffer.data(),
+                                                   stsz_buffer.size());
 
     stsz->parse(error);
     ASSERT_FALSE(error);
@@ -107,19 +105,18 @@ TEST(extractor_test_sample_extractor_layer, init)
     // co64.hpp for information related to this.
     uint8_t chunk_offset1 = 1U;
     uint8_t chunk_offset2 = 2U;
-    std::vector<uint8_t> co64_buffer =
-        {
-            0x00, 0x00, 0x00, 0x20, // box size
-            'c', 'o', '6', '4', // box type
-            0x00, // full_box version
-            0x00, 0x00, 0x00, // full_box flag
-            0x00, 0x00, 0x00, 0x02, // co64 entry count
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, chunk_offset1, // entry 1
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, chunk_offset2  // entry 2
-        };
+    std::vector<uint8_t> co64_buffer = {
+        0x00, 0x00, 0x00, 0x20, // box size
+        'c',  'o',  '6',  '4',  // box type
+        0x00,                   // full_box version
+        0x00, 0x00, 0x00,       // full_box flag
+        0x00, 0x00, 0x00, 0x02, // co64 entry count
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, chunk_offset1, // entry 1
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, chunk_offset2  // entry 2
+    };
 
-    auto co64 = std::make_shared<petro::box::co64>(
-        co64_buffer.data(), co64_buffer.size());
+    auto co64 = std::make_shared<petro::box::co64>(co64_buffer.data(),
+                                                   co64_buffer.size());
     co64->parse(error);
     ASSERT_FALSE(bool(error));
 

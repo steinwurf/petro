@@ -18,14 +18,12 @@ namespace box
 class url : public full_box
 {
 public:
-
     static const std::string TYPE;
 
 public:
-
-    url(const uint8_t* data, uint64_t size) :
-        full_box(data, size)
-    { }
+    url(const uint8_t* data, uint64_t size) : full_box(data, size)
+    {
+    }
 
     void parse_full_box_content(std::error_code& error) override
     {
@@ -57,7 +55,6 @@ public:
     }
 
 private:
-
     std::string m_location;
 };
 }

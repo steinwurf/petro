@@ -8,26 +8,24 @@
 #include <cassert>
 #include <memory>
 
-#include "../parser.hpp"
-#include "../box/moov.hpp"
-#include "../box/trak.hpp"
-#include "../box/tkhd.hpp"
-#include "../box/mdia.hpp"
+#include "../box/co64.hpp"
+#include "../box/ctts.hpp"
 #include "../box/hdlr.hpp"
 #include "../box/mdhd.hpp"
-#include "../box/mvhd.hpp"
+#include "../box/mdia.hpp"
 #include "../box/minf.hpp"
+#include "../box/moov.hpp"
+#include "../box/mvhd.hpp"
+#include "../box/root.hpp"
 #include "../box/stbl.hpp"
 #include "../box/stco.hpp"
-#include "../box/stsd.hpp"
-#include "../box/co64.hpp"
-#include "../box/stsz.hpp"
 #include "../box/stsc.hpp"
-#include "../box/ctts.hpp"
-#include "../box/stts.hpp"
+#include "../box/stsd.hpp"
 #include "../box/stsz.hpp"
-#include "../box/stbl.hpp"
-#include "../box/root.hpp"
+#include "../box/stts.hpp"
+#include "../box/tkhd.hpp"
+#include "../box/trak.hpp"
+#include "../parser.hpp"
 
 namespace petro
 {
@@ -35,33 +33,20 @@ namespace extractor
 {
 /// This layer exposes the "root" of the tree constructed using the mp4 box
 /// parser.
-template<class Super>
+template <class Super>
 class parser_layer : public Super
 {
 public:
-
-    using extractor_parser =
-        parser<
-        box::moov<parser<
+    using extractor_parser = parser<box::moov<parser<
         box::mvhd,
         box::trak<parser<
-        box::tkhd,
-        box::mdia<parser<
-        box::hdlr,
-        box::mdhd,
-        box::minf<parser<
-        box::stbl<parser<
-        box::stco,
-        box::stsc,
-        box::stsd,
-        box::co64,
-        box::ctts,
-        box::stts,
-        box::stsz
-        >>>>>>>>>>>;
+            box::tkhd,
+            box::mdia<parser<box::hdlr, box::mdhd,
+                             box::minf<parser<box::stbl<parser<
+                                 box::stco, box::stsc, box::stsd, box::co64,
+                                 box::ctts, box::stts, box::stsz>>>>>>>>>>>;
 
 public:
-
     /// Open this and the underlying layer, returns false upon failure.
     void open(std::error_code& error)
     {
@@ -98,9 +83,7 @@ public:
     }
 
 private:
-
     std::shared_ptr<box::box> m_root;
-
 };
 }
 }

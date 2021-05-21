@@ -18,11 +18,8 @@ namespace extractor
 struct extractor
 {
     /// Open this an the underlying layers
-    virtual void open(
-        const uint8_t* data,
-        uint64_t size,
-        uint32_t track_id,
-        std::error_code& error) = 0;
+    virtual void open(const uint8_t* data, uint64_t size, uint32_t track_id,
+                      std::error_code& error) = 0;
 
     /// Close this an the underlying layers
     virtual void close() = 0;
@@ -70,7 +67,8 @@ struct extractor
     virtual uint32_t loops() const = 0;
 
     virtual ~extractor()
-    { }
+    {
+    }
 };
 }
 }

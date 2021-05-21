@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <cstdint>
 #include <cassert>
+#include <cstdint>
 #include <system_error>
 
 #include "../box/tkhd.hpp"
@@ -16,11 +16,10 @@ namespace petro
 namespace extractor
 {
 /// Provides the stack with track information
-template<class Super>
+template <class Super>
 class track_layer : public Super
 {
 public:
-
     /// Opens the extractor. Remember to set the data buffer before calling
     /// this.
     void open(std::error_code& error)
@@ -72,7 +71,6 @@ public:
     }
 
 private:
-
     bool m_track_id_set = false;
     uint32_t m_track_id = 0;
     std::shared_ptr<const box::box> m_trak = nullptr;

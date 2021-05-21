@@ -5,11 +5,11 @@
 
 #pragma once
 
-#include <cstdint>
 #include <cassert>
-#include <vector>
+#include <cstdint>
 #include <limits>
 #include <system_error>
+#include <vector>
 
 #include "error.hpp"
 
@@ -33,11 +33,8 @@ namespace petro
 class bit_stream
 {
 public:
-
     bit_stream(const uint8_t* data, uint64_t size) :
-        m_data(data),
-        m_size(size),
-        m_bit_offset(0)
+        m_data(data), m_size(size), m_bit_offset(0)
     {
         // Make sure we can address all the bits
         assert(m_size < std::numeric_limits<uint64_t>::max() / 8);
@@ -45,7 +42,8 @@ public:
 
     bit_stream(const std::vector<uint8_t>& data) :
         bit_stream(data.data(), data.size())
-    { }
+    {
+    }
 
     void skip(uint64_t bits, std::error_code& error)
     {
@@ -69,7 +67,7 @@ public:
         m_bit_offset = offset;
     }
 
-    template<class ValueType>
+    template <class ValueType>
     void read_bit(ValueType& out, std::error_code& error)
     {
         static_assert(std::is_integral<ValueType>::value, "integer required");
@@ -78,7 +76,7 @@ public:
         read_bits(out, 1, error);
     }
 
-    template<class ValueType>
+    template <class ValueType>
     void read_bits(ValueType& out, uint64_t bits, std::error_code& error)
     {
         static_assert(std::is_integral<ValueType>::value, "integer required");
@@ -98,8 +96,8 @@ public:
         out = result;
     }
 
-    void read_unsigned_exponential_golomb_code(
-        uint32_t& out, std::error_code& error)
+    void read_unsigned_exponential_golomb_code(uint32_t& out,
+                                               std::error_code& error)
     {
         assert(!error);
         auto offset_before = m_bit_offset;
@@ -129,8 +127,8 @@ public:
         out = result;
     }
 
-    void read_signed_exponential_golomb_code(
-        int32_t& out, std::error_code& error)
+    void read_signed_exponential_golomb_code(int32_t& out,
+                                             std::error_code& error)
     {
         assert(!error);
         uint32_t v = 0;
@@ -164,7 +162,6 @@ public:
     }
 
 private:
-
     void read_next_bit(uint8_t& value, std::error_code& error)
     {
         assert(!error);
@@ -181,7 +178,6 @@ private:
     }
 
 private:
-
     const uint8_t* m_data;
     const uint64_t m_size;
     uint64_t m_bit_offset;

@@ -18,7 +18,6 @@ namespace box
 class elst : public full_box
 {
 public:
-
     struct entry_type
     {
 
@@ -44,13 +43,12 @@ public:
     };
 
 public:
-
     static const std::string TYPE;
 
 public:
-    elst(const uint8_t* data, uint64_t size) :
-        full_box(data, size)
-    { }
+    elst(const uint8_t* data, uint64_t size) : full_box(data, size)
+    {
+    }
 
     void parse_full_box_content(std::error_code& error) override
     {
@@ -78,13 +76,8 @@ public:
                 m_bs.read<uint16_t>(media_rate_fraction, error);
                 if (error)
                     return;
-                m_entries.push_back(
-                    {
-                        segment_duration,
-                        media_time,
-                        media_rate_integer,
-                        media_rate_fraction
-                    });
+                m_entries.push_back({segment_duration, media_time,
+                                     media_rate_integer, media_rate_fraction});
             }
             else // m_version == 0
             {
@@ -104,13 +97,8 @@ public:
                 m_bs.read<uint16_t>(media_rate_fraction, error);
                 if (error)
                     return;
-                m_entries.push_back(
-                    {
-                        segment_duration,
-                        media_time,
-                        media_rate_integer,
-                        media_rate_fraction
-                    });
+                m_entries.push_back({segment_duration, media_time,
+                                     media_rate_integer, media_rate_fraction});
             }
         }
         m_bs.skip(m_bs.remaining_size(), error);
@@ -134,12 +122,10 @@ public:
         {
             auto entry = m_entries[i];
             ss << seperator;
-            ss << "("
-               << entry.segment_duration << ","
-               << entry.media_time << ","
-               << entry.media_rate_integer << ","
+            ss << "(" << entry.segment_duration << "," << entry.media_time
+               << "," << entry.media_rate_integer << ","
                << entry.media_rate_fraction << ")";
-            seperator =  ", ";
+            seperator = ", ";
         }
         if (m_entries.size() > max_print)
             ss << "...";
@@ -158,7 +144,6 @@ public:
     }
 
 private:
-
     /// an integer that gives the number of entries in the following table
     uint32_t m_entry_count;
 

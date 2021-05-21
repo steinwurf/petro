@@ -5,26 +5,25 @@
 
 #pragma once
 
-#include <cstdint>
 #include <cassert>
+#include <cstdint>
 #include <string>
 
+#include "../box/co64.hpp"
+#include "../box/data_box.hpp"
 #include "../box/stco.hpp"
 #include "../box/stsc.hpp"
 #include "../box/stsz.hpp"
-#include "../box/co64.hpp"
-#include "../box/data_box.hpp"
 
 namespace petro
 {
 namespace extractor
 {
 /// Uses the aac and avc track layers to extract samples.
-template<class Super>
+template <class Super>
 class sample_extractor_layer : public Super
 {
 public:
-
     /// Open this and the underlying layer
     void open(std::error_code& error)
     {
@@ -158,7 +157,6 @@ public:
     }
 
 private:
-
     uint32_t m_offset = 0;
     uint32_t m_sample_index = 0;
     uint32_t m_chunk_index = 0;

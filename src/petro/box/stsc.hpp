@@ -26,7 +26,6 @@ namespace box
 class stsc : public full_box
 {
 public:
-
     struct entry_type
     {
         /// an integer that gives the index of the first chunk in this run
@@ -48,14 +47,12 @@ public:
     };
 
 public:
-
     static const std::string TYPE;
 
 public:
-
-    stsc(const uint8_t* data, uint64_t size) :
-        full_box(data, size)
-    { }
+    stsc(const uint8_t* data, uint64_t size) : full_box(data, size)
+    {
+    }
 
     void parse_full_box_content(std::error_code& error) override
     {
@@ -77,12 +74,8 @@ public:
             m_bs.read<uint32_t>(sample_description_index, error);
             if (error)
                 return;
-            m_entries.push_back(entry_type
-            {
-                first_chunk,
-                samples_per_chunk,
-                sample_description_index
-            });
+            m_entries.push_back(entry_type{first_chunk, samples_per_chunk,
+                                           sample_description_index});
         }
 
         m_bs.skip(m_bs.remaining_size(), error);
@@ -115,11 +108,9 @@ public:
         {
             auto entry = m_entries[i];
             ss << seperator;
-            ss << "("
-               << entry.first_chunk << ","
-               << entry.samples_per_chunk << ","
-               << entry.sample_description_index << ")";
-            seperator =  ", ";
+            ss << "(" << entry.first_chunk << "," << entry.samples_per_chunk
+               << "," << entry.sample_description_index << ")";
+            seperator = ", ";
         }
         if (m_entries.size() > max_print)
             ss << "...";
@@ -154,7 +145,6 @@ public:
     }
 
 private:
-
     /// an integer that gives the number of entries in the following table
     uint32_t m_entry_count;
 

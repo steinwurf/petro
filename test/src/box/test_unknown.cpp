@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/unknown.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/unknown.hpp>
 
 #include <gtest/gtest.h>
 
@@ -15,13 +15,9 @@
 
 TEST(box_test_unknown, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x00,
-            'b', 'o', 'x', 'y'
-        };
-    auto unknown_box = std::make_shared<petro::box::unknown>(
-        buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer = {0x00, 0x00, 0x00, 0x00, 'b', 'o', 'x', 'y'};
+    auto unknown_box =
+        std::make_shared<petro::box::unknown>(buffer.data(), buffer.size());
 
     std::error_code error;
     unknown_box->parse(error);

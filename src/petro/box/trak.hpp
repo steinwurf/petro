@@ -15,28 +15,24 @@ namespace petro
 namespace box
 {
 /// container for an individual track or stream
-template<class Parser>
+template <class Parser>
 class trak : public data_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-
-    trak(const uint8_t* data, uint64_t size) :
-        data_box(data, size)
-    { }
+    trak(const uint8_t* data, uint64_t size) : data_box(data, size)
+    {
+    }
 
     void parse_box_content(std::error_code& error) override
     {
         assert(!error);
         Parser p;
-        p.parse(
-            m_bs.remaining_data(),
-            m_bs.remaining_size(),
-            shared_from_this(), error);
+        p.parse(m_bs.remaining_data(), m_bs.remaining_size(),
+                shared_from_this(), error);
         if (error)
             return;
 
@@ -56,7 +52,7 @@ public:
     }
 };
 
-template<class Parser>
+template <class Parser>
 const std::string trak<Parser>::TYPE = "trak";
 }
 }

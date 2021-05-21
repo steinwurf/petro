@@ -20,14 +20,12 @@ class ftyp : public data_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-
-    ftyp(const uint8_t* data, uint64_t size) :
-        data_box(data, size)
-    { }
+    ftyp(const uint8_t* data, uint64_t size) : data_box(data, size)
+    {
+    }
 
     void parse_box_content(std::error_code& error) override
     {
@@ -70,14 +68,13 @@ public:
         for (const auto& brand : m_compatible_brands)
         {
             ss << seperator << brand;
-            seperator =  ", ";
+            seperator = ", ";
         }
         ss << std::endl;
         return ss.str();
     }
 
 private:
-
     /// a brand identifier
     std::string m_major_brand;
 

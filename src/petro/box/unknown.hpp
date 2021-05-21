@@ -5,11 +5,11 @@
 
 #pragma once
 
+#include <cassert>
 #include <cstdint>
-#include <string>
 #include <memory>
 #include <sstream>
-#include <cassert>
+#include <string>
 
 #include "data_box.hpp"
 
@@ -21,10 +21,9 @@ namespace box
 class unknown : public data_box
 {
 public:
-
-    unknown(const uint8_t* data, uint64_t size) :
-        data_box(data, size)
-    { }
+    unknown(const uint8_t* data, uint64_t size) : data_box(data, size)
+    {
+    }
 
     std::string type() const override
     {

@@ -19,13 +19,12 @@ class hmhd : public full_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-    hmhd(const uint8_t* data, uint64_t size) :
-        full_box(data, size)
-    { }
+    hmhd(const uint8_t* data, uint64_t size) : full_box(data, size)
+    {
+    }
 
     void parse_full_box_content(std::error_code& error) override
     {
@@ -77,7 +76,6 @@ public:
     }
 
 private:
-
     /// the size in bytes of the largest PDU in this (hint) stream
     uint16_t m_max_pdu_size;
 

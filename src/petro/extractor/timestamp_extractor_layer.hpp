@@ -5,26 +5,25 @@
 
 #pragma once
 
-#include <cstdint>
-#include <cassert>
-#include <string>
-#include "../decoding_time.hpp"
-#include "../presentation_time.hpp"
+#include "../box/ctts.hpp"
 #include "../box/mdhd.hpp"
 #include "../box/mvhd.hpp"
 #include "../box/stts.hpp"
-#include "../box/ctts.hpp"
+#include "../decoding_time.hpp"
+#include "../presentation_time.hpp"
+#include <cassert>
+#include <cstdint>
+#include <string>
 
 namespace petro
 {
 namespace extractor
 {
 /// Uses the aac and avc track layers to extract sample timestamps.
-template<class Super>
+template <class Super>
 class timestamp_extractor_layer : public Super
 {
 public:
-
     /// Open this an the underlying layers
     void open(std::error_code& error)
     {
@@ -80,17 +79,15 @@ public:
     uint64_t presentation_timestamp() const
     {
         assert(m_stts != nullptr);
-        return presentation_time(
-            m_stts, m_ctts, m_timescale, Super::sample_index());
+        return presentation_time(m_stts, m_ctts, m_timescale,
+                                 Super::sample_index());
     }
 
 private:
-
     uint32_t m_timescale = 0;
 
     std::shared_ptr<const box::stts> m_stts;
     std::shared_ptr<const box::ctts> m_ctts;
-
 };
 }
 }

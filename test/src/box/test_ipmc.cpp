@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/ipmc.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/ipmc.hpp>
 
 #include <gtest/gtest.h>
 
@@ -15,13 +15,9 @@
 
 TEST(box_test_ipmc, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x00,
-            'i', 'p', 'm', 'c'
-        };
-    auto ipmc_box = std::make_shared<petro::box::ipmc>(
-        buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer = {0x00, 0x00, 0x00, 0x00, 'i', 'p', 'm', 'c'};
+    auto ipmc_box =
+        std::make_shared<petro::box::ipmc>(buffer.data(), buffer.size());
 
     std::error_code error;
     ipmc_box->parse(error);

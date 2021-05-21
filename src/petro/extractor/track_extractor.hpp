@@ -8,16 +8,16 @@
 #include <cassert>
 #include <memory>
 
-#include "../parser.hpp"
-#include "../box/root.hpp"
-#include "../box/moov.hpp"
-#include "../box/trak.hpp"
-#include "../box/tkhd.hpp"
-#include "../box/mdia.hpp"
 #include "../box/hdlr.hpp"
+#include "../box/mdia.hpp"
 #include "../box/minf.hpp"
+#include "../box/moov.hpp"
+#include "../box/root.hpp"
 #include "../box/stbl.hpp"
 #include "../box/stsd.hpp"
+#include "../box/tkhd.hpp"
+#include "../box/trak.hpp"
+#include "../parser.hpp"
 
 #include "track_type.hpp"
 
@@ -28,16 +28,10 @@ namespace extractor
 class track_extractor
 {
 public:
-
-    using track_parser = parser<
-                         box::moov<parser<
-                         box::trak<parser<
-                         box::tkhd,
-                         box::mdia<parser<
-                         box::hdlr, // needed for esds extraction
-                         box::minf<parser<
-                         box::stbl<parser<
-                         box::stsd>>>>>>>>>>>;
+    using track_parser = parser<box::moov<parser<box::trak<parser<
+        box::tkhd,
+        box::mdia<parser<box::hdlr, // needed for esds extraction
+                         box::minf<parser<box::stbl<parser<box::stsd>>>>>>>>>>>;
 
     struct track
     {
@@ -46,7 +40,6 @@ public:
     };
 
 public:
-
     void open(const uint8_t* data, uint64_t size, std::error_code& error)
     {
         assert(!error);
@@ -107,7 +100,6 @@ public:
     }
 
 protected:
-
     std::vector<track> m_tracks;
 };
 }

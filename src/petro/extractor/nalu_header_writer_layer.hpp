@@ -12,11 +12,10 @@ namespace petro
 namespace extractor
 {
 /// Simple layer for writing the nalu header.
-template<class Super>
+template <class Super>
 class nalu_header_writer_layer : public Super
 {
 public:
-
     /// Write the nalu header to the given data pointer
     void write_nalu_header(uint8_t* data) const
     {

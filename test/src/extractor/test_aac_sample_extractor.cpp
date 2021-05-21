@@ -8,8 +8,8 @@
 #include <boost/iostreams/device/mapped_file.hpp>
 
 #include <cstdint>
-#include <vector>
 #include <fstream>
+#include <vector>
 
 #include <gtest/gtest.h>
 

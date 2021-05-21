@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/mfra.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/mfra.hpp>
 #include <petro/parser.hpp>
 
 #include <gtest/gtest.h>
@@ -16,13 +16,10 @@
 
 TEST(box_test_mfra, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x10,
-            'm', 'f', 'r', 'a',
-            0x00, 0x00, 0x00, 0x08,
-            0x00, 0x00, 0x00, 0x00,
-        };
+    std::vector<uint8_t> buffer = {
+        0x00, 0x00, 0x00, 0x10, 'm',  'f',  'r',  'a',
+        0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00,
+    };
     auto mfra_box = std::make_shared<petro::box::mfra<petro::parser<>>>(
         buffer.data(), buffer.size());
 

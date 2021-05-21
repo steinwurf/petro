@@ -5,28 +5,28 @@
 
 #include "stream.hpp"
 
+#include <chrono>
+#include <cmath>
 #include <cstdint>
-#include <system_error>
+#include <ctime>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <cmath>
-#include <chrono>
-#include <iomanip>
-#include <ctime>
+#include <system_error>
 
 #include <endian/big_endian.hpp>
 #include <endian/stream_reader.hpp>
 
+#include "descriptor/tag.hpp"
 #include "error.hpp"
 #include "matrix.hpp"
-#include "descriptor/tag.hpp"
-
 
 namespace petro
 {
 stream::stream(const uint8_t* data, uint64_t size) :
     endian::stream_reader<endian::big_endian>(data, size)
-{ }
+{
+}
 
 void stream::read(std::string& string, uint64_t size, std::error_code& error)
 {
@@ -84,7 +84,7 @@ void stream::read_fixed_point_1616(double& value, std::error_code& error)
     read<uint32_t>(data, error);
     if (error)
         return;
-    value = ((double) data) / (1 << 16);
+    value = ((double)data) / (1 << 16);
 }
 void stream::read_fixed_point_0230(double& value, std::error_code& error)
 {
@@ -92,7 +92,7 @@ void stream::read_fixed_point_0230(double& value, std::error_code& error)
     read<uint32_t>(data, error);
     if (error)
         return;
-    value = ((double) data) / (1 << 30);
+    value = ((double)data) / (1 << 30);
 }
 
 void stream::read_fixed_point_88(float& value, std::error_code& error)
@@ -101,7 +101,7 @@ void stream::read_fixed_point_88(float& value, std::error_code& error)
     read<uint16_t>(data, error);
     if (error)
         return;
-    value = ((float) data) / (1 << 8);
+    value = ((float)data) / (1 << 8);
 }
 
 void stream::read_iso639(std::string& value, std::error_code& error)
@@ -111,9 +111,9 @@ void stream::read_iso639(std::string& value, std::error_code& error)
     if (error)
         return;
 
-    char c1 = 0x60 + ((data & 0x7C00) >> 10);  // Mask is 0111 1100 0000 0000
-    char c2 = 0x60 + ((data & 0x03E0) >> 5);   // Mask is 0000 0011 1110 0000
-    char c3 = 0x60 + ((data & 0x001F));        // Mask is 0000 0000 0001 1111
+    char c1 = 0x60 + ((data & 0x7C00) >> 10); // Mask is 0111 1100 0000 0000
+    char c2 = 0x60 + ((data & 0x03E0) >> 5);  // Mask is 0000 0011 1110 0000
+    char c3 = 0x60 + ((data & 0x001F));       // Mask is 0000 0000 0001 1111
     value = {c1, c2, c3};
 }
 

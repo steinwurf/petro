@@ -5,18 +5,17 @@
 
 #pragma once
 
-#include <memory>
 #include <cstdint>
+#include <memory>
 
 #include "box/stts.hpp"
 
 namespace petro
 {
 /// Returns the sample's decoding time in microseconds.
-inline uint64_t decoding_time(
-    std::shared_ptr<const box::stts> stts,
-    uint32_t media_header_timescale,
-    uint32_t sample_index)
+inline uint64_t decoding_time(std::shared_ptr<const box::stts> stts,
+                              uint32_t media_header_timescale,
+                              uint32_t sample_index)
 {
     assert(stts != nullptr);
     assert(media_header_timescale != 0);

@@ -15,15 +15,12 @@
 
 TEST(box_test_ctts, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x00,
-            'c', 't', 't', 's',
-            0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00,
-        };
-    auto ctts_box = std::make_shared<petro::box::ctts>(
-        buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer = {
+        0x00, 0x00, 0x00, 0x00, 'c',  't',  't',  's',
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    };
+    auto ctts_box =
+        std::make_shared<petro::box::ctts>(buffer.data(), buffer.size());
 
     std::error_code error;
     ctts_box->parse(error);

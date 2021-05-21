@@ -19,13 +19,12 @@ class smhd : public full_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-    smhd(const uint8_t* data, uint64_t size) :
-        full_box(data, size)
-    { }
+    smhd(const uint8_t* data, uint64_t size) : full_box(data, size)
+    {
+    }
 
     void parse_full_box_content(std::error_code& error) override
     {
@@ -59,7 +58,6 @@ public:
     }
 
 private:
-
     /// a fixed-point 8.8 number that places mono audio tracks in a stereo
     /// space; 0 is center (the normal value); full left is -1.0 and full
     /// right is 1.0.

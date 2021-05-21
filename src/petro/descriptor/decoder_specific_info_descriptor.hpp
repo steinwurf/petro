@@ -18,10 +18,10 @@ namespace descriptor
 class decoder_specific_info_descriptor : public descriptor
 {
 public:
-
     decoder_specific_info_descriptor(const uint8_t* data, uint64_t size) :
         descriptor(data, size)
-    { }
+    {
+    }
 
     void parse_descriptor_content(std::error_code& error) override
     {
@@ -83,7 +83,6 @@ public:
     }
 
 private:
-
     uint8_t m_mpeg_audio_object_type = 0;
     uint32_t m_frequency_index = 0;
     uint8_t m_channel_configuration = 0;

@@ -5,13 +5,12 @@
 
 #pragma once
 
-
 #include "avcc.hpp"
-#include "data_box.hpp"
 #include "bxml.hpp"
 #include "co64.hpp"
 #include "cprt.hpp"
 #include "ctts.hpp"
+#include "data_box.hpp"
 #include "dinf.hpp"
 #include "dref.hpp"
 #include "edts.hpp"

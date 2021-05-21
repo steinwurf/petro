@@ -6,8 +6,8 @@
 #pragma once
 
 #include <cstdint>
-#include <sstream>
 #include <memory>
+#include <sstream>
 
 #include "data_box.hpp"
 
@@ -18,10 +18,9 @@ namespace box
 class full_box : public data_box
 {
 public:
-
-    full_box(const uint8_t* data, uint64_t size) :
-        data_box(data, size)
-    { }
+    full_box(const uint8_t* data, uint64_t size) : data_box(data, size)
+    {
+    }
 
     void parse_box_content(std::error_code& error) override final
     {
@@ -57,7 +56,6 @@ public:
         return ss.str();
     }
 
-
     virtual std::string full_box_describe() const
     {
         return "";
@@ -69,10 +67,10 @@ public:
     }
 
     virtual ~full_box()
-    { }
+    {
+    }
 
 protected:
-
     uint8_t m_version;
     std::vector<uint8_t> m_flags;
 };

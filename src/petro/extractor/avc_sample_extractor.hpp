@@ -31,11 +31,8 @@ struct avc_sample_extractor : extractor
     ~avc_sample_extractor();
 
     /// Open this an the underlying layers
-    void open(
-        const uint8_t* data,
-        uint64_t size,
-        uint32_t track_id,
-        std::error_code& error) override;
+    void open(const uint8_t* data, uint64_t size, uint32_t track_id,
+              std::error_code& error) override;
 
     /// Gets the track id.
     uint32_t track_id() const override;
@@ -105,7 +102,6 @@ struct avc_sample_extractor : extractor
     uint32_t loops() const override;
 
 private:
-
     // Private implemenation
     struct impl;
     std::unique_ptr<impl> m_impl;

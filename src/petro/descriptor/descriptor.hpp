@@ -17,10 +17,9 @@ namespace descriptor
 class descriptor
 {
 public:
-
-    descriptor(const uint8_t* data, uint64_t size) :
-        m_bs(data, size)
-    { }
+    descriptor(const uint8_t* data, uint64_t size) : m_bs(data, size)
+    {
+    }
 
     void parse(std::error_code& error)
     {
@@ -41,9 +40,7 @@ public:
         if (error)
             return;
 
-        if (length == 0x80 ||
-            length == 0x81 ||
-            length == 0xFE)
+        if (length == 0x80 || length == 0x81 || length == 0xFE)
         {
             // appearently we are reading the optional extended
             // descriptor type tag string - let's throw it away...
@@ -84,10 +81,10 @@ public:
     }
 
     virtual ~descriptor()
-    { }
+    {
+    }
 
 protected:
-
     stream m_bs;
     tag m_tag = tag(0U);
 };

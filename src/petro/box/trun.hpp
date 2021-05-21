@@ -19,13 +19,12 @@ class trun : public data_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-    trun(const uint8_t* data, uint64_t size) :
-        data_box(data, size)
-    { }
+    trun(const uint8_t* data, uint64_t size) : data_box(data, size)
+    {
+    }
 
     error box_error_code() const override
     {

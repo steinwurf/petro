@@ -9,8 +9,7 @@ namespace petro
 {
 namespace box
 {
-data_box::data_box(const uint8_t* data, uint64_t size) :
-    m_bs(data, size)
+data_box::data_box(const uint8_t* data, uint64_t size) : m_bs(data, size)
 {
     m_bs.set_error_code(petro::error::invalid_box);
 }

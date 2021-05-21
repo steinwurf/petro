@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/stbl.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/stbl.hpp>
 #include <petro/parser.hpp>
 
 #include <gtest/gtest.h>
@@ -16,13 +16,10 @@
 
 TEST(box_test_stbl, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x10,
-            's', 't', 'b', 'l',
-            0x00, 0x00, 0x00, 0x08,
-            0x00, 0x00, 0x00, 0x00,
-        };
+    std::vector<uint8_t> buffer = {
+        0x00, 0x00, 0x00, 0x10, 's',  't',  'b',  'l',
+        0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00,
+    };
     auto stbl_box = std::make_shared<petro::box::stbl<petro::parser<>>>(
         buffer.data(), buffer.size());
 

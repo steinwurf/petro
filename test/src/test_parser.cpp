@@ -6,17 +6,17 @@
 #include <petro/parser.hpp>
 
 #include <cstdint>
-#include <vector>
-#include <sstream>
-#include <memory>
 #include <iterator>
+#include <memory>
+#include <sstream>
+#include <vector>
 
-#include <petro/box/root.hpp>
+#include <petro/box/free.hpp>
+#include <petro/box/ftyp.hpp>
 #include <petro/box/mdat.hpp>
 #include <petro/box/moov.hpp>
-#include <petro/box/ftyp.hpp>
-#include <petro/box/free.hpp>
 #include <petro/box/mvhd.hpp>
+#include <petro/box/root.hpp>
 #include <petro/box/trak.hpp>
 #include <petro/box/udta.hpp>
 
@@ -33,16 +33,12 @@ TEST(test_parser, read_data)
 
     using trak_type = petro::box::trak<petro::parser<>>;
 
-    using moov_type = petro::box::moov<petro::parser<
-                      petro::box::mvhd,
-                      trak_type
-                      >>;
+    using moov_type =
+        petro::box::moov<petro::parser<petro::box::mvhd, trak_type>>;
 
-    petro::parser<
-        petro::box::mdat,
-        moov_type,
-        petro::box::free,
-        petro::box::ftyp> p;
+    petro::parser<petro::box::mdat, moov_type, petro::box::free,
+                  petro::box::ftyp>
+        p;
 
     auto root = std::make_shared<petro::box::root>();
 

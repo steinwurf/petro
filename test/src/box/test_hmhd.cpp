@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/hmhd.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/hmhd.hpp>
 
 #include <gtest/gtest.h>
 
@@ -15,19 +15,12 @@
 
 TEST(box_test_hmhd, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x00,
-            'h', 'm', 'h', 'd',
-            0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00,
-            0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00
-        };
-    auto hmhd_box = std::make_shared<petro::box::hmhd>(
-        buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer = {0x00, 0x00, 0x00, 0x00, 'h',  'm',  'h',
+                                   'd',  0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    auto hmhd_box =
+        std::make_shared<petro::box::hmhd>(buffer.data(), buffer.size());
 
     std::error_code error;
     hmhd_box->parse(error);

@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/trak.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/trak.hpp>
 #include <petro/parser.hpp>
 
 #include <gtest/gtest.h>
@@ -16,13 +16,10 @@
 
 TEST(box_test_trak, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x10,
-            't', 'r', 'a', 'k',
-            0x00, 0x00, 0x00, 0x08,
-            0x00, 0x00, 0x00, 0x00,
-        };
+    std::vector<uint8_t> buffer = {
+        0x00, 0x00, 0x00, 0x10, 't',  'r',  'a',  'k',
+        0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00,
+    };
     auto trak_box = std::make_shared<petro::box::trak<petro::parser<>>>(
         buffer.data(), buffer.size());
 

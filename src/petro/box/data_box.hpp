@@ -5,12 +5,12 @@
 
 #pragma once
 
-#include <memory>
-#include <string>
 #include <cstdint>
-#include <vector>
-#include <sstream>
+#include <memory>
 #include <queue>
+#include <sstream>
+#include <string>
+#include <vector>
 
 #include "box.hpp"
 
@@ -24,7 +24,6 @@ namespace box
 class data_box : public box
 {
 public:
-
     data_box(const uint8_t* data, uint64_t size);
 
     void parse(std::error_code& error);
@@ -42,16 +41,15 @@ public:
     std::string describe() const override final;
 
     virtual ~data_box()
-    { }
+    {
+    }
 
 protected:
-
     virtual std::string box_describe() const;
 
     virtual error box_error_code() const;
 
 protected:
-
     std::string m_type;
 
     std::string m_extended_type;

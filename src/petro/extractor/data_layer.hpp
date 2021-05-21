@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <cstdint>
 #include <cassert>
+#include <cstdint>
 #include <system_error>
 
 namespace petro
@@ -17,7 +17,6 @@ namespace extractor
 class data_layer
 {
 public:
-
     /// Opens the extractor. Remember to set the data buffer before calling
     /// this.
     void open(std::error_code& error)

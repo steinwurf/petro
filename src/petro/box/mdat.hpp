@@ -19,13 +19,12 @@ class mdat : public data_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-    mdat(const uint8_t* data, uint64_t size) :
-        data_box(data, size)
-    { }
+    mdat(const uint8_t* data, uint64_t size) : data_box(data, size)
+    {
+    }
 
     error box_error_code() const override
     {

@@ -21,8 +21,9 @@ inline std::string track_type_to_string(petro::extractor::track_type type)
 {
     switch (type)
     {
-#define PETRO_TRACK_TYPE_TAG(id,msg)      \
-                case petro::extractor::track_type::id: return std::string(msg);
+#define PETRO_TRACK_TYPE_TAG(id, msg)      \
+    case petro::extractor::track_type::id: \
+        return std::string(msg);
 #include "track_type_tags.hpp"
 #undef PETRO_TRACK_TYPE_TAG
     }

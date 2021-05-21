@@ -5,11 +5,11 @@
 
 #pragma once
 
+#include <cassert>
 #include <cstdint>
+#include <memory>
 #include <sstream>
 #include <vector>
-#include <cassert>
-#include <memory>
 
 #include "bit_stream.hpp"
 
@@ -18,9 +18,8 @@ namespace petro
 class picture_parameter_set
 {
 public:
-
-    static std::shared_ptr<picture_parameter_set> parse(
-        const uint8_t* data, uint64_t size, std::error_code& error)
+    static std::shared_ptr<picture_parameter_set>
+    parse(const uint8_t* data, uint64_t size, std::error_code& error)
     {
         std::shared_ptr<picture_parameter_set> pps(
             new picture_parameter_set(data, size));
@@ -32,18 +31,17 @@ public:
     }
 
 private:
-
-    picture_parameter_set(const uint8_t* data, uint64_t size) :
-        m_bs(data, size)
-    { }
+    picture_parameter_set(const uint8_t* data, uint64_t size) : m_bs(data, size)
+    {
+    }
 
     void parse(std::error_code& error)
     {
         assert(!error);
+        (void)error;
     }
 
 public:
-
     const uint8_t* data() const
     {
         return m_bs.data();
@@ -64,7 +62,6 @@ public:
     }
 
 private:
-
     bit_stream m_bs;
 };
 }

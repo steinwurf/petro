@@ -5,11 +5,11 @@
 
 #include "avcc.hpp"
 
+#include "../picture_parameter_set.hpp"
+#include "../sequence_parameter_set.hpp"
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
-#include "../sequence_parameter_set.hpp"
-#include "../picture_parameter_set.hpp"
 
 namespace petro
 {

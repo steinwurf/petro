@@ -5,45 +5,38 @@
 
 #include "aac_sample_extractor.hpp"
 
-#include "adts_writer_layer.hpp"
 #include "aac_track_layer.hpp"
+#include "adts_writer_layer.hpp"
+#include "data_layer.hpp"
 #include "looper_layer.hpp"
-#include "timestamp_extractor_layer.hpp"
-#include "sample_extractor_layer.hpp"
-#include "track_layer.hpp"
 #include "media_duration_layer.hpp"
 #include "parser_layer.hpp"
-#include "data_layer.hpp"
-
+#include "sample_extractor_layer.hpp"
+#include "timestamp_extractor_layer.hpp"
+#include "track_layer.hpp"
 
 namespace petro
 {
 namespace extractor
 {
 /// stack for extracting avc samples
-struct aac_sample_extractor::impl :
-    adts_writer_layer<
-    aac_track_layer<
-    looper_layer<
-    timestamp_extractor_layer<
-    sample_extractor_layer<
-    track_layer<
-    media_duration_layer<
-    parser_layer<
-    data_layer>>>>>>>>
-{ };
+struct aac_sample_extractor::impl
+    : adts_writer_layer<aac_track_layer<
+          looper_layer<timestamp_extractor_layer<sample_extractor_layer<
+              track_layer<media_duration_layer<parser_layer<data_layer>>>>>>>>
+{
+};
 
 aac_sample_extractor::aac_sample_extractor()
-{ }
+{
+}
 
 aac_sample_extractor::~aac_sample_extractor()
-{ }
+{
+}
 
-void aac_sample_extractor::open(
-    const uint8_t* data,
-    uint64_t size,
-    uint32_t track_id,
-    std::error_code& error)
+void aac_sample_extractor::open(const uint8_t* data, uint64_t size,
+                                uint32_t track_id, std::error_code& error)
 {
     assert(!error);
     auto impl = std::unique_ptr<aac_sample_extractor::impl>(

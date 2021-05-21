@@ -16,9 +16,9 @@ namespace
 struct dummy_parameter_set
 {
     dummy_parameter_set(const uint8_t* data, uint32_t size) :
-        m_data(data),
-        m_size(size)
-    { }
+        m_data(data), m_size(size)
+    {
+    }
 
     const uint8_t* data() const
     {
@@ -39,17 +39,18 @@ struct dummy_avcc
     dummy_avcc() :
         m_picture_parameter_set((const uint8_t*)1, 1U),
         m_sequence_parameter_set((const uint8_t*)2, 2U)
-    { }
+    {
+    }
 
     const dummy_parameter_set* picture_parameter_set(uint32_t index) const
     {
-        (void) index;
+        (void)index;
         return &m_picture_parameter_set;
     }
 
     const dummy_parameter_set* sequence_parameter_set(uint32_t index) const
     {
-        (void) index;
+        (void)index;
         return &m_sequence_parameter_set;
     }
 
@@ -64,7 +65,7 @@ struct dummy_avcc
 
 struct dummy_avc1
 {
-    template<class Box>
+    template <class Box>
     const std::shared_ptr<dummy_avcc> get_child() const
     {
         return std::make_shared<dummy_avcc>();
@@ -73,14 +74,12 @@ struct dummy_avc1
 
 struct dummy_trak
 {
-    dummy_trak() :
-        m_dummy_avc1(std::make_shared<dummy_avc1>())
+    dummy_trak() : m_dummy_avc1(std::make_shared<dummy_avc1>())
     {
-
     }
     const std::shared_ptr<dummy_avc1> get_child(const std::string& type) const
     {
-        (void) type;
+        (void)type;
         return m_dummy_avc1;
     }
 

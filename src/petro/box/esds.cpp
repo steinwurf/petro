@@ -7,9 +7,9 @@
 
 #include "../descriptor/elemetary_stream_descriptor.hpp"
 
-#include <string>
-#include <memory>
 #include <cstdint>
+#include <memory>
+#include <string>
 
 namespace petro
 {

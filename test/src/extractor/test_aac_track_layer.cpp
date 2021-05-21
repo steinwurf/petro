@@ -18,7 +18,8 @@ namespace
 struct dummy_mp4a : public petro::box::box
 {
     dummy_mp4a()
-    { }
+    {
+    }
 
     std::string type() const override
     {
@@ -33,12 +34,12 @@ struct dummy_mp4a : public petro::box::box
 
 struct dummy_trak
 {
-    dummy_trak(std::shared_ptr<dummy_mp4a> mp4a) :
-        m_dummy_mp4a(mp4a)
-    { }
+    dummy_trak(std::shared_ptr<dummy_mp4a> mp4a) : m_dummy_mp4a(mp4a)
+    {
+    }
 
-    std::shared_ptr<const petro::box::box> get_child(
-        const std::string& type) const
+    std::shared_ptr<const petro::box::box>
+    get_child(const std::string& type) const
     {
         if (type == "mp4a")
             return m_dummy_mp4a;
@@ -65,22 +66,19 @@ TEST(extractor_test_aac_track_layer, api)
 
     auto mp4a = std::make_shared<dummy_mp4a>();
 
-    std::vector<uint8_t> esds_data =
-        {
-            0x00, 0x00, 0x00, 0x27, // size
-            'e', 's', 'd', 's', // type
-            0x00, // full_box version
-            0x00, 0x00, 0x00, // full_box flag
-            0x03, // esds elemetary_stream_descriptor_tag
-            // elemetary_stream_descriptor (from test1.mp4 file)
-            0x19, 0x00, 0x02, 0x00, 0x04, 0x11, 0x40, 0x15,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0xfd, 0x75, 0x05, 0x02, 0x11, 0x90, 0x06,
-            0x01, 0x02
-        };
+    std::vector<uint8_t> esds_data = {
+        0x00, 0x00, 0x00, 0x27, // size
+        'e', 's', 'd', 's',     // type
+        0x00,                   // full_box version
+        0x00, 0x00, 0x00,       // full_box flag
+        0x03,                   // esds elemetary_stream_descriptor_tag
+        // elemetary_stream_descriptor (from test1.mp4 file)
+        0x19, 0x00, 0x02, 0x00, 0x04, 0x11, 0x40, 0x15, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0xfd, 0x75, 0x05, 0x02, 0x11, 0x90, 0x06,
+        0x01, 0x02};
 
-    auto esds = std::make_shared<petro::box::esds>(
-        esds_data.data(), esds_data.size());
+    auto esds =
+        std::make_shared<petro::box::esds>(esds_data.data(), esds_data.size());
     std::error_code error;
     esds->parse(error);
     ASSERT_FALSE(bool(error));

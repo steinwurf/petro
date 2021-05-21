@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/tfra.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/tfra.hpp>
 
 #include <gtest/gtest.h>
 
@@ -15,13 +15,9 @@
 
 TEST(box_test_tfra, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x00,
-            't', 'f', 'r', 'a'
-        };
-    auto tfra_box = std::make_shared<petro::box::tfra>(
-        buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer = {0x00, 0x00, 0x00, 0x00, 't', 'f', 'r', 'a'};
+    auto tfra_box =
+        std::make_shared<petro::box::tfra>(buffer.data(), buffer.size());
 
     std::error_code error;
     tfra_box->parse(error);

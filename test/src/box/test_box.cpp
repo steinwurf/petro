@@ -11,9 +11,9 @@ namespace
 {
 struct dummy_box : petro::box::box
 {
-    dummy_box(const std::string& type) :
-        m_type(type)
-    { }
+    dummy_box(const std::string& type) : m_type(type)
+    {
+    }
 
     std::string type() const override
     {
@@ -28,17 +28,15 @@ struct dummy_box : petro::box::box
     using petro::box::box::m_parent;
 
 private:
-
     std::string m_type;
 };
 struct special_box : dummy_box
 {
     static const std::string TYPE;
 
-    special_box() :
-        dummy_box(TYPE)
-    { }
-
+    special_box() : dummy_box(TYPE)
+    {
+    }
 };
 
 const std::string special_box::TYPE = "special";

@@ -5,20 +5,19 @@
 
 #pragma once
 
-#include <memory>
-#include <cstdint>
-#include "box/stts.hpp"
 #include "box/ctts.hpp"
+#include "box/stts.hpp"
+#include <cstdint>
+#include <memory>
 
 namespace petro
 {
 /// returns the sample's presentation time in microseconds.
 /// the ctts box is allowed to be zero.
-inline int64_t presentation_time(
-    std::shared_ptr<const petro::box::stts> stts,
-    std::shared_ptr<const petro::box::ctts> ctts,
-    uint32_t media_header_timescale,
-    uint32_t sample_index)
+inline int64_t presentation_time(std::shared_ptr<const petro::box::stts> stts,
+                                 std::shared_ptr<const petro::box::ctts> ctts,
+                                 uint32_t media_header_timescale,
+                                 uint32_t sample_index)
 {
     assert(stts != nullptr);
     assert(media_header_timescale != 0);

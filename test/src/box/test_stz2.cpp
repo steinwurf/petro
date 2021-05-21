@@ -3,8 +3,8 @@
 //
 // Distributed under the "BSD License". See the accompanying LICENSE.rst file.
 
-#include <petro/box/stz2.hpp>
 #include <petro/box/data_box.hpp>
+#include <petro/box/stz2.hpp>
 
 #include <gtest/gtest.h>
 
@@ -15,17 +15,11 @@
 
 TEST(box_test_stz2, construct)
 {
-    std::vector<uint8_t> buffer =
-        {
-            0x00, 0x00, 0x00, 0x00,
-            's', 't', 'z', '2',
-            0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00,
-            0x00,
-            0x00, 0x00, 0x00, 0x00
-        };
-    auto stz2_box = std::make_shared<petro::box::stz2>(
-        buffer.data(), buffer.size());
+    std::vector<uint8_t> buffer = {0x00, 0x00, 0x00, 0x00, 's',  't',  'z',
+                                   '2',  0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                   0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    auto stz2_box =
+        std::make_shared<petro::box::stz2>(buffer.data(), buffer.size());
 
     std::error_code error;
     stz2_box->parse(error);

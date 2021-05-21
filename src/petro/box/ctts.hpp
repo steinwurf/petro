@@ -18,7 +18,6 @@ namespace box
 class ctts : public full_box
 {
 public:
-
     struct entry_type
     {
         /// The sample count is an integer that counts the number of
@@ -32,14 +31,12 @@ public:
     };
 
 public:
-
     static const std::string TYPE;
 
 public:
-
-    ctts(const uint8_t* data, uint64_t size) :
-        full_box(data, size)
-    { }
+    ctts(const uint8_t* data, uint64_t size) : full_box(data, size)
+    {
+    }
 
     void parse_full_box_content(std::error_code& error) override
     {
@@ -59,11 +56,7 @@ public:
             if (error)
                 return;
 
-            m_entries.push_back(entry_type
-            {
-                sample_count,
-                sample_offset
-            });
+            m_entries.push_back(entry_type{sample_count, sample_offset});
 
             for (uint32_t i = 0; i < sample_count; ++i)
             {
@@ -100,7 +93,7 @@ public:
             ss << seperator;
             ss << "(" << entry.sample_count << ", ";
             ss << entry.sample_offset << ")";
-            seperator =  ", ";
+            seperator = ", ";
         }
         if (m_entries.size() > max_print)
             ss << "...";

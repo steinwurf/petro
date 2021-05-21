@@ -5,26 +5,25 @@
 
 #pragma once
 
-#include <cstdint>
-#include <cassert>
-#include <string>
-#include "../decoding_time.hpp"
-#include "../presentation_time.hpp"
+#include "../box/ctts.hpp"
 #include "../box/mdhd.hpp"
 #include "../box/mvhd.hpp"
 #include "../box/stts.hpp"
-#include "../box/ctts.hpp"
+#include "../decoding_time.hpp"
+#include "../presentation_time.hpp"
+#include <cassert>
+#include <cstdint>
+#include <string>
 
 namespace petro
 {
 namespace extractor
 {
 /// Uses the mvhd box to extract the media duration.
-template<class Super>
+template <class Super>
 class media_duration_layer : public Super
 {
 public:
-
     /// Open this an the underlying layers
     void open(std::error_code& error)
     {
@@ -61,10 +60,8 @@ public:
     }
 
 private:
-
     // Total media duration in microseconds
     uint64_t m_media_duration = 0;
-
 };
 }
 }

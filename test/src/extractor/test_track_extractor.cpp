@@ -9,8 +9,8 @@
 #include <boost/iostreams/device/mapped_file.hpp>
 
 #include <cstdint>
-#include <vector>
 #include <fstream>
+#include <vector>
 
 #include <gtest/gtest.h>
 
@@ -27,11 +27,9 @@ TEST(extractor_test_track_extractor, init)
     ASSERT_FALSE(bool(error));
 
     auto tracks = extractor.tracks();
-    std::vector<petro::extractor::track_extractor::track> expected_tracks =
-        {
-            { 1, petro::extractor::track_type::avc1 },
-            { 2, petro::extractor::track_type::aac }
-        };
+    std::vector<petro::extractor::track_extractor::track> expected_tracks = {
+        {1, petro::extractor::track_type::avc1},
+        {2, petro::extractor::track_type::aac}};
 
     std::stringstream ss;
     for (auto track : tracks)

@@ -18,7 +18,7 @@ namespace petro
 /// http://phk.freebsd.dk/time/20141116.html
 enum class error
 {
-#define PETRO_ERROR_TAG(id,msg) id,
+#define PETRO_ERROR_TAG(id, msg) id,
 #include "error_tags.hpp"
 #undef PETRO_ERROR_TAG
 };
@@ -27,7 +27,6 @@ enum class error
 class error_category : public std::error_category
 {
 public:
-
     /// @return The name of the category
     const char* name() const noexcept override
     {
@@ -40,8 +39,8 @@ public:
         switch (static_cast<error>(error_value))
         {
 #define PETRO_ERROR_TAG(id, message) \
-            case error::id:          \
-                return message;
+    case error::id:                  \
+        return message;
 #include "error_tags.hpp"
 #undef PETRO_ERROR_TAG
         }
@@ -68,5 +67,7 @@ namespace std
 {
 /// Reference: http://bit.ly/1RCq7ts
 template <>
-struct is_error_code_enum<petro::error> : public true_type {};
+struct is_error_code_enum<petro::error> : public true_type
+{
+};
 }

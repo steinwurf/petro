@@ -19,14 +19,12 @@ class hdlr : public full_box
 {
 
 public:
-
     static const std::string TYPE;
 
 public:
-
-    hdlr(const uint8_t* data, uint64_t size) :
-        full_box(data, size)
-    { }
+    hdlr(const uint8_t* data, uint64_t size) : full_box(data, size)
+    {
+    }
 
     void parse_full_box_content(std::error_code& error) override
     {
@@ -82,7 +80,6 @@ public:
     }
 
 private:
-
     /// when present in a media box, is an integer containing one of the
     /// following values, or a value from a derived specification:
     ///     "vide": Video track
