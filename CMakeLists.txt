@@ -3,8 +3,8 @@ project(petro)
 
 find_package(Python COMPONENTS Interpreter)
 if(NOT DEFINED STEINWURF_RESOLVE)
-    message(STATUS "Resolving dependencies...")
-    execute_process(
+  message(STATUS "Resolving dependencies...")
+  execute_process(
     COMMAND ${Python_EXECUTABLE} waf resolve ${STEINWURF_RESOLVE_OPTIONS}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE STATUS)
