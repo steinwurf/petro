@@ -14,6 +14,8 @@
 # Python
 *.pyc
 
+# Visual Studio Code
+.vscode
 # Compiled Doxygen documentation
 /doxygen/html
 

@@ -25,21 +25,27 @@ namespace petro
 {
 namespace extractor
 {
+/// Class for extracting tracks from a file.
 class track_extractor
 {
 public:
+    /// A parser for the different tracks
     using track_parser = parser<box::moov<parser<box::trak<parser<
         box::tkhd,
         box::mdia<parser<box::hdlr, // needed for esds extraction
                          box::minf<parser<box::stbl<parser<box::stsd>>>>>>>>>>>;
 
+    /// Struct containing the track information
     struct track
     {
+        /// ID of the track
         uint32_t id;
+        /// The track type
         petro::extractor::track_type type;
     };
 
 public:
+    /// parses data, extracts the tracks and gathers them in the m_tracks vector
     void open(const uint8_t* data, uint64_t size, std::error_code& error)
     {
         assert(!error);
@@ -89,17 +95,20 @@ public:
         }
     }
 
+    /// Clears the tracks
     void close()
     {
         m_tracks.clear();
     }
 
+    /// @return A vector containing the tracks extracted
     std::vector<track> tracks() const
     {
         return m_tracks;
     }
 
 protected:
+    /// Vector to contain the tracks extracted
     std::vector<track> m_tracks;
 };
 }

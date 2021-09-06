@@ -17,10 +17,17 @@
 
 namespace petro
 {
+
+/// Class for a box parser
 template <class... PBoxes>
 class parser
 {
 public:
+    /// Parses the data with a specific box
+    /// @param data The data to parse
+    /// @param size The size of the data
+    /// @param parent The parent of the box currently handled by the parser
+    /// @param error An error to report
     void parse(const uint8_t* data, uint64_t size,
                std::weak_ptr<box::box> parent, std::error_code& error)
     {
@@ -43,6 +50,11 @@ public:
         }
     }
 
+    /// @return A pointer to the box currently parsed
+    /// @param data The data to parse
+    /// @param size The size of the data
+    /// @param parent The parent of the box currently handled by the parser
+    /// @param error An error to report
     std::shared_ptr<box::data_box> parse_box(const uint8_t* data, uint64_t size,
                                              std::weak_ptr<box::box> parent,
                                              std::error_code& error)
@@ -83,9 +95,16 @@ public:
     }
 
 private:
+    /// Struct to help the parser handle unsupported box-types
     template <class...>
     struct parse_helper
     {
+        /// @return a pointer to a data_box
+        /// @param type The type of box being parsed
+        /// @param data The data being parsed
+        /// @param size The size of the data
+        /// @param parent The parent of the box currently handled by the parser
+        /// @param error An error to report
         static std::shared_ptr<box::data_box>
         call(const std::string& type, const uint8_t* data, uint64_t size,
              std::weak_ptr<box::box> parent, std::error_code& error)
@@ -102,9 +121,16 @@ private:
         }
     };
 
+    /// Struct to help the parser handle supported box-types
     template <class Box, class... Boxes>
     struct parse_helper<Box, Boxes...>
     {
+        /// @return a pointer to a data_box
+        /// @param type The type of box being parsed
+        /// @param data The data being parsed
+        /// @param size The size of the data
+        /// @param parent The parent of the box currently handled by the parser
+        /// @param error An error to report
         static std::shared_ptr<box::data_box>
         call(const std::string& type, const uint8_t* data, uint64_t size,
              std::weak_ptr<box::box> parent, std::error_code& error)
