@@ -1,21 +1,46 @@
 #! /usr/bin/env python
 # encoding: utf-8
 
-APPNAME = 'petro'
-VERSION = '16.2.0'
+import os
+
+APPNAME = "petro"
+VERSION = "16.2.0"
 
 
 def build(bld):
 
     bld.env.append_unique(
-        'DEFINES_STEINWURF_VERSION',
-        'STEINWURF_PETRO_VERSION="{}"'.format(VERSION))
+        "DEFINES_STEINWURF_VERSION", 'STEINWURF_PETRO_VERSION="{}"'.format(VERSION)
+    )
 
-    bld.recurse('src/petro')
+    bld.recurse("src/petro")
 
     if bld.is_toplevel():
 
         # Only build tests when executed from the top-level wscript,
         # i.e. not when included as a dependency
-        bld.recurse('test')
-        bld.recurse('examples')
+        bld.recurse("test")
+        bld.recurse("examples")
+
+
+def docs(ctx):
+    """Build the documentation in a virtualenv"""
+
+    with ctx.create_virtualenv() as venv:
+
+        # To update the requirements.txt just delete it - a fresh one
+        # will be generated from test/requirements.in
+        if not os.path.isfile("docs/requirements.txt"):
+            venv.run("python -m pip install pip-tools")
+            venv.run("pip-compile docs/requirements.in")
+
+        venv.run("python -m pip install -r docs/requirements.txt")
+
+        build_path = os.path.join(ctx.path.abspath(), "build", "site", "docs")
+
+        venv.run(
+            "giit clean . --build_path {}".format(build_path), cwd=ctx.path.abspath()
+        )
+        venv.run(
+            "giit sphinx . --build_path {}".format(build_path), cwd=ctx.path.abspath()
+        )

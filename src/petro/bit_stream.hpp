@@ -33,6 +33,7 @@ namespace petro
 class bit_stream
 {
 public:
+    /// Constructor with pointer
     bit_stream(const uint8_t* data, uint64_t size) :
         m_data(data), m_size(size), m_bit_offset(0)
     {
@@ -40,11 +41,15 @@ public:
         assert(m_size < std::numeric_limits<uint64_t>::max() / 8);
     }
 
+    /// Constructor with vector
     bit_stream(const std::vector<uint8_t>& data) :
         bit_stream(data.data(), data.size())
     {
     }
 
+    /// Skips bits in bit_stream
+    /// @param bits The number of bits to skip
+    /// @param error An error to report. Usually called recursively
     void skip(uint64_t bits, std::error_code& error)
     {
         assert(!error);
@@ -55,7 +60,9 @@ public:
         }
         m_bit_offset += bits;
     }
-
+    /// Go to specific position in bit_stream
+    /// @param offset The offset of the new position
+    /// @param error An error to report. Usually called recursively
     void seek(uint64_t offset, std::error_code& error)
     {
         assert(!error);
@@ -67,6 +74,9 @@ public:
         m_bit_offset = offset;
     }
 
+    /// Read a bit
+    /// @param out A number or value type object
+    /// @param error An error to report. Usually called recursively
     template <class ValueType>
     void read_bit(ValueType& out, std::error_code& error)
     {
@@ -76,6 +86,10 @@ public:
         read_bits(out, 1, error);
     }
 
+    /// Read multiple bits
+    /// @param out A number or value type object. At most 32 bits
+    /// @param bits Number of bits to read
+    /// @param error An error to report. Usually called recursively
     template <class ValueType>
     void read_bits(ValueType& out, uint64_t bits, std::error_code& error)
     {
@@ -96,6 +110,8 @@ public:
         out = result;
     }
 
+    /// @param out The value to be read
+    /// @param error An error to report. Usually called recursively
     void read_unsigned_exponential_golomb_code(uint32_t& out,
                                                std::error_code& error)
     {
@@ -127,6 +143,8 @@ public:
         out = result;
     }
 
+    /// @param out The value to be read
+    /// @param error An error to report. Usually called recursively
     void read_signed_exponential_golomb_code(int32_t& out,
                                              std::error_code& error)
     {
@@ -146,22 +164,27 @@ public:
         }
     }
 
+    /// @return The data pointer being read
     const uint8_t* data() const
     {
         return m_data;
     }
 
+    /// @return The size of the data
     uint64_t size() const
     {
         return m_size;
     }
 
+    /// @return The number of bits being read
     uint64_t bits() const
     {
         return size() * 8U;
     }
 
 private:
+    /// @param value The byte to be read
+    /// @param error An error to report. Usually called recursively
     void read_next_bit(uint8_t& value, std::error_code& error)
     {
         assert(!error);
@@ -178,8 +201,13 @@ private:
     }
 
 private:
+    /// The data to read from
     const uint8_t* m_data;
+
+    /// Size of the data
     const uint64_t m_size;
+
+    /// Current position in the bit_stream
     uint64_t m_bit_offset;
 };
 }

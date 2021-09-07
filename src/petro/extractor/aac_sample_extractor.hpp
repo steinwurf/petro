@@ -17,7 +17,7 @@ namespace petro
 namespace extractor
 {
 
-// stack for extracting avc samples
+/// stack for extracting avc samples
 struct aac_sample_extractor : extractor
 {
     /// Constructor
