@@ -13,10 +13,8 @@ Overview of the public API.
 
 
    bit_stream
-   decoding_time
    error
    matrix
    picture_parameter_set
-   presentation_time
    stream
    extractor/extractor

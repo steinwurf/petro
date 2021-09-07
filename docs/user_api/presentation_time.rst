@@ -1,2 +1,0 @@
-.. wurfapi:: function_synopsis.rst
-    :selector: presentation_time(std::shared_ptr<constpetro::box::stts>stts,std::shared_ptr<constpetro::box::ctts>ctts,uint32_tmedia_header_timescale,uint32_tsample_index)

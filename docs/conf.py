@@ -22,11 +22,9 @@ wurfapi = {
     "source_paths": [
         # API
         "../src/petro/bit_stream.hpp",
-        "../src/petro/decoding_time.hpp",
         "../src/petro/error.hpp",
         "../src/petro/matrix.hpp",
         "../src/petro/picture_parameter_set.hpp",
-        "../src/petro/presentation_time.hpp",
         "../src/petro/stream.hpp",
         # Extractor
         "../src/petro/extractor/track_extractor.hpp",
@@ -34,7 +32,7 @@ wurfapi = {
         "../src/petro/extractor/avc_sample_extractor.hpp",
     ],
     "recursive": False,
-    "user_templates": "rst_templates",
+    "user_templates": "",
     "include_paths": ["../src"],
     "parser": {
         "type": "doxygen",
@@ -77,7 +75,7 @@ release = u""
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ["rst_templates"]
+exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
