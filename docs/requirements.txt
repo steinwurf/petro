@@ -37,9 +37,9 @@ docutils==0.17.1
 fuzzywuzzy==0.18.0
     # via sphobjinv
 giit==6.1.0
-    # via -r docs/requirements.in
-git+https://github.com/steinwurf/guzzle_sphinx_theme@53265a5ccd929ad63b7b0bff029c634be4977a43
-    # via -r docs/requirements.in
+    # via -r requirements.in
+guzzle-sphinx-theme @ git+https://github.com/steinwurf/guzzle_sphinx_theme@53265a5ccd929ad63b7b0bff029c634be4977a43
+    # via -r requirements.in
 idna==3.2
     # via requests
 imagesize==1.2.0
@@ -48,7 +48,7 @@ jinja2==3.0.1
     # via sphinx
 jsonschema==3.2.0
     # via sphobjinv
-lxml==4.6.3
+lxml==4.6.5
     # via pyquery
 markupsafe==2.0.1
     # via jinja2
@@ -89,7 +89,7 @@ soupsieve==2.2.1
     # via beautifulsoup4
 sphinx==4.1.2
     # via
-    #   -r docs/requirements.in
+    #   -r requirements.in
     #   guzzle-sphinx-theme
     #   wurfapi
 sphinxcontrib-applehelp==1.0.2
@@ -111,9 +111,9 @@ text-unidecode==1.3
 urllib3==1.26.6
     # via requests
 versjon==2.1.0
-    # via -r docs/requirements.in
+    # via -r requirements.in
 wurfapi==8.1.0
-    # via -r docs/requirements.in
+    # via -r requirements.in
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
